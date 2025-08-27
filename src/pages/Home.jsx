@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import PostCard from "../components/PostCard";
 import { getUserIdentifier } from "../utils/userIdentifier";
+import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -32,7 +33,7 @@ function Home() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/v1/posts");
+      const response = await fetch(API_ENDPOINTS.POSTS);
       if (response.ok) {
         const data = await response.json();
         // Add userLiked property to each post
@@ -56,7 +57,7 @@ function Home() {
     try {
       const userId = getUserIdentifier();
       const response = await fetch(
-        `http://localhost:5000/api/v1/posts/${postId}/like`,
+        buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}/like`),
         {
           method: "POST",
           headers: {
@@ -90,7 +91,7 @@ function Home() {
     try {
       const userId = getUserIdentifier();
       const response = await fetch(
-        `http://localhost:5000/api/v1/posts/${postId}/report`,
+        buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}/report`),
         {
           method: "POST",
           headers: {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { PenTool, Send, User, MessageSquare } from "lucide-react";
+import { API_ENDPOINTS } from "../config/api";
 
 function Create() {
   const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ function Create() {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/posts", {
+      const response = await fetch(API_ENDPOINTS.POSTS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

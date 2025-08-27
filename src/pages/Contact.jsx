@@ -8,6 +8,7 @@ import {
   User,
   Phone as PhoneIcon,
 } from "lucide-react";
+import { API_ENDPOINTS } from "../config/api";
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ function Contact() {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/v1/contact", {
+      const response = await fetch(API_ENDPOINTS.CONTACT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

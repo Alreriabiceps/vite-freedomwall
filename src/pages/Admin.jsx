@@ -20,6 +20,7 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 
 function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -61,7 +62,7 @@ function Admin() {
 
     try {
       // Test admin access by fetching admin posts
-      const response = await fetch("http://localhost:5000/api/v1/posts/admin", {
+      const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
         headers: {
           "Admin-Key": adminKey,
         },
@@ -102,7 +103,7 @@ function Admin() {
 
   const fetchPosts = async (key) => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/posts/admin", {
+      const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
         headers: {
           "Admin-Key": key,
         },
@@ -118,7 +119,7 @@ function Admin() {
 
   const fetchStats = async (key) => {
     try {
-      const response = await fetch("http://localhost:5000/api/v1/posts/admin", {
+      const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
         headers: {
           "Admin-Key": key,
         },
@@ -153,14 +154,11 @@ function Admin() {
 
   const fetchContactMessages = async (key) => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/v1/contact/admin",
-        {
-          headers: {
-            "Admin-Key": key,
-          },
-        }
-      );
+      const response = await fetch(API_ENDPOINTS.CONTACT_ADMIN, {
+        headers: {
+          "Admin-Key": key,
+        },
+      });
 
       if (response.ok) {
         const contacts = await response.json();
@@ -189,7 +187,7 @@ function Admin() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/v1/contact/${contactId}/status`,
+        buildEndpoint(API_ENDPOINTS.CONTACT, `/${contactId}/status`),
         {
           method: "PUT",
           headers: {
@@ -217,7 +215,7 @@ function Admin() {
     try {
       const key = localStorage.getItem("adminKey");
       const response = await fetch(
-        `http://localhost:5000/api/v1/contact/${contactId}`,
+        buildEndpoint(API_ENDPOINTS.CONTACT, `/${contactId}`),
         {
           method: "DELETE",
           headers: {
@@ -247,7 +245,7 @@ function Admin() {
     try {
       const key = localStorage.getItem("adminKey");
       const response = await fetch(
-        `http://localhost:5000/api/v1/posts/${postId}/moderate`,
+        buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}/moderate`),
         {
           method: "POST",
           headers: {
@@ -277,7 +275,10 @@ function Admin() {
     try {
       const key = localStorage.getItem("adminKey");
       const response = await fetch(
-        `http://localhost:5000/api/v1/posts/${postId}/comment/${commentIndex}`,
+        buildEndpoint(
+          API_ENDPOINTS.POSTS,
+          `/${postId}/comment/${commentIndex}`
+        ),
         {
           method: "DELETE",
           headers: {
