@@ -94,7 +94,7 @@ function PostModal({
         <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full h-[90vh] sm:h-auto sm:max-h-[90vh] sm:max-w-2xl overflow-hidden flex flex-col">
           {/* Modal Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-            <h2 className="text-lg font-bold text-gray-900 font-['Comic_Sans_MS']">
+            <h2 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
               Post Details
             </h2>
             <button
@@ -111,9 +111,9 @@ function PostModal({
               {/* Post Header with Avatar */}
               <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
                 {/* Avatar */}
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600"
+                    className="w-6 h-6 text-gray-600"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -128,10 +128,10 @@ function PostModal({
                 {/* User Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
-                    <h3 className="font-semibold text-gray-900 text-base sm:text-lg font-['Comic_Sans_MS']">
+                    <h3 className="font-semibold text-gray-900 text-lg font-['Comic_Sans_MS']">
                       {post.name || "Anonymous"}
                     </h3>
-                    <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                    <span className="text-base text-gray-500 font-['Comic_Sans_MS']">
                       {formatDate(post.createdAt)}
                     </span>
                   </div>
@@ -139,14 +139,14 @@ function PostModal({
                   {/* Status Badges */}
                   <div className="flex items-center gap-2">
                     {post.isFlagged && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded-full">
-                        <Flag size={10} />
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 text-sm rounded-full">
+                        <Flag size={12} />
                         Flagged
                       </span>
                     )}
                     {post.isHidden && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-700 text-xs rounded-full">
-                        <EyeOff size={10} />
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-700 text-sm rounded-full">
+                        <EyeOff size={12} />
                         Hidden
                       </span>
                     )}
@@ -197,13 +197,13 @@ function PostModal({
 
               {/* Full Message Content */}
               <div className="mb-4 sm:mb-6">
-                <p className="text-gray-800 text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-['Comic_Sans_MS']">
+                <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap font-['Comic_Sans_MS']">
                   {post.message}
                 </p>
               </div>
 
               {/* Stats Row */}
-              <div className="flex items-center gap-4 sm:gap-6 text-sm text-gray-500 mb-4 sm:mb-6">
+              <div className="flex items-center gap-4 sm:gap-6 text-base text-gray-500 mb-4 sm:mb-6">
                 <span className="flex items-center gap-2">
                   <Heart size={16} className="text-red-500" />
                   {post.likes || 0} likes
@@ -225,7 +225,7 @@ function PostModal({
                 <button
                   onClick={handleLike}
                   disabled={isLiking}
-                  className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl transition-colors font-medium touch-manipulation ${
+                  className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl transition-colors font-medium touch-manipulation text-base ${
                     post.userLiked
                       ? "bg-red-100 text-red-700 hover:bg-red-200"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -240,7 +240,7 @@ function PostModal({
 
                 <button
                   onClick={openCommentModal}
-                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-xl transition-colors font-medium touch-manipulation"
+                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-xl transition-colors font-medium touch-manipulation text-base"
                 >
                   <MessageSquare size={18} />
                   Comment
@@ -248,7 +248,7 @@ function PostModal({
 
                 <button
                   onClick={openReportModal}
-                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-orange-100 text-orange-700 hover:bg-orange-200 rounded-xl transition-colors font-medium touch-manipulation"
+                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-orange-100 text-orange-700 hover:bg-orange-200 rounded-xl transition-colors font-medium touch-manipulation text-base"
                 >
                   <Flag size={18} />
                   Report
@@ -272,14 +272,14 @@ function PostModal({
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="font-semibold text-gray-900 text-sm font-['Comic_Sans_MS']">
+                              <span className="font-semibold text-gray-900 text-base font-['Comic_Sans_MS']">
                                 {comment.name || "Anonymous"}
                               </span>
-                              <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                              <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
                                 {formatDate(comment.createdAt)}
                               </span>
                             </div>
-                            <p className="text-gray-700 text-sm font-['Comic_Sans_MS'] leading-relaxed whitespace-pre-wrap">
+                            <p className="text-gray-700 text-base font-['Comic_Sans_MS'] leading-relaxed whitespace-pre-wrap">
                               {comment.message}
                             </p>
                           </div>

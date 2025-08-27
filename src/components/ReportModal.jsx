@@ -65,7 +65,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
             <div className="p-2 bg-red-100 rounded-lg">
               <Flag className="text-red-600" size={20} />
             </div>
-            <h3 className="text-lg sm:text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+            <h3 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
               Report Post
             </h3>
           </div>
@@ -87,10 +87,10 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                 size={20}
               />
               <div>
-                <h4 className="font-semibold text-yellow-800 mb-1 font-['Comic_Sans_MS'] text-sm sm:text-base">
+                <h4 className="font-semibold text-yellow-800 mb-1 font-['Comic_Sans_MS'] text-base">
                   Report Inappropriate Content
                 </h4>
-                <p className="text-yellow-700 text-sm font-['Comic_Sans_MS']">
+                <p className="text-yellow-700 text-base font-['Comic_Sans_MS']">
                   Please only report posts that violate our community
                   guidelines. False reports may result in action against your
                   account.
@@ -101,7 +101,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
 
           {/* Post Preview */}
           <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-xl">
-            <h4 className="font-semibold text-gray-900 mb-2 font-['Comic_Sans_MS'] text-sm sm:text-base">
+            <h4 className="font-semibold text-gray-900 mb-2 font-['Comic_Sans_MS'] text-base">
               Reporting this post:
             </h4>
             <div className="flex items-start gap-3">
@@ -119,7 +119,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-gray-700 text-sm font-['Comic_Sans_MS']">
+                <p className="text-gray-700 text-base font-['Comic_Sans_MS']">
                   {post?.message && post.message.length > 100
                     ? post.message.substring(0, 100) + "..."
                     : post?.message || "Post content"}
@@ -131,7 +131,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Reason Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3 font-['Comic_Sans_MS']">
+              <label className="block text-base font-semibold text-gray-700 mb-3 font-['Comic_Sans_MS']">
                 Reason for reporting:
               </label>
               <div className="space-y-3">
@@ -148,7 +148,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                       onChange={(e) => setReason(e.target.value)}
                       className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
                     />
-                    <span className="text-sm text-gray-700 font-['Comic_Sans_MS']">
+                    <span className="text-base text-gray-700 font-['Comic_Sans_MS']">
                       {reportReason}
                     </span>
                   </label>
@@ -161,7 +161,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
               <div>
                 <label
                   htmlFor="customReason"
-                  className="block text-sm font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
+                  className="block text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
                 >
                   Please specify:
                 </label>
@@ -176,7 +176,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                   required
                 />
                 <div className="flex justify-end mt-1">
-                  <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                  <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
                     {reason === "Other" ? 0 : reason.length}/200 characters
                   </span>
                 </div>
@@ -189,14 +189,14 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                 type="button"
                 onClick={handleCancel}
                 disabled={isSubmitting}
-                className="flex-1 px-4 sm:px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-['Comic_Sans_MS'] font-medium touch-manipulation"
+                className="flex-1 px-4 sm:px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-['Comic_Sans_MS'] font-medium touch-manipulation text-base"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting || !reason.trim()}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-4 sm:px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold touch-manipulation"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-4 sm:px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold touch-manipulation text-base"
               >
                 {isSubmitting ? (
                   <>

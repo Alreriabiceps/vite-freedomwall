@@ -53,7 +53,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
       <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full h-[90vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md overflow-hidden flex flex-col">
         {/* Modal Header */}
         <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+          <h3 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
             Add Comment
           </h3>
           <button
@@ -68,10 +68,10 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {/* Post Preview */}
           <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-xl">
-            <h4 className="font-semibold text-gray-900 mb-2 font-['Comic_Sans_MS'] text-sm sm:text-base">
+            <h4 className="font-semibold text-gray-900 mb-2 font-['Comic_Sans_MS'] text-base">
               Commenting on:
             </h4>
-            <p className="text-gray-700 text-sm font-['Comic_Sans_MS']">
+            <p className="text-gray-700 text-base font-['Comic_Sans_MS']">
               {post?.message && post.message.length > 100
                 ? post.message.substring(0, 100) + "..."
                 : post?.message || "Post content"}
@@ -83,7 +83,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
             <div>
               <label
                 htmlFor="commentName"
-                className="block text-sm font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
+                className="block text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
               >
                 <div className="flex items-center gap-2">
                   <User size={16} />
@@ -106,7 +106,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
             <div>
               <label
                 htmlFor="commentMessage"
-                className="block text-sm font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
+                className="block text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
               >
                 <div className="flex items-center gap-2">
                   <MessageSquare size={16} />
@@ -125,7 +125,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
                 maxLength={1000}
               />
               <div className="flex justify-end mt-1">
-                <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
                   {formData.message.length}/1000 characters
                 </span>
               </div>
@@ -136,7 +136,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
               <button
                 type="submit"
                 disabled={isSubmitting || !formData.message.trim()}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold touch-manipulation"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold touch-manipulation text-base"
               >
                 {isSubmitting ? (
                   <>
