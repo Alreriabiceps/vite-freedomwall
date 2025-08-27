@@ -6,7 +6,7 @@ import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 function PollCard({ poll, onVoteSubmitted }) {
   const [showResults, setShowResults] = useState(false);
   const [pollData, setPollData] = useState(poll);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState([]);
   const [isVoting, setIsVoting] = useState(false);
 
   const formatDate = (dateString) => {
@@ -30,7 +30,7 @@ function PollCard({ poll, onVoteSubmitted }) {
   };
 
   const handleVote = async () => {
-    if (!selectedOption || isVoting) return;
+    if (selectedOptions.length === 0 || isVoting) return;
 
     setIsVoting(true);
     try {
@@ -43,7 +43,7 @@ function PollCard({ poll, onVoteSubmitted }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            optionIndex: selectedOption,
+            optionIndices: selectedOptions,
             userId,
           }),
         }
@@ -158,23 +158,32 @@ function PollCard({ poll, onVoteSubmitted }) {
         {!showResults && !hasUserVoted() && !isExpired() && (
           <div className="mt-4 space-y-3">
             <div className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
-              Select an option:
+              Select one or more options:
             </div>
             {pollData.options.map((option, index) => (
               <label
                 key={index}
                 className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 font-['Comic_Sans_MS'] ${
-                  selectedOption === index
+                  selectedOptions.includes(index)
                     ? "border-purple-500 bg-purple-50"
                     : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                 }`}
               >
                 <input
-                  type="radio"
+                  type="checkbox"
                   name="pollOption"
                   value={index}
-                  checked={selectedOption === index}
-                  onChange={(e) => setSelectedOption(parseInt(e.target.value))}
+                  checked={selectedOptions.includes(index)}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    if (e.target.checked) {
+                      setSelectedOptions([...selectedOptions, value]);
+                    } else {
+                      setSelectedOptions(
+                        selectedOptions.filter((opt) => opt !== value)
+                      );
+                    }
+                  }}
                   className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                 />
                 <span className="text-gray-900 font-medium">{option.text}</span>
@@ -184,7 +193,7 @@ function PollCard({ poll, onVoteSubmitted }) {
             {/* Vote Button */}
             <button
               onClick={handleVote}
-              disabled={!selectedOption || isVoting}
+              disabled={selectedOptions.length === 0 || isVoting}
               className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white py-3 px-4 rounded-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold"
             >
               {isVoting ? (

@@ -20,6 +20,7 @@ import {
   Mail,
   Phone,
   Megaphone,
+  User,
 } from "lucide-react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 
@@ -52,6 +53,29 @@ function Admin() {
     expiresAt: "",
     adminNotes: "",
   });
+
+  // Search and filter states for posts
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+
+  // Search and filter states for polls
+  const [pollSearchTerm, setPollSearchTerm] = useState("");
+  const [pollStatusFilter, setPollStatusFilter] = useState("all");
+  const [pollSortBy, setPollSortBy] = useState("newest");
+
+  // Search and filter states for announcements
+  const [announcementSearchTerm, setAnnouncementSearchTerm] = useState("");
+  const [announcementTypeFilter, setAnnouncementTypeFilter] = useState("all");
+  const [announcementStatusFilter, setAnnouncementStatusFilter] =
+    useState("all");
+  const [announcementSortBy, setAnnouncementSortBy] = useState("newest");
+
+  // Search and filter states for contact messages
+  const [contactSearchTerm, setContactSearchTerm] = useState("");
+  const [contactStatusFilter, setContactStatusFilter] = useState("all");
+  const [contactSortBy, setContactSortBy] = useState("newest");
 
   // Check if already authenticated
   useEffect(() => {
@@ -149,10 +173,7 @@ function Admin() {
           0
         );
         const totalLikes = data.reduce((sum, post) => sum + post.likes, 0);
-        const totalReports = data.reduce(
-          (sum, post) => sum + post.reportCount,
-          0
-        );
+        const totalReports = data.filter((post) => post.reportCount > 0).length;
 
         setStats((prev) => ({
           ...prev,
@@ -557,16 +578,218 @@ function Admin() {
   };
 
   const getFilteredPosts = () => {
+    let filtered = [...posts];
+
+    // Tab-based filtering
     switch (activeTab) {
       case "reported":
-        return posts.filter((post) => post.reportCount > 0);
+        filtered = filtered.filter((post) => post.reportCount > 0);
+        break;
       case "hidden":
-        return posts.filter((post) => post.isHidden);
+        filtered = filtered.filter((post) => post.isHidden);
+        break;
       case "flagged":
-        return posts.filter((post) => post.isFlagged);
+        filtered = filtered.filter((post) => post.isFlagged);
+        break;
       default:
-        return posts;
+        break;
     }
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (post) =>
+          post.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          post.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== "all") {
+      if (statusFilter === "flagged") {
+        filtered = filtered.filter((post) => post.isFlagged);
+      } else if (statusFilter === "hidden") {
+        filtered = filtered.filter((post) => post.isHidden);
+      } else if (statusFilter === "reported") {
+        filtered = filtered.filter((post) => post.reportCount > 0);
+      }
+    }
+
+    // Type filter (posts with comments, likes, etc.)
+    if (typeFilter !== "all") {
+      if (typeFilter === "withComments") {
+        filtered = filtered.filter((post) => post.comments.length > 0);
+      } else if (typeFilter === "withLikes") {
+        filtered = filtered.filter((post) => post.likes > 0);
+      } else if (typeFilter === "withReports") {
+        filtered = filtered.filter((post) => post.reportCount > 0);
+      }
+    }
+
+    // Sorting
+    switch (sortBy) {
+      case "newest":
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case "oldest":
+        filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case "mostLiked":
+        filtered.sort((a, b) => b.likes - a.likes);
+        break;
+      case "mostCommented":
+        filtered.sort((a, b) => b.comments.length - a.comments.length);
+        break;
+      case "mostReported":
+        filtered.sort((a, b) => b.reportCount - a.reportCount);
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
+  };
+
+  // Filter and search functions for polls
+  const getFilteredPolls = () => {
+    let filtered = [...polls];
+
+    // Search filter
+    if (pollSearchTerm) {
+      filtered = filtered.filter(
+        (poll) =>
+          poll.question.toLowerCase().includes(pollSearchTerm.toLowerCase()) ||
+          poll.createdBy.toLowerCase().includes(pollSearchTerm.toLowerCase())
+      );
+    }
+
+    // Status filter
+    if (pollStatusFilter !== "all") {
+      if (pollStatusFilter === "active") {
+        filtered = filtered.filter((poll) => poll.isActive);
+      } else if (pollStatusFilter === "inactive") {
+        filtered = filtered.filter((poll) => !poll.isActive);
+      }
+    }
+
+    // Sorting
+    switch (pollSortBy) {
+      case "newest":
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case "oldest":
+        filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case "mostVotes":
+        filtered.sort((a, b) => (b.totalVotes || 0) - (a.totalVotes || 0));
+        break;
+      case "mostOptions":
+        filtered.sort((a, b) => b.options.length - a.options.length);
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
+  };
+
+  // Filter and search functions for announcements
+  const getFilteredAnnouncements = () => {
+    let filtered = [...announcements];
+
+    // Search filter
+    if (announcementSearchTerm) {
+      filtered = filtered.filter(
+        (announcement) =>
+          announcement.title
+            .toLowerCase()
+            .includes(announcementSearchTerm.toLowerCase()) ||
+          announcement.message
+            .toLowerCase()
+            .includes(announcementSearchTerm.toLowerCase())
+      );
+    }
+
+    // Type filter
+    if (announcementTypeFilter !== "all") {
+      filtered = filtered.filter(
+        (announcement) => announcement.type === announcementTypeFilter
+      );
+    }
+
+    // Status filter
+    if (announcementStatusFilter !== "all") {
+      if (announcementStatusFilter === "active") {
+        filtered = filtered.filter((announcement) => announcement.isActive);
+      } else if (announcementStatusFilter === "inactive") {
+        filtered = filtered.filter((announcement) => !announcement.isActive);
+      }
+    }
+
+    // Sorting
+    switch (announcementSortBy) {
+      case "newest":
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case "oldest":
+        filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case "title":
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
+  };
+
+  // Filter and search functions for contact messages
+  const getFilteredContacts = () => {
+    let filtered = [...contactMessages];
+
+    // Search filter
+    if (contactSearchTerm) {
+      filtered = filtered.filter(
+        (contact) =>
+          contact.name
+            .toLowerCase()
+            .includes(contactSearchTerm.toLowerCase()) ||
+          contact.subject
+            .toLowerCase()
+            .includes(contactSearchTerm.toLowerCase()) ||
+          contact.message
+            .toLowerCase()
+            .includes(contactSearchTerm.toLowerCase())
+      );
+    }
+
+    // Status filter
+    if (contactStatusFilter !== "all") {
+      filtered = filtered.filter(
+        (contact) => contact.status === contactStatusFilter
+      );
+    }
+
+    // Sorting
+    switch (contactSortBy) {
+      case "newest":
+        filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case "oldest":
+        filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case "name":
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "subject":
+        filtered.sort((a, b) => a.subject.localeCompare(b.subject));
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
   };
 
   if (!isAuthenticated) {
@@ -636,6 +859,9 @@ function Admin() {
   }
 
   const filteredPosts = getFilteredPosts();
+  const filteredPolls = getFilteredPolls();
+  const filteredAnnouncements = getFilteredAnnouncements();
+  const filteredContacts = getFilteredContacts();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -843,7 +1069,7 @@ function Admin() {
                       Total Posts
                     </p>
                     <p className="text-3xl font-bold text-gray-900 font-['Comic_Sans_MS']">
-                      {stats.totalPosts}
+                      {filteredPosts.length}
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -990,6 +1216,95 @@ function Admin() {
                     <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
                       {filteredPosts.length} posts
                     </span>
+                  </div>
+
+                  {/* Search and Filter Controls */}
+                  <div className="mb-6 space-y-4">
+                    {/* Search Bar */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          placeholder="Search posts by content or author..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Filters Row */}
+                    <div className="flex flex-wrap items-center gap-4">
+                      {/* Status Filter */}
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                          Status:
+                        </label>
+                        <select
+                          value={statusFilter}
+                          onChange={(e) => setStatusFilter(e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        >
+                          <option value="all">All Status</option>
+                          <option value="flagged">Flagged</option>
+                          <option value="hidden">Hidden</option>
+                          <option value="reported">Reported</option>
+                        </select>
+                      </div>
+
+                      {/* Type Filter */}
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                          Type:
+                        </label>
+                        <select
+                          value={typeFilter}
+                          onChange={(e) => setTypeFilter(e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        >
+                          <option value="all">All Types</option>
+                          <option value="withComments">With Comments</option>
+                          <option value="withLikes">With Likes</option>
+                          <option value="withReports">With Reports</option>
+                        </select>
+                      </div>
+
+                      {/* Sort By */}
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                          Sort:
+                        </label>
+                        <select
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value)}
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        >
+                          <option value="newest">Newest First</option>
+                          <option value="oldest">Oldest First</option>
+                          <option value="mostLiked">Most Liked</option>
+                          <option value="mostCommented">Most Commented</option>
+                          <option value="mostReported">Most Reported</option>
+                        </select>
+                      </div>
+
+                      {/* Clear Filters Button */}
+                      {(searchTerm ||
+                        statusFilter !== "all" ||
+                        typeFilter !== "all" ||
+                        sortBy !== "newest") && (
+                        <button
+                          onClick={() => {
+                            setSearchTerm("");
+                            setStatusFilter("all");
+                            setTypeFilter("all");
+                            setSortBy("newest");
+                          }}
+                          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                        >
+                          Clear Filters
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {filteredPosts.length === 0 ? (
@@ -1163,6 +1478,99 @@ function Admin() {
                   </button>
                 </div>
 
+                {/* Search and Filter Controls for Announcements */}
+                <div className="mb-6 space-y-4">
+                  {/* Search Bar */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Search announcements by title or message..."
+                        value={announcementSearchTerm}
+                        onChange={(e) =>
+                          setAnnouncementSearchTerm(e.target.value)
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent font-['Comic_Sans_MS']"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Filters Row */}
+                  <div className="flex flex-wrap items-center gap-4">
+                    {/* Type Filter */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        Type:
+                      </label>
+                      <select
+                        value={announcementTypeFilter}
+                        onChange={(e) =>
+                          setAnnouncementTypeFilter(e.target.value)
+                        }
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                      >
+                        <option value="all">All Types</option>
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="success">Success</option>
+                        <option value="error">Error</option>
+                      </select>
+                    </div>
+
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        Status:
+                      </label>
+                      <select
+                        value={announcementStatusFilter}
+                        onChange={(e) =>
+                          setAnnouncementStatusFilter(e.target.value)
+                        }
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                      >
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+
+                    {/* Sort By */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        Sort:
+                      </label>
+                      <select
+                        value={announcementSortBy}
+                        onChange={(e) => setAnnouncementSortBy(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                      >
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="title">By Title</option>
+                      </select>
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    {(announcementSearchTerm ||
+                      announcementTypeFilter !== "all" ||
+                      announcementStatusFilter !== "all" ||
+                      announcementSortBy !== "newest") && (
+                      <button
+                        onClick={() => {
+                          setAnnouncementSearchTerm("");
+                          setAnnouncementTypeFilter("all");
+                          setAnnouncementStatusFilter("all");
+                          setAnnouncementSortBy("newest");
+                        }}
+                        className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                      >
+                        Clear Filters
+                      </button>
+                    )}
+                  </div>
+                </div>
+
                 {showCreateForm && (
                   <div className="mb-8 p-6 bg-orange-50 border border-orange-200 rounded-xl">
                     <h3 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS'] mb-4">
@@ -1274,13 +1682,13 @@ function Admin() {
                   </div>
                 )}
 
-                {announcements.length === 0 ? (
+                {filteredAnnouncements.length === 0 ? (
                   <p className="text-gray-500 text-center py-8 font-['Comic_Sans_MS']">
-                    No announcements created yet
+                    No announcements found
                   </p>
                 ) : (
                   <div className="space-y-6">
-                    {announcements.map((announcement) => (
+                    {filteredAnnouncements.map((announcement) => (
                       <div
                         key={announcement._id}
                         className={`border border-gray-200 rounded-xl p-6 ${
@@ -1390,17 +1798,85 @@ function Admin() {
                     Polls
                   </h2>
                   <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
-                    {polls.length} polls
+                    {filteredPolls.length} polls
                   </span>
                 </div>
 
-                {polls.length === 0 ? (
+                {/* Search and Filter Controls for Polls */}
+                <div className="mb-6 space-y-4">
+                  {/* Search Bar */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Search polls by question or creator..."
+                        value={pollSearchTerm}
+                        onChange={(e) => setPollSearchTerm(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Filters Row */}
+                  <div className="flex flex-wrap items-center gap-4">
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        Status:
+                      </label>
+                      <select
+                        value={pollStatusFilter}
+                        onChange={(e) => setPollStatusFilter(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                      >
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+
+                    {/* Sort By */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        Sort:
+                      </label>
+                      <select
+                        value={pollSortBy}
+                        onChange={(e) => setPollSortBy(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                      >
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="mostVotes">Most Votes</option>
+                        <option value="mostOptions">Most Options</option>
+                      </select>
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    {(pollSearchTerm ||
+                      pollStatusFilter !== "all" ||
+                      pollSortBy !== "newest") && (
+                      <button
+                        onClick={() => {
+                          setPollSearchTerm("");
+                          setPollStatusFilter("all");
+                          setPollSortBy("newest");
+                        }}
+                        className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                      >
+                        Clear Filters
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {filteredPolls.length === 0 ? (
                   <p className="text-gray-500 text-center py-8 font-['Comic_Sans_MS']">
-                    No polls created yet
+                    No polls found
                   </p>
                 ) : (
                   <div className="space-y-6">
-                    {polls.map((poll) => (
+                    {filteredPolls.map((poll) => (
                       <div
                         key={poll._id}
                         className={`border border-gray-200 rounded-xl p-6 ${
@@ -1503,17 +1979,86 @@ function Admin() {
                     Contact Messages
                   </h2>
                   <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
-                    {contactMessages.length} messages
+                    {filteredContacts.length} messages
                   </span>
                 </div>
 
-                {contactMessages.length === 0 ? (
+                {/* Search and Filter Controls for Contact Messages */}
+                <div className="mb-6 space-y-4">
+                  {/* Search Bar */}
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Search messages by name, subject, or content..."
+                        value={contactSearchTerm}
+                        onChange={(e) => setContactSearchTerm(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Filters Row */}
+                  <div className="flex flex-wrap items-center gap-4">
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        Status:
+                      </label>
+                      <select
+                        value={contactStatusFilter}
+                        onChange={(e) => setContactStatusFilter(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                      >
+                        <option value="all">All Status</option>
+                        <option value="new">New</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                      </select>
+                    </div>
+
+                    {/* Sort By */}
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        Sort:
+                      </label>
+                      <select
+                        value={contactSortBy}
+                        onChange={(e) => setContactSortBy(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                      >
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name">By Name</option>
+                        <option value="subject">By Subject</option>
+                      </select>
+                    </div>
+
+                    {/* Clear Filters Button */}
+                    {(contactSearchTerm ||
+                      contactStatusFilter !== "all" ||
+                      contactSortBy !== "newest") && (
+                      <button
+                        onClick={() => {
+                          setContactSearchTerm("");
+                          setContactStatusFilter("all");
+                          setContactSortBy("newest");
+                        }}
+                        className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                      >
+                        Clear Filters
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {filteredContacts.length === 0 ? (
                   <p className="text-gray-500 text-center py-8 font-['Comic_Sans_MS']">
-                    No contact messages yet
+                    No contact messages found
                   </p>
                 ) : (
                   <div className="space-y-6">
-                    {contactMessages.map((contact) => (
+                    {filteredContacts.map((contact) => (
                       <div
                         key={contact._id}
                         className={`border border-gray-200 rounded-xl p-6 ${
