@@ -74,10 +74,10 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
 
             {/* User Info */}
             <div className="min-w-0">
-              <h3 className="font-semibold text-gray-900 text-sm truncate">
+              <h3 className="font-semibold text-gray-900 text-base font-['Comic_Sans_MS'] truncate">
                 {post.name || "Anonymous"}
               </h3>
-              <span className="text-xs text-gray-500">
+              <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
                 {formatDate(post.createdAt)}
               </span>
             </div>
@@ -105,7 +105,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
 
         {/* Card Content */}
         <div className="post-card-content px-4 pb-3">
-          <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap line-clamp-4">
+          <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap line-clamp-4 font-['Comic_Sans_MS']">
             {getMessagePreview(post.message)}
           </p>
 
@@ -113,7 +113,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
           {post.message.length > 120 && (
             <button
               onClick={openPostModal}
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2 transition-colors"
+              className="text-blue-600 hover:text-blue-700 text-base font-medium mt-2 transition-colors font-['Comic_Sans_MS']"
             >
               Read more
             </button>
@@ -123,21 +123,21 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
         {/* Card Footer */}
         <div className="post-card-footer px-4 pb-4">
           {/* Stats Row */}
-          <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1">
-                <Heart size={14} className="text-red-500" />
+                <Heart size={16} className="text-red-500" />
                 {post.likes || 0}
               </span>
               <span className="flex items-center gap-1">
-                <MessageSquare size={14} className="text-blue-500" />
+                <MessageSquare size={16} className="text-blue-500" />
                 {post.comments ? post.comments.length : 0}
               </span>
             </div>
 
             {post.reportCount > 0 && (
               <span className="flex items-center gap-1 text-orange-600">
-                <Flag size={12} />
+                <Flag size={14} />
                 {post.reportCount}
               </span>
             )}
@@ -148,7 +148,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
             <button
               onClick={handleLike}
               disabled={isLiking}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-base font-['Comic_Sans_MS'] ${
                 post.userLiked
                   ? "text-red-600 bg-red-50 hover:bg-red-100"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
@@ -163,7 +163,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
 
             <button
               onClick={openPostModal}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-base text-gray-600 hover:bg-gray-50 hover:text-gray-800 font-['Comic_Sans_MS']"
             >
               <MessageSquare size={18} />
               Comment
@@ -171,7 +171,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
 
             <button
               onClick={openPostModal}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-base text-gray-600 hover:bg-gray-50 hover:text-gray-800 font-['Comic_Sans_MS']"
             >
               <Flag size={18} />
               Report
