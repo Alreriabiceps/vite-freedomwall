@@ -1,0 +1,212 @@
+import { useState } from "react";
+import { X, Flag, AlertTriangle, Send } from "lucide-react";
+
+function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
+  const [reason, setReason] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const reportReasons = [
+    "Inappropriate content",
+    "Hate speech or discrimination",
+    "Bullying or harassment",
+    "Spam or irrelevant content",
+    "Personal information exposure",
+    "Violence or threats",
+    "Other",
+  ];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!reason.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      const userId = localStorage.getItem("userId") || "anonymous";
+      const response = await fetch(
+        `http://localhost:5000/api/v1/posts/${post._id}/report`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId,
+            reason: reason.trim(),
+          }),
+        }
+      );
+
+      if (response.ok) {
+        setReason("");
+        onReportSubmitted();
+        onClose();
+      }
+    } catch (error) {
+      console.error("Error reporting post:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setReason("");
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
+        {/* Modal Header */}
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <Flag className="text-red-600" size={20} />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+              Report Post
+            </h3>
+          </div>
+          <button
+            onClick={handleCancel}
+            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="p-6">
+          {/* Warning Message */}
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+            <div className="flex items-start gap-3">
+              <AlertTriangle
+                className="text-yellow-600 mt-0.5 flex-shrink-0"
+                size={20}
+              />
+              <div>
+                <h4 className="font-semibold text-yellow-800 mb-1 font-['Comic_Sans_MS']">
+                  Report Inappropriate Content
+                </h4>
+                <p className="text-yellow-700 text-sm font-['Comic_Sans_MS']">
+                  Please only report posts that violate our community
+                  guidelines. False reports may result in action against your
+                  account.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Post Preview */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-xl">
+            <h4 className="font-semibold text-gray-900 mb-2 font-['Comic_Sans_MS']">
+              Reporting this post:
+            </h4>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-sm font-bold">
+                  {post.name ? post.name.charAt(0).toUpperCase() : "A"}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-gray-700 text-sm font-['Comic_Sans_MS']">
+                  {post.message.length > 100
+                    ? post.message.substring(0, 100) + "..."
+                    : post.message}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Reason Selection */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-3 font-['Comic_Sans_MS']">
+                Reason for reporting:
+              </label>
+              <div className="space-y-2">
+                {reportReasons.map((reportReason) => (
+                  <label
+                    key={reportReason}
+                    className="flex items-center gap-3 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="reason"
+                      value={reportReason}
+                      checked={reason === reportReason}
+                      onChange={(e) => setReason(e.target.value)}
+                      className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                    />
+                    <span className="text-sm text-gray-700 font-['Comic_Sans_MS']">
+                      {reportReason}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Reason (if "Other" is selected) */}
+            {reason === "Other" && (
+              <div>
+                <label
+                  htmlFor="customReason"
+                  className="block text-sm font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
+                >
+                  Please specify:
+                </label>
+                <textarea
+                  id="customReason"
+                  value={reason === "Other" ? "" : reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Please describe the issue..."
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 resize-none font-['Comic_Sans_MS']"
+                  maxLength={200}
+                  required
+                />
+                <div className="flex justify-end mt-1">
+                  <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                    {reason === "Other" ? 0 : reason.length}/200 characters
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={isSubmitting}
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-['Comic_Sans_MS'] font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || !reason.trim()}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Reporting...
+                  </>
+                ) : (
+                  <>
+                    <Flag size={16} />
+                    Submit Report
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default ReportModal;
