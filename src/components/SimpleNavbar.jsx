@@ -283,7 +283,7 @@ function SimpleNavbar() {
               {showAnnouncements && (
                 <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
                   <div className="p-3 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900 text-base">
+                    <h3 className="font-semibold text-gray-900 text-base font-sans">
                       Announcements
                     </h3>
                     <button
@@ -308,13 +308,13 @@ function SimpleNavbar() {
                   {loadingAnnouncements ? (
                     <div className="p-3 text-gray-600 text-center">
                       <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-600 mx-auto mb-2"></div>
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-normal font-sans">
                         Loading announcements...
                       </span>
                     </div>
                   ) : announcementsError ? (
                     <div className="p-3 text-red-600 text-center">
-                      <div className="text-sm font-medium mb-2">
+                      <div className="text-sm font-normal font-sans mb-2">
                         {announcementsError}
                       </div>
                       <button
@@ -342,14 +342,14 @@ function SimpleNavbar() {
                           };
                           fetchAnnouncements();
                         }}
-                        className="text-blue-700 hover:text-blue-800 text-sm font-semibold underline bg-blue-50 px-2 py-1 rounded-lg hover:bg-blue-100 transition-colors"
+                        className="text-blue-700 hover:text-blue-800 text-sm font-normal font-sans underline bg-blue-50 px-2 py-1 rounded-lg hover:bg-blue-100 transition-colors"
                       >
                         Try again
                       </button>
                     </div>
                   ) : getActiveAnnouncements().length === 0 ? (
                     <div className="p-3 text-gray-600 text-center">
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-normal font-sans">
                         No active announcements
                       </span>
                     </div>
@@ -370,14 +370,14 @@ function SimpleNavbar() {
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h4 className="font-bold text-gray-900 text-sm mb-1 leading-tight">
+                              <h4 className="font-semibold text-gray-900 text-sm mb-1 leading-tight font-sans">
                                 {announcement.title}
                               </h4>
-                              <p className="text-gray-800 text-sm leading-relaxed mb-1.5">
+                              <p className="text-gray-800 text-sm leading-relaxed mb-1.5 font-sans">
                                 {announcement.message}
                               </p>
                               <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-600 font-medium">
+                                <span className="text-xs text-gray-600 font-normal font-sans">
                                   {new Date(
                                     announcement.createdAt
                                   ).toLocaleDateString()}
