@@ -8,6 +8,13 @@ import {
   TrendingUp,
 } from "lucide-react";
 import PostModal from "./PostModal";
+import LazyContent from "./LazyContent";
+import {
+  InteractiveCard,
+  AnimatedLikeButton,
+  AnimatedCommentButton,
+} from "./InteractiveElements";
+import { getUserIdentifier } from "../utils/userIdentifier";
 
 function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
   const [showPostModal, setShowPostModal] = useState(false);
@@ -130,7 +137,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
     setIsLiking(true);
     try {
       if (onLike) {
-        await onLike(post._id);
+        await onLike(post._id, getUserIdentifier());
       }
     } catch (error) {
       console.error("Error liking post:", error);
@@ -152,7 +159,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
   return (
     <>
       {/* Instagram/Facebook Style Card with Popularity Indicators */}
-      <div
+      <InteractiveCard
         className={`post-card group relative ${styles.border} ${styles.shadow}`}
       >
         {/* Popularity Badge */}
@@ -215,21 +222,23 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
         </div>
 
         {/* Card Content */}
-        <div className="post-card-content px-4 pb-3">
-          <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap line-clamp-4 font-['Comic_Sans_MS']">
-            {getMessagePreview(post.message)}
-          </p>
+        <LazyContent>
+          <div className="post-card-content px-4 pb-3">
+            <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap line-clamp-4 font-['Comic_Sans_MS']">
+              {getMessagePreview(post.message)}
+            </p>
 
-          {/* Show "Read more" if message is truncated */}
-          {post.message.length > 120 && (
-            <button
-              onClick={openPostModal}
-              className="text-blue-600 hover:text-blue-700 text-base font-medium mt-2 transition-colors font-['Comic_Sans_MS']"
-            >
-              Read more
-            </button>
-          )}
-        </div>
+            {/* Show "Read more" if message is truncated */}
+            {post.message.length > 120 && (
+              <button
+                onClick={openPostModal}
+                className="text-blue-600 hover:text-blue-700 text-base font-medium mt-2 transition-colors font-['Comic_Sans_MS']"
+              >
+                Read more
+              </button>
+            )}
+          </div>
+        </LazyContent>
 
         {/* Card Footer */}
         <div className="post-card-footer px-4 pb-4">
@@ -255,41 +264,29 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-1 border-t border-gray-100 pt-3">
-            <button
+          <div className="flex items-center justify-center gap-4 border-t border-gray-100 pt-3">
+            <AnimatedLikeButton
+              isLiked={post.userLiked}
               onClick={handleLike}
-              disabled={isLiking}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-base font-['Comic_Sans_MS'] ${
-                post.userLiked
-                  ? "text-red-600 bg-red-50 hover:bg-red-100"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
-              }`}
-            >
-              <Heart
-                size={18}
-                className={post.userLiked ? "fill-current" : ""}
-              />
-              {post.userLiked ? "Liked" : "Like"}
-            </button>
+              size="md"
+              className="flex-1"
+            />
+
+            <AnimatedCommentButton
+              onClick={openPostModal}
+              size="md"
+              className="flex-1"
+            />
 
             <button
               onClick={openPostModal}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-base text-gray-600 hover:bg-gray-50 hover:text-gray-800 font-['Comic_Sans_MS']"
+              className="flex-1 flex items-center justify-center p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
-              <MessageSquare size={18} />
-              Comment
-            </button>
-
-            <button
-              onClick={openPostModal}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-base text-gray-600 hover:bg-gray-50 hover:text-gray-800 font-['Comic_Sans_MS']"
-            >
-              <Flag size={18} />
-              Report
+              <Flag size={20} className="text-orange-500" />
             </button>
           </div>
         </div>
-      </div>
+      </InteractiveCard>
 
       {/* Post Modal */}
       <PostModal
@@ -299,6 +296,13 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
         onLike={onLike}
         onReport={onReport}
         onUpdate={onUpdate}
+        onCommentAdded={(updatedPost) => {
+          // Update the local post state with the actual comment data from backend
+          // This ensures the comment appears immediately with correct data
+          if (updatedPost && updatedPost.comments) {
+            post.comments = updatedPost.comments;
+          }
+        }}
         isAdmin={isAdmin}
       />
     </>

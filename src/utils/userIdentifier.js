@@ -11,12 +11,15 @@ export const getUserIdentifier = () => {
     const sessionId = generateSessionId();
     userId = `user_${deviceId}_${sessionId}`;
     localStorage.setItem("userId", userId);
+
+    // Also store in sessionStorage as backup
+    sessionStorage.setItem("userId", userId);
   }
 
   return userId;
 };
 
-// Generate a device identifier
+// Generate a device identifier using multiple browser characteristics
 const generateDeviceId = () => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -25,7 +28,15 @@ const generateDeviceId = () => {
   ctx.fillText("Device fingerprint", 2, 2);
 
   const fingerprint = canvas.toDataURL();
-  return btoa(fingerprint).substring(0, 8);
+
+  // Combine multiple identifiers for more uniqueness
+  const screenInfo = `${screen.width}x${screen.height}x${screen.colorDepth}`;
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const language = navigator.language;
+  const platform = navigator.platform;
+
+  const combined = `${fingerprint}_${screenInfo}_${timezone}_${language}_${platform}`;
+  return btoa(combined).substring(0, 16);
 };
 
 // Generate a session identifier
@@ -48,6 +59,8 @@ export const markPostAsLiked = (postId) => {
   if (!likedPosts.includes(postId)) {
     likedPosts.push(postId);
     localStorage.setItem("likedPosts", JSON.stringify(likedPosts));
+    // Also store in sessionStorage as backup
+    sessionStorage.setItem("likedPosts", JSON.stringify(likedPosts));
   }
 };
 
@@ -56,12 +69,16 @@ export const markPostAsUnliked = (postId) => {
   const likedPosts = JSON.parse(localStorage.getItem("likedPosts") || "[]");
   const updatedLikedPosts = likedPosts.filter((id) => id !== postId);
   localStorage.setItem("likedPosts", JSON.stringify(updatedLikedPosts));
+  // Also update sessionStorage
+  sessionStorage.setItem("likedPosts", JSON.stringify(updatedLikedPosts));
 };
 
 // Clear all user data (for testing or logout)
 export const clearUserData = () => {
   localStorage.removeItem("userId");
   localStorage.removeItem("likedPosts");
+  sessionStorage.removeItem("userId");
+  sessionStorage.removeItem("likedPosts");
 };
 
 // Check if this is a new device/browser session
@@ -78,4 +95,16 @@ export const isNewSession = () => {
   const hoursSinceStart =
     (Date.now() - parseInt(sessionStart)) / (1000 * 60 * 60);
   return hoursSinceStart > 24;
+};
+
+// Get a more persistent identifier that's harder to change
+export const getPersistentIdentifier = () => {
+  const userId = getUserIdentifier();
+  const sessionStart =
+    localStorage.getItem("eca_freedom_wall_session_start") ||
+    Date.now().toString();
+
+  // Create a hash-like identifier that includes session start time
+  const persistentId = btoa(`${userId}_${sessionStart}`).substring(0, 24);
+  return persistentId;
 };

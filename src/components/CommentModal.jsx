@@ -72,8 +72,9 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
       );
 
       if (response.ok) {
+        const updatedPost = await response.json();
         setFormData({ name: "", message: "" });
-        onCommentAdded();
+        onCommentAdded(updatedPost);
         onClose();
       }
     } catch (error) {

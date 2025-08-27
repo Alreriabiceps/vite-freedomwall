@@ -55,7 +55,7 @@ const TextType = ({
   }, [variableSpeed, typingSpeed]);
 
   const getCurrentTextColor = () => {
-    if (textColors.length === 0) return "#ffffff";
+    if (textColors.length === 0) return "#374151"; // Default to gray-700 for better visibility
     return textColors[currentTextIndex % textColors.length];
   };
 

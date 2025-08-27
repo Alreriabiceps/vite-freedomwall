@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import CommentModal from "./CommentModal";
 import ReportModal from "./ReportModal";
+import { getUserIdentifier } from "../utils/userIdentifier";
 
 function PostModal({
   post,
@@ -21,6 +22,7 @@ function PostModal({
   onLike,
   onReport,
   onUpdate,
+  onCommentAdded,
   isAdmin = false,
 }) {
   const [showCommentModal, setShowCommentModal] = useState(false);
@@ -78,7 +80,7 @@ function PostModal({
     setIsLiking(true);
     try {
       if (onLike) {
-        await onLike(post._id);
+        await onLike(post._id, getUserIdentifier());
       }
     } catch (error) {
       console.error("Error liking post:", error);
@@ -109,8 +111,18 @@ function PostModal({
     setShowCommentModal(false);
   };
 
-  const handleCommentAdded = () => {
-    window.dispatchEvent(new Event("postsModified"));
+  const handleCommentAdded = (updatedPost) => {
+    // Call the parent's onCommentAdded handler if provided
+    if (onCommentAdded) {
+      onCommentAdded(updatedPost);
+    }
+    // Close the comment modal
+    closeCommentModal();
+
+    // Update the local post state with the actual comment data from backend
+    if (updatedPost && updatedPost.comments) {
+      post.comments = updatedPost.comments;
+    }
   };
 
   if (!isOpen) return null;

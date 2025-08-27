@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BarChart3, Users, Hash, MessageSquare, Flag } from "lucide-react";
 import { getUserIdentifier } from "../utils/userIdentifier";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
+import LazyContent from "./LazyContent";
 
 function PollCard({ poll, onVoteSubmitted }) {
   const [showResults, setShowResults] = useState(false);
@@ -140,19 +141,21 @@ function PollCard({ poll, onVoteSubmitted }) {
 
       {/* Card Content */}
       <div className="post-card-content px-4 pb-3">
-        <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap line-clamp-4 font-['Comic_Sans_MS']">
-          {getMessagePreview(pollData.question)}
-        </p>
+        <LazyContent>
+          <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap line-clamp-4 font-['Comic_Sans_MS']">
+            {getMessagePreview(pollData.question)}
+          </p>
 
-        {/* Show "View poll" if question is truncated */}
-        {pollData.question.length > 120 && (
-          <button
-            onClick={() => setShowResults(!showResults)}
-            className="text-blue-600 hover:text-blue-700 text-base font-medium mt-2 transition-colors font-['Comic_Sans_MS']"
-          >
-            View poll
-          </button>
-        )}
+          {/* Show "View poll" if question is truncated */}
+          {pollData.question.length > 120 && (
+            <button
+              onClick={() => setShowResults(!showResults)}
+              className="text-blue-600 hover:text-blue-700 text-base font-medium mt-2 transition-colors font-['Comic_Sans_MS']"
+            >
+              View poll
+            </button>
+          )}
+        </LazyContent>
 
         {/* Voting Interface (when not showing results and user hasn't voted) */}
         {!showResults && !hasUserVoted() && !isExpired() && (

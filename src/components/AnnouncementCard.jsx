@@ -7,6 +7,7 @@ import {
   X,
   Clock,
 } from "lucide-react";
+import LazyContent from "./LazyContent";
 
 function AnnouncementCard({ announcement, onClose, isAdmin = false }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -92,17 +93,19 @@ function AnnouncementCard({ announcement, onClose, isAdmin = false }) {
               </div>
             </div>
 
-            {isExpanded ? (
-              <div className="text-gray-800 font-['Comic_Sans_MS']">
-                {announcement.message}
-              </div>
-            ) : (
-              <div className="text-gray-800 font-['Comic_Sans_MS']">
-                {announcement.message.length > 150
-                  ? `${announcement.message.substring(0, 150)}...`
-                  : announcement.message}
-              </div>
-            )}
+            <LazyContent>
+              {isExpanded ? (
+                <div className="text-gray-800 font-['Comic_Sans_MS']">
+                  {announcement.message}
+                </div>
+              ) : (
+                <div className="text-gray-800 font-['Comic_Sans_MS']">
+                  {announcement.message.length > 150
+                    ? `${announcement.message.substring(0, 150)}...`
+                    : announcement.message}
+                </div>
+              )}
+            </LazyContent>
 
             {announcement.message.length > 150 && (
               <button
