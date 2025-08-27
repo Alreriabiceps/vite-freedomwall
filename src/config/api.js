@@ -9,6 +9,8 @@ export const API_ENDPOINTS = {
   POLLS_TRENDING: `${API_BASE_URL}/api/v1/polls/trending`,
   CONTACT: `${API_BASE_URL}/api/v1/contact`,
   CONTACT_ADMIN: `${API_BASE_URL}/api/v1/contact/admin`,
+  ANNOUNCEMENTS: `${API_BASE_URL}/api/v1/announcements`,
+  ANNOUNCEMENTS_ADMIN: `${API_BASE_URL}/api/v1/announcements/admin`,
 };
 
 export const buildEndpoint = (base, path) => `${base}${path}`;

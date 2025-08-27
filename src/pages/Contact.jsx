@@ -1,20 +1,10 @@
 import { useState } from "react";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Send,
-  MessageSquare,
-  User,
-  Phone as PhoneIcon,
-} from "lucide-react";
+import { MapPin, Send, MessageSquare, User } from "lucide-react";
 import { API_ENDPOINTS } from "../config/api";
 
 function Contact() {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
-    phone: "",
     subject: "",
     message: "",
   });
@@ -23,7 +13,7 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.message.trim() || !formData.email.trim()) return;
+    if (!formData.message.trim() || !formData.name.trim()) return;
 
     setIsSubmitting(true);
     setSubmitStatus(null);
@@ -41,8 +31,6 @@ function Contact() {
         setSubmitStatus("success");
         setFormData({
           name: "",
-          email: "",
-          phone: "",
           subject: "",
           message: "",
         });
@@ -74,14 +62,15 @@ function Contact() {
       <div className="text-center mb-8 md:mb-12">
         <div className="mb-4 md:mb-6">
           <div className="w-16 h-16 md:w-24 md:h-16 bg-gradient-to-r from-gray-900 to-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-xl">
-            <Mail className="text-white" size={24} />
+            <MessageSquare className="text-white" size={24} />
           </div>
         </div>
         <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-4 font-['Comic_Sans_MS']">
           Contact Us
         </h1>
         <p className="text-sm md:text-lg text-gray-600 font-['Comic_Sans_MS'] max-w-2xl md:max-w-3xl mx-auto px-4 md:px-0">
-          Have a question or want to get in touch? We'd love to hear from you!
+          Have a question or want to get in touch? Send us a message using the
+          form below!
         </p>
       </div>
 
@@ -100,28 +89,14 @@ function Contact() {
             <div className="space-y-4 md:space-y-6">
               <div className="flex items-start gap-3 md:gap-4">
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+                  <User className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 text-sm md:text-base font-['Comic_Sans_MS'] mb-1">
-                    Email
+                    Contact Form
                   </h3>
                   <p className="text-gray-600 text-xs md:text-sm font-['Comic_Sans_MS']">
-                    freedomwall011@gmail.com
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 md:gap-4">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <PhoneIcon className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm md:text-base font-['Comic_Sans_MS'] mb-1">
-                    Phone
-                  </h3>
-                  <p className="text-gray-600 text-xs md:text-sm font-['Comic_Sans_MS']">
-                    None as of the moment
+                    Use the form to send us a message
                   </p>
                 </div>
               </div>
@@ -167,100 +142,50 @@ function Contact() {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                {/* Name Field */}
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm md:text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
-                  >
-                    <div className="flex items-center gap-2">
-                      <User size={16} className="md:w-5 md:h-5" />
-                      Full Name
-                    </div>
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="Your full name"
-                    className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
-                    required
-                  />
-                </div>
-
-                {/* Email Field */}
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm md:text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Mail size={16} className="md:w-5 md:h-5" />
-                      Email Address
-                    </div>
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="your.email@example.com"
-                    className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
-                    required
-                  />
-                </div>
+              {/* Nickname Field */}
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm md:text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
+                >
+                  <div className="flex items-center gap-2">
+                    <User size={16} className="md:w-5 md:h-5" />
+                    Nickname
+                  </div>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Your nickname"
+                  className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
+                  required
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                {/* Phone Field */}
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm md:text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
-                  >
-                    <div className="flex items-center gap-2">
-                      <PhoneIcon size={16} className="md:w-5 md:h-5" />
-                      Phone Number (Optional)
-                    </div>
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="Not available at the moment"
-                    className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
-                    disabled
-                  />
-                </div>
-
-                {/* Subject Field */}
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm md:text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
-                  >
-                    <div className="flex items-center gap-2">
-                      <MessageSquare size={16} className="md:w-5 md:h-5" />
-                      Subject
-                    </div>
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    placeholder="What's this about?"
-                    className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
-                    required
-                  />
-                </div>
+              {/* Subject Field */}
+              <div>
+                <label
+                  htmlFor="subject"
+                  className="block text-sm md:text-base font-semibold text-gray-700 mb-2 font-['Comic_Sans_MS']"
+                >
+                  <div className="flex items-center gap-2">
+                    <MessageSquare size={16} className="md:w-5 md:h-5" />
+                    Subject
+                  </div>
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                  placeholder="What's this about?"
+                  className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
+                  required
+                />
               </div>
 
               {/* Message Field */}

@@ -11,12 +11,14 @@ import {
 } from "lucide-react";
 import PostCard from "../components/PostCard";
 import PollCard from "../components/PollCard";
+import AnnouncementCard from "../components/AnnouncementCard";
 import { getUserIdentifier } from "../utils/userIdentifier";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 
 function Home() {
   const [posts, setPosts] = useState([]);
   const [polls, setPolls] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPolls, setShowPolls] = useState(false);
@@ -24,6 +26,7 @@ function Home() {
   useEffect(() => {
     fetchPosts();
     fetchPolls();
+    fetchAnnouncements();
 
     // Listen for posts modification events
     const handlePostsModified = () => {
@@ -67,6 +70,18 @@ function Home() {
       }
     } catch (error) {
       console.error("Error fetching polls:", error);
+    }
+  };
+
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.ANNOUNCEMENTS);
+      if (response.ok) {
+        const data = await response.json();
+        setAnnouncements(data);
+      }
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
     }
   };
 
@@ -180,6 +195,24 @@ function Home() {
 
       {/* Main Content */}
       <div className="mb-8">
+        {/* Announcements Section */}
+        {announcements.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS'] flex items-center gap-2 mb-4">
+              <Shield className="w-6 h-6 text-blue-600" />
+              Announcements
+            </h2>
+            <div className="space-y-4">
+              {announcements.map((announcement) => (
+                <AnnouncementCard
+                  key={announcement._id}
+                  announcement={announcement}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Polls Section */}
         {polls.length > 0 && (
           <div className="mb-8">

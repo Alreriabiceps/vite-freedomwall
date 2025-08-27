@@ -19,6 +19,7 @@ import {
   ChevronUp,
   Mail,
   Phone,
+  Megaphone,
 } from "lucide-react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 
@@ -42,6 +43,15 @@ function Admin() {
   });
   const [contactMessages, setContactMessages] = useState([]);
   const [polls, setPolls] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    title: "",
+    message: "",
+    type: "info",
+    expiresAt: "",
+    adminNotes: "",
+  });
 
   // Check if already authenticated
   useEffect(() => {
@@ -52,6 +62,7 @@ function Admin() {
       fetchStats(savedKey);
       fetchContactMessages(savedKey);
       fetchPolls(savedKey);
+      fetchAnnouncements(savedKey);
     }
   }, []);
 
@@ -77,6 +88,7 @@ function Admin() {
         fetchStats(adminKey);
         fetchContactMessages(adminKey);
         fetchPolls(adminKey);
+        fetchAnnouncements(adminKey);
       } else {
         setError("Invalid admin key");
       }
@@ -102,6 +114,7 @@ function Admin() {
     });
     setContactMessages([]);
     setPolls([]);
+    setAnnouncements([]);
     setExpandedComments({});
   };
 
@@ -193,6 +206,22 @@ function Admin() {
     }
   };
 
+  const fetchAnnouncements = async (key) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.ANNOUNCEMENTS_ADMIN, {
+        headers: {
+          "Admin-Key": key,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAnnouncements(data);
+      }
+    } catch {
+      console.error("Error fetching announcements");
+    }
+  };
+
   const handlePollStatus = async (pollId, isActive) => {
     try {
       const key = localStorage.getItem("adminKey");
@@ -245,6 +274,110 @@ function Admin() {
     } catch (error) {
       console.error("Error deleting poll:", error);
     }
+  };
+
+  const handleAnnouncementStatus = async (announcementId, isActive) => {
+    try {
+      const key = localStorage.getItem("adminKey");
+      const response = await fetch(
+        buildEndpoint(API_ENDPOINTS.ANNOUNCEMENTS, `/${announcementId}`),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Admin-Key": key,
+          },
+          body: JSON.stringify({ isActive }),
+        }
+      );
+
+      if (response.ok) {
+        // Update local state
+        setAnnouncements((prevAnnouncements) =>
+          prevAnnouncements.map((announcement) =>
+            announcement._id === announcementId
+              ? { ...announcement, isActive }
+              : announcement
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating announcement status:", error);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (announcementId) => {
+    if (!window.confirm("Are you sure you want to delete this announcement?"))
+      return;
+
+    try {
+      const key = localStorage.getItem("adminKey");
+      const response = await fetch(
+        buildEndpoint(API_ENDPOINTS.ANNOUNCEMENTS, `/${announcementId}`),
+        {
+          method: "DELETE",
+          headers: {
+            "Admin-Key": key,
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Remove from local state
+        setAnnouncements((prevAnnouncements) =>
+          prevAnnouncements.filter(
+            (announcement) => announcement._id !== announcementId
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
+    }
+  };
+
+  const handleCreateAnnouncement = async (e) => {
+    e.preventDefault();
+
+    try {
+      const key = localStorage.getItem("adminKey");
+      const response = await fetch(API_ENDPOINTS.ANNOUNCEMENTS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Admin-Key": key,
+        },
+        body: JSON.stringify({
+          ...newAnnouncement,
+          expiresAt: newAnnouncement.expiresAt || null,
+        }),
+      });
+
+      if (response.ok) {
+        const newAnnouncementData = await response.json();
+        setAnnouncements((prev) => [newAnnouncementData, ...prev]);
+        setNewAnnouncement({
+          title: "",
+          message: "",
+          type: "info",
+          expiresAt: "",
+          adminNotes: "",
+        });
+        setShowCreateForm(false);
+        setActiveTab("announcements");
+      } else {
+        setError("Failed to create announcement");
+      }
+    } catch (error) {
+      setError("Error creating announcement");
+      console.error("Error creating announcement:", error);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setNewAnnouncement((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleContactStatus = async (contactId, action, value = null) => {
@@ -627,6 +760,22 @@ function Admin() {
               )}
             </button>
             <button
+              onClick={() => setActiveTab("announcements")}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] ${
+                activeTab === "announcements"
+                  ? "bg-orange-100 text-orange-700 border-r-2 border-orange-500"
+                  : "text-orange-700 hover:bg-orange-50"
+              }`}
+            >
+              <Megaphone size={20} />
+              <span>Announcements</span>
+              {announcements.length > 0 && (
+                <span className="ml-auto bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
+                  {announcements.length}
+                </span>
+              )}
+            </button>
+            <button
               onClick={() => setActiveTab("contact-messages")}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] ${
                 activeTab === "contact-messages"
@@ -667,6 +816,7 @@ function Admin() {
               {activeTab === "flagged" && "Flagged Posts"}
               {activeTab === "hidden" && "Hidden Posts"}
               {activeTab === "polls" && "Polls"}
+              {activeTab === "announcements" && "Announcements"}
               {activeTab === "contact-messages" && "Contact Messages"}
             </h1>
             <p className="text-gray-600 text-lg font-['Comic_Sans_MS']">
@@ -677,6 +827,8 @@ function Admin() {
               {activeTab === "flagged" && "Posts flagged for moderation"}
               {activeTab === "hidden" && "Posts currently hidden from users"}
               {activeTab === "polls" && "Manage all polls and voting"}
+              {activeTab === "announcements" &&
+                "Create and manage announcements"}
               {activeTab === "contact-messages" &&
                 "Messages from users via contact form"}
             </p>
@@ -804,171 +956,426 @@ function Admin() {
                   </div>
                 </div>
               </div>
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
+                      Total Announcements
+                    </p>
+                    <p className="text-3xl font-bold text-orange-600 font-['Comic_Sans_MS']">
+                      {announcements.length}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <Megaphone className="text-orange-600" size={24} />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           <div>
-            {activeTab !== "contact-messages" && activeTab !== "polls" && (
+            {activeTab !== "contact-messages" &&
+              activeTab !== "polls" &&
+              activeTab !== "announcements" && (
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+                      {activeTab === "dashboard" && "Recent Posts"}
+                      {activeTab === "all-posts" && "All Posts"}
+                      {activeTab === "reported" && "Reported Posts"}
+                      {activeTab === "flagged" && "Flagged Posts"}
+                      {activeTab === "hidden" && "Hidden Posts"}
+                    </h2>
+                    <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                      {filteredPosts.length} posts
+                    </span>
+                  </div>
+
+                  {filteredPosts.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8 font-['Comic_Sans_MS']">
+                      No posts found
+                    </p>
+                  ) : (
+                    <div className="space-y-6">
+                      {filteredPosts.map((post) => (
+                        <div
+                          key={post._id}
+                          className={`border border-gray-200 rounded-xl p-6 ${
+                            post.isHidden ? "bg-gray-50 opacity-75" : "bg-white"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
+                                  {post.name || "Anonymous"}
+                                </h3>
+                                <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                                  {formatDate(post.createdAt)}
+                                </span>
+                                {post.isFlagged && (
+                                  <span className="flex items-center gap-1 text-orange-600 text-sm">
+                                    <Flag size={14} />
+                                    Flagged ({post.reportCount} reports)
+                                  </span>
+                                )}
+                                {post.isHidden && (
+                                  <span className="flex items-center gap-1 text-red-600 text-sm">
+                                    <EyeOff size={14} />
+                                    Hidden
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-lg">
+                                {post.message}
+                              </p>
+                              <div className="flex items-center gap-4 text-sm text-gray-500 font-['Comic_Sans_MS']">
+                                <span className="flex items-center gap-1">
+                                  <Heart size={14} />
+                                  {post.likes} likes
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <MessageSquare size={14} />
+                                  {post.comments.length} comments
+                                </span>
+                                {post.reportCount > 0 && (
+                                  <span className="flex items-center gap-1 text-red-600">
+                                    <Flag size={14} />
+                                    {post.reportCount} reports
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 ml-4">
+                              {post.isHidden ? (
+                                <button
+                                  onClick={() =>
+                                    handleModerate(post._id, "unhide")
+                                  }
+                                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                  title="Unhide post"
+                                >
+                                  <Eye size={16} />
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() =>
+                                    handleModerate(post._id, "hide")
+                                  }
+                                  className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                  title="Hide post"
+                                >
+                                  <EyeOff size={16} />
+                                </button>
+                              )}
+                              {post.isFlagged && (
+                                <button
+                                  onClick={() =>
+                                    handleModerate(post._id, "unflag")
+                                  }
+                                  className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                  title="Unflag post"
+                                >
+                                  <Shield size={16} />
+                                </button>
+                              )}
+                              <button
+                                onClick={() =>
+                                  handleModerate(post._id, "delete")
+                                }
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete post"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {post.comments && post.comments.length > 0 && (
+                            <div className="border-t border-gray-100 pt-4">
+                              <button
+                                onClick={() => toggleComments(post._id)}
+                                className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors font-['Comic_Sans_MS'] mb-3"
+                              >
+                                {expandedComments[post._id] ? (
+                                  <ChevronUp size={16} />
+                                ) : (
+                                  <ChevronDown size={16} />
+                                )}
+                                Comments ({post.comments.length})
+                              </button>
+
+                              {expandedComments[post._id] && (
+                                <div className="space-y-3">
+                                  {post.comments.map((comment, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-start justify-between bg-gray-50 rounded-lg p-3"
+                                    >
+                                      <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-1">
+                                          <span className="font-semibold text-gray-900 text-sm font-['Comic_Sans_MS']">
+                                            {comment.name || "Anonymous"}
+                                          </span>
+                                          <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                                            {formatDate(comment.createdAt)}
+                                          </span>
+                                        </div>
+                                        <p className="text-gray-700 text-sm font-['Comic_Sans_MS']">
+                                          {comment.message}
+                                        </p>
+                                      </div>
+                                      <button
+                                        onClick={() =>
+                                          handleDeleteComment(post._id, index)
+                                        }
+                                        className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors ml-2"
+                                        title="Delete comment"
+                                      >
+                                        <Trash2 size={14} />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+            {activeTab === "announcements" && (
               <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
-                    {activeTab === "dashboard" && "Recent Posts"}
-                    {activeTab === "all-posts" && "All Posts"}
-                    {activeTab === "reported" && "Reported Posts"}
-                    {activeTab === "flagged" && "Flagged Posts"}
-                    {activeTab === "hidden" && "Hidden Posts"}
+                    Announcements
                   </h2>
-                  <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
-                    {filteredPosts.length} posts
-                  </span>
+                  <button
+                    onClick={() => setShowCreateForm(true)}
+                    className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                  >
+                    Create Announcement
+                  </button>
                 </div>
 
-                {filteredPosts.length === 0 ? (
+                {showCreateForm && (
+                  <div className="mb-8 p-6 bg-orange-50 border border-orange-200 rounded-xl">
+                    <h3 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS'] mb-4">
+                      Create New Announcement
+                    </h3>
+                    <form
+                      onSubmit={handleCreateAnnouncement}
+                      className="space-y-4"
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2 font-['Comic_Sans_MS']">
+                            Title *
+                          </label>
+                          <input
+                            type="text"
+                            value={newAnnouncement.title}
+                            onChange={(e) =>
+                              handleInputChange("title", e.target.value)
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            placeholder="Announcement title"
+                            required
+                            maxLength={200}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2 font-['Comic_Sans_MS']">
+                            Type
+                          </label>
+                          <select
+                            value={newAnnouncement.type}
+                            onChange={(e) =>
+                              handleInputChange("type", e.target.value)
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          >
+                            <option value="info">Info</option>
+                            <option value="warning">Warning</option>
+                            <option value="success">Success</option>
+                            <option value="error">Error</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-['Comic_Sans_MS']">
+                          Expires At (Optional)
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={newAnnouncement.expiresAt}
+                          onChange={(e) =>
+                            handleInputChange("expiresAt", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-['Comic_Sans_MS']">
+                          Message *
+                        </label>
+                        <textarea
+                          value={newAnnouncement.message}
+                          onChange={(e) =>
+                            handleInputChange("message", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          placeholder="Announcement message"
+                          rows={4}
+                          required
+                          maxLength={1000}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-['Comic_Sans_MS']">
+                          Admin Notes (Optional)
+                        </label>
+                        <textarea
+                          value={newAnnouncement.adminNotes}
+                          onChange={(e) =>
+                            handleInputChange("adminNotes", e.target.value)
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          placeholder="Internal notes for admins"
+                          rows={2}
+                          maxLength={500}
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-4">
+                        <button
+                          type="submit"
+                          className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                        >
+                          Create Announcement
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowCreateForm(false)}
+                          className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                {announcements.length === 0 ? (
                   <p className="text-gray-500 text-center py-8 font-['Comic_Sans_MS']">
-                    No posts found
+                    No announcements created yet
                   </p>
                 ) : (
                   <div className="space-y-6">
-                    {filteredPosts.map((post) => (
+                    {announcements.map((announcement) => (
                       <div
-                        key={post._id}
+                        key={announcement._id}
                         className={`border border-gray-200 rounded-xl p-6 ${
-                          post.isHidden ? "bg-gray-50 opacity-75" : "bg-white"
+                          announcement.isActive ? "bg-green-50" : "bg-gray-50"
                         }`}
                       >
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="flex items-center gap-3 mb-2 flex-wrap">
                               <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
-                                {post.name || "Anonymous"}
+                                {announcement.title}
                               </h3>
                               <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
-                                {formatDate(post.createdAt)}
+                                {formatDate(announcement.createdAt)}
                               </span>
-                              {post.isFlagged && (
-                                <span className="flex items-center gap-1 text-orange-600 text-sm">
-                                  <Flag size={14} />
-                                  Flagged ({post.reportCount} reports)
-                                </span>
-                              )}
-                              {post.isHidden && (
-                                <span className="flex items-center gap-1 text-red-600 text-sm">
-                                  <EyeOff size={14} />
-                                  Hidden
-                                </span>
-                              )}
+                              <span
+                                className={`text-sm px-2 py-1 rounded-full ${
+                                  announcement.isActive
+                                    ? "bg-green-200 text-green-700"
+                                    : "bg-gray-200 text-gray-700"
+                                } font-['Comic_Sans_MS']`}
+                              >
+                                {announcement.isActive ? "Active" : "Inactive"}
+                              </span>
+
+                              <span
+                                className={`text-sm px-2 py-1 rounded-full ${
+                                  announcement.type === "warning"
+                                    ? "bg-yellow-200 text-yellow-700"
+                                    : announcement.type === "success"
+                                    ? "bg-green-200 text-green-700"
+                                    : announcement.type === "error"
+                                    ? "bg-red-200 text-red-700"
+                                    : "bg-blue-200 text-blue-700"
+                                } font-['Comic_Sans_MS']`}
+                              >
+                                {announcement.type}
+                              </span>
                             </div>
                             <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-lg">
-                              {post.message}
+                              {announcement.message}
                             </p>
-                            <div className="flex items-center gap-4 text-sm text-gray-500 font-['Comic_Sans_MS']">
-                              <span className="flex items-center gap-1">
-                                <Heart size={14} />
-                                {post.likes} likes
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <MessageSquare size={14} />
-                                {post.comments.length} comments
-                              </span>
-                              {post.reportCount > 0 && (
-                                <span className="flex items-center gap-1 text-red-600">
-                                  <Flag size={14} />
-                                  {post.reportCount} reports
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 ml-4">
-                            {post.isHidden ? (
-                              <button
-                                onClick={() =>
-                                  handleModerate(post._id, "unhide")
-                                }
-                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                title="Unhide post"
-                              >
-                                <Eye size={16} />
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handleModerate(post._id, "hide")}
-                                className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                                title="Hide post"
-                              >
-                                <EyeOff size={16} />
-                              </button>
+                            {announcement.expiresAt && (
+                              <div className="text-sm text-orange-600 font-['Comic_Sans_MS'] mb-3">
+                                <AlertTriangle
+                                  size={14}
+                                  className="inline mr-1"
+                                />
+                                Expires: {formatDate(announcement.expiresAt)}
+                              </div>
                             )}
-                            {post.isFlagged && (
-                              <button
-                                onClick={() =>
-                                  handleModerate(post._id, "unflag")
-                                }
-                                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                title="Unflag post"
-                              >
-                                <Shield size={16} />
-                              </button>
-                            )}
-                            <button
-                              onClick={() => handleModerate(post._id, "delete")}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Delete post"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </div>
-
-                        {post.comments && post.comments.length > 0 && (
-                          <div className="border-t border-gray-100 pt-4">
-                            <button
-                              onClick={() => toggleComments(post._id)}
-                              className="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors font-['Comic_Sans_MS'] mb-3"
-                            >
-                              {expandedComments[post._id] ? (
-                                <ChevronUp size={16} />
-                              ) : (
-                                <ChevronDown size={16} />
-                              )}
-                              Comments ({post.comments.length})
-                            </button>
-
-                            {expandedComments[post._id] && (
-                              <div className="space-y-3">
-                                {post.comments.map((comment, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-start justify-between bg-gray-50 rounded-lg p-3"
-                                  >
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <span className="font-semibold text-gray-900 text-sm font-['Comic_Sans_MS']">
-                                          {comment.name || "Anonymous"}
-                                        </span>
-                                        <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
-                                          {formatDate(comment.createdAt)}
-                                        </span>
-                                      </div>
-                                      <p className="text-gray-700 text-sm font-['Comic_Sans_MS']">
-                                        {comment.message}
-                                      </p>
-                                    </div>
-                                    <button
-                                      onClick={() =>
-                                        handleDeleteComment(post._id, index)
-                                      }
-                                      className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors ml-2"
-                                      title="Delete comment"
-                                    >
-                                      <Trash2 size={14} />
-                                    </button>
-                                  </div>
-                                ))}
+                            {announcement.adminNotes && (
+                              <div className="text-sm text-gray-500 font-['Comic_Sans_MS'] mb-3 p-3 bg-gray-100 rounded-lg">
+                                <strong>Admin Notes:</strong>{" "}
+                                {announcement.adminNotes}
                               </div>
                             )}
                           </div>
-                        )}
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
+                          <button
+                            onClick={() =>
+                              handleAnnouncementStatus(
+                                announcement._id,
+                                !announcement.isActive
+                              )
+                            }
+                            className={`p-2 rounded-lg transition-colors ${
+                              announcement.isActive
+                                ? "bg-red-600 text-white hover:bg-red-700"
+                                : "bg-green-600 text-white hover:bg-green-700"
+                            }`}
+                            title={
+                              announcement.isActive
+                                ? "Deactivate announcement"
+                                : "Activate announcement"
+                            }
+                          >
+                            {announcement.isActive ? (
+                              <EyeOff size={16} />
+                            ) : (
+                              <Eye size={16} />
+                            )}
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleDeleteAnnouncement(announcement._id)
+                            }
+                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                            title="Delete announcement"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1147,15 +1554,9 @@ function Admin() {
                             </div>
                             <div className="flex items-center gap-4 text-sm text-gray-500 font-['Comic_Sans_MS'] mb-3">
                               <span className="flex items-center gap-1">
-                                <Mail size={14} />
-                                {contact.email}
+                                <User size={14} />
+                                From: {contact.name}
                               </span>
-                              {contact.phone && (
-                                <span className="flex items-center gap-1">
-                                  <Phone size={14} />
-                                  {contact.phone}
-                                </span>
-                              )}
                             </div>
                             <h4 className="font-semibold text-gray-800 font-['Comic_Sans_MS'] mb-2">
                               {contact.subject}
