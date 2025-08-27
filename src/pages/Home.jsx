@@ -138,7 +138,7 @@ function Home() {
       <div className="text-center mb-8 md:mb-12">
         <div className="mb-4 md:mb-6">
           <img
-            src="/src/assets/image.png"
+            src="/image.png"
             alt="IS Logo"
             className="w-16 h-16 md:w-24 md:h-24 mx-auto mb-3 md:mb-4 rounded-full shadow-xl"
           />

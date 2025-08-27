@@ -29,7 +29,7 @@ function SimpleNavbar() {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <img
-                src="/src/assets/image.png"
+                src="/image.png"
                 alt="IS Logo"
                 className="w-8 h-8 md:w-10 md:h-10 rounded-full"
               />
