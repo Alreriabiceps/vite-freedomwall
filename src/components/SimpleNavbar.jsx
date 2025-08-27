@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, PenTool, Info, Mail } from "lucide-react";
+import { Menu, X, Home, PenTool, BarChart3, Info, Mail } from "lucide-react";
 
 function SimpleNavbar() {
   const location = useLocation();
@@ -17,6 +17,7 @@ function SimpleNavbar() {
   const navItems = [
     { to: "/", label: "Home", icon: Home },
     { to: "/create", label: "Create", icon: PenTool },
+    { to: "/create-poll", label: "Polls", icon: BarChart3 },
     { to: "/about", label: "About", icon: Info },
     { to: "/contact", label: "Contact", icon: Mail },
   ];

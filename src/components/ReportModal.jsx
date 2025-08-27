@@ -4,6 +4,7 @@ import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 
 function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
   const [reason, setReason] = useState("");
+  const [customReason, setCustomReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const reportReasons = [
@@ -20,9 +21,15 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
     e.preventDefault();
     if (!reason.trim()) return;
 
+    // If "Other" is selected, require custom reason
+    if (reason === "Other" && !customReason.trim()) return;
+
     setIsSubmitting(true);
     try {
       const userId = localStorage.getItem("userId") || "anonymous";
+      const finalReason =
+        reason === "Other" ? customReason.trim() : reason.trim();
+
       const response = await fetch(
         buildEndpoint(API_ENDPOINTS.POSTS, `/${post._id}/report`),
         {
@@ -32,13 +39,14 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
           },
           body: JSON.stringify({
             userId,
-            reason: reason.trim(),
+            reason: finalReason,
           }),
         }
       );
 
       if (response.ok) {
         setReason("");
+        setCustomReason("");
         onReportSubmitted();
         onClose();
       }
@@ -51,6 +59,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
 
   const handleCancel = () => {
     setReason("");
+    setCustomReason("");
     onClose();
   };
 
@@ -167,8 +176,8 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                 </label>
                 <textarea
                   id="customReason"
-                  value={reason === "Other" ? "" : reason}
-                  onChange={(e) => setReason(e.target.value)}
+                  value={customReason}
+                  onChange={(e) => setCustomReason(e.target.value)}
                   placeholder="Please describe the issue..."
                   rows={3}
                   className="w-full px-3 sm:px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 resize-none font-['Comic_Sans_MS'] text-base"
@@ -177,7 +186,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                 />
                 <div className="flex justify-end mt-1">
                   <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
-                    {reason === "Other" ? 0 : reason.length}/200 characters
+                    {customReason.length}/200 characters
                   </span>
                 </div>
               </div>
@@ -195,7 +204,11 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting || !reason.trim()}
+                disabled={
+                  isSubmitting ||
+                  !reason.trim() ||
+                  (reason === "Other" && !customReason.trim())
+                }
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-4 sm:px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold touch-manipulation text-base"
               >
                 {isSubmitting ? (

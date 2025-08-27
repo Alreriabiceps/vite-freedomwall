@@ -7,19 +7,23 @@ import {
   EyeOff,
   Trash2,
   Shield,
-  TrendingUp,
+  BarChart3,
 } from "lucide-react";
 import PostCard from "../components/PostCard";
+import PollCard from "../components/PollCard";
 import { getUserIdentifier } from "../utils/userIdentifier";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 
 function Home() {
   const [posts, setPosts] = useState([]);
+  const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showPolls, setShowPolls] = useState(false);
 
   useEffect(() => {
     fetchPosts();
+    fetchPolls();
 
     // Listen for posts modification events
     const handlePostsModified = () => {
@@ -52,6 +56,27 @@ function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchPolls = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.POLLS_TRENDING);
+      if (response.ok) {
+        const data = await response.json();
+        setPolls(data);
+      }
+    } catch (error) {
+      console.error("Error fetching polls:", error);
+    }
+  };
+
+  const handlePollVoteSubmitted = (updatedPoll) => {
+    // Update the poll in the local state
+    setPolls((prevPolls) =>
+      prevPolls.map((poll) =>
+        poll._id === updatedPoll._id ? updatedPoll : poll
+      )
+    );
   };
 
   const handleLike = async (postId) => {
@@ -153,25 +178,58 @@ function Home() {
         </p>
       </div>
 
-      {/* Posts Section */}
-      {posts.length === 0 ? (
-        <div className="text-center py-12 md:py-16">
-          <p className="text-gray-500 font-['Comic_Sans_MS'] text-lg">
-            No posts yet. Be the first to share your thoughts!
-          </p>
-        </div>
-      ) : (
-        <div className="post-grid">
-          {posts.map((post) => (
-            <PostCard
-              key={post._id}
-              post={post}
-              onLike={handleLike}
-              onReport={handleReport}
-            />
-          ))}
-        </div>
-      )}
+      {/* Main Content */}
+      <div className="mb-8">
+        {/* Polls Section */}
+        {polls.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS'] flex items-center gap-2">
+                <BarChart3 className="w-6 h-6 text-purple-600" />
+                Active Polls
+              </h2>
+              <button
+                onClick={() => setShowPolls(!showPolls)}
+                className="text-purple-600 hover:text-purple-700 font-medium font-['Comic_Sans_MS']"
+              >
+                {showPolls ? "Hide" : "Show"} Polls
+              </button>
+            </div>
+
+            {showPolls && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {polls.map((poll) => (
+                  <PollCard
+                    key={poll._id}
+                    poll={poll}
+                    onVoteSubmitted={handlePollVoteSubmitted}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Posts Section */}
+        {posts.length === 0 ? (
+          <div className="text-center py-12 md:py-16">
+            <p className="text-gray-500 font-['Comic_Sans_MS'] text-lg">
+              No posts yet. Be the first to share your thoughts!
+            </p>
+          </div>
+        ) : (
+          <div className="post-grid">
+            {posts.map((post) => (
+              <PostCard
+                key={post._id}
+                post={post}
+                onLike={handleLike}
+                onReport={handleReport}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Call to Action */}
       <div className="text-center mt-8 md:mt-12">
@@ -182,12 +240,21 @@ function Home() {
           <p className="text-gray-300 mb-4 md:mb-6 font-['Comic_Sans_MS'] text-sm md:text-base max-w-2xl mx-auto px-4 md:px-0">
             Start sharing your thoughts anonymously with your school community!
           </p>
-          <a
-            href="/create"
-            className="bg-white hover:bg-gray-100 text-gray-900 px-6 py-3 rounded-xl transition-colors transform hover:scale-105 inline-flex items-center gap-2 font-['Comic_Sans_MS'] font-semibold text-sm md:text-base"
-          >
-            Write a Post
-          </a>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="/create"
+              className="bg-white hover:bg-gray-100 text-gray-900 px-6 py-3 rounded-xl transition-colors transform hover:scale-105 inline-flex items-center gap-2 font-['Comic_Sans_MS'] font-semibold text-sm md:text-base"
+            >
+              Write a Post
+            </a>
+            <a
+              href="/create-poll"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl transition-colors transform hover:scale-105 inline-flex items-center gap-2 font-['Comic_Sans_MS'] font-semibold text-sm md:text-base"
+            >
+              <BarChart3 size={18} />
+              Create Poll
+            </a>
+          </div>
         </div>
       </div>
     </div>
