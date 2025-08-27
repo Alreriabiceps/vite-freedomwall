@@ -107,7 +107,7 @@ function Contact() {
                     Email
                   </h3>
                   <p className="text-gray-600 text-xs md:text-sm font-['Comic_Sans_MS']">
-                    support@isfreedomwall.com
+                    freedomwall011@gmail.com
                   </p>
                 </div>
               </div>
@@ -121,7 +121,7 @@ function Contact() {
                     Phone
                   </h3>
                   <p className="text-gray-600 text-xs md:text-sm font-['Comic_Sans_MS']">
-                    +1 (555) 123-4567
+                    None as of the moment
                   </p>
                 </div>
               </div>
@@ -135,9 +135,9 @@ function Contact() {
                     Location
                   </h3>
                   <p className="text-gray-600 text-xs md:text-sm font-['Comic_Sans_MS']">
-                    IS School Campus
+                    College of Asia
                     <br />
-                    Student Center, Room 101
+                    Suclayin, Arayat, Pampanga
                   </p>
                 </div>
               </div>
@@ -149,7 +149,7 @@ function Contact() {
               </h4>
               <p className="text-gray-600 text-xs md:text-sm font-['Comic_Sans_MS']">
                 We typically respond to all inquiries within 24-48 hours during
-                school days.
+                school days. For urgent matters, please visit the school office.
               </p>
             </div>
           </div>
@@ -224,7 +224,7 @@ function Contact() {
                   >
                     <div className="flex items-center gap-2">
                       <PhoneIcon size={16} className="md:w-5 md:h-5" />
-                      Phone Number
+                      Phone Number (Optional)
                     </div>
                   </label>
                   <input
@@ -233,8 +233,9 @@ function Contact() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="(555) 123-4567"
+                    placeholder="Not available at the moment"
                     className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
+                    disabled
                   />
                 </div>
 

@@ -9,6 +9,51 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // If less than 1 minute ago
+    if (diffMinutes < 1) return "Just now";
+
+    // If less than 1 hour ago
+    if (diffMinutes < 60) {
+      if (diffMinutes === 1) return "1 minute ago";
+      return `${diffMinutes} minutes ago`;
+    }
+
+    // If less than 24 hours ago
+    if (diffHours < 24) {
+      if (diffHours === 1) return "1 hour ago";
+      return `${diffHours} hours ago`;
+    }
+
+    // If less than 7 days ago
+    if (diffDays <= 7) {
+      if (diffDays === 1) return "Yesterday";
+      return `${diffDays - 1} days ago`;
+    }
+
+    // If more than 7 days ago, show full date and time
+    return (
+      date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }) +
+      " at " +
+      date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.message.trim()) return;
@@ -76,6 +121,9 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
                 ? post.message.substring(0, 100) + "..."
                 : post?.message || "Post content"}
             </p>
+            <div className="mt-2 text-xs text-gray-500 font-['Comic_Sans_MS']">
+              Posted {formatDate(post.createdAt)}
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

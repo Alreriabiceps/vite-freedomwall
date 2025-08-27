@@ -31,17 +31,45 @@ function PostModal({
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now - date);
+    const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 1) return "Today";
-    if (diffDays === 2) return "Yesterday";
-    if (diffDays <= 7) return `${diffDays - 1} days ago`;
+    // If less than 1 minute ago
+    if (diffMinutes < 1) return "Just now";
 
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    // If less than 1 hour ago
+    if (diffMinutes < 60) {
+      if (diffMinutes === 1) return "1 minute ago";
+      return `${diffMinutes} minutes ago`;
+    }
+
+    // If less than 24 hours ago
+    if (diffHours < 24) {
+      if (diffHours === 1) return "1 hour ago";
+      return `${diffHours} hours ago`;
+    }
+
+    // If less than 7 days ago
+    if (diffDays <= 7) {
+      if (diffDays === 1) return "Yesterday";
+      return `${diffDays - 1} days ago`;
+    }
+
+    // If more than 7 days ago, show full date and time
+    return (
+      date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }) +
+      " at " +
+      date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+    );
   };
 
   const handleLike = async () => {
@@ -131,7 +159,7 @@ function PostModal({
                     <h3 className="font-semibold text-gray-900 text-lg font-['Comic_Sans_MS']">
                       {post.name || "Anonymous"}
                     </h3>
-                    <span className="text-base text-gray-500 font-['Comic_Sans_MS']">
+                    <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
                       {formatDate(post.createdAt)}
                     </span>
                   </div>
@@ -139,14 +167,14 @@ function PostModal({
                   {/* Status Badges */}
                   <div className="flex items-center gap-2">
                     {post.isFlagged && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 text-sm rounded-full">
-                        <Flag size={12} />
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded-full">
+                        <Flag size={10} />
                         Flagged
                       </span>
                     )}
                     {post.isHidden && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-700 text-sm rounded-full">
-                        <EyeOff size={12} />
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-700 text-xs rounded-full">
+                        <EyeOff size={10} />
                         Hidden
                       </span>
                     )}
