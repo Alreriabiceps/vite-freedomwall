@@ -139,7 +139,7 @@ function SimpleNavbar() {
               {showAnnouncements && (
                 <div className="announcement-dropdown absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
                   <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-bold text-gray-900 text-lg">
                       Announcements
                     </h3>
                     <button
@@ -166,23 +166,27 @@ function SimpleNavbar() {
                         fetchAnnouncements();
                       }}
                       disabled={loadingAnnouncements}
-                      className={`text-sm font-medium ${
+                      className={`text-base font-semibold px-3 py-2 rounded-lg transition-colors ${
                         loadingAnnouncements
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "text-blue-600 hover:text-blue-700"
+                          ? "text-gray-400 cursor-not-allowed bg-gray-100"
+                          : "text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100"
                       }`}
                     >
                       {loadingAnnouncements ? "Refreshing..." : "Refresh"}
                     </button>
                   </div>
                   {loadingAnnouncements ? (
-                    <div className="p-4 text-gray-500 text-center">
+                    <div className="p-4 text-gray-600 text-center">
                       <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-600 mx-auto mb-2"></div>
-                      Loading announcements...
+                      <span className="text-base font-medium">
+                        Loading announcements...
+                      </span>
                     </div>
                   ) : announcementsError ? (
-                    <div className="p-4 text-red-500 text-center">
-                      <div className="text-sm mb-2">{announcementsError}</div>
+                    <div className="p-4 text-red-600 text-center">
+                      <div className="text-base font-medium mb-3">
+                        {announcementsError}
+                      </div>
                       <button
                         onClick={() => {
                           const fetchAnnouncements = async () => {
@@ -208,40 +212,42 @@ function SimpleNavbar() {
                           };
                           fetchAnnouncements();
                         }}
-                        className="text-blue-600 hover:text-blue-700 text-sm font-medium underline"
+                        className="text-blue-700 hover:text-blue-800 text-base font-semibold underline bg-blue-50 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
                       >
                         Try again
                       </button>
                     </div>
                   ) : getActiveAnnouncements().length === 0 ? (
-                    <div className="p-4 text-gray-500 text-center">
-                      No active announcements
+                    <div className="p-4 text-gray-600 text-center">
+                      <span className="text-base font-medium">
+                        No active announcements
+                      </span>
                     </div>
                   ) : (
-                    <div className="p-4 space-y-3">
+                    <div className="p-4 space-y-4">
                       {getActiveAnnouncements().map((announcement) => (
                         <div
                           key={announcement._id}
-                          className={`p-3 rounded-lg border-l-4 ${
+                          className={`p-4 rounded-lg border-l-4 shadow-sm ${
                             announcement.type === "warning"
-                              ? "border-yellow-400 bg-yellow-50"
+                              ? "border-yellow-500 bg-yellow-50"
                               : announcement.type === "success"
-                              ? "border-green-400 bg-green-50"
+                              ? "border-green-500 bg-green-50"
                               : announcement.type === "error"
-                              ? "border-red-400 bg-red-50"
-                              : "border-blue-400 bg-blue-50"
+                              ? "border-red-500 bg-red-50"
+                              : "border-blue-500 bg-blue-50"
                           }`}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900 text-sm mb-1">
+                              <h4 className="font-bold text-gray-900 text-base mb-2 leading-tight">
                                 {announcement.title}
                               </h4>
-                              <p className="text-gray-700 text-sm">
+                              <p className="text-gray-800 text-base leading-relaxed mb-3">
                                 {announcement.message}
                               </p>
-                              <div className="flex items-center gap-2 mt-2">
-                                <span className="text-xs text-gray-500">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600 font-medium">
                                   {new Date(
                                     announcement.createdAt
                                   ).toLocaleDateString()}
@@ -263,11 +269,11 @@ function SimpleNavbar() {
             <div className="relative">
               <button
                 onClick={toggleAnnouncements}
-                className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors relative"
+                className="p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors relative bg-gray-50 hover:bg-gray-100"
               >
                 <Bell size={24} />
                 {getActiveAnnouncements().length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-sm font-bold rounded-full w-6 h-6 flex items-center justify-center">
                     {getActiveAnnouncements().length}
                   </span>
                 )}
@@ -275,9 +281,9 @@ function SimpleNavbar() {
 
               {/* Mobile Announcement Dropdown */}
               {showAnnouncements && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
-                  <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">
+                <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
+                  <div className="p-3 border-b border-gray-200 flex items-center justify-between">
+                    <h3 className="font-bold text-gray-900 text-base">
                       Announcements
                     </h3>
                     <button
@@ -300,13 +306,17 @@ function SimpleNavbar() {
                     </button>
                   </div>
                   {loadingAnnouncements ? (
-                    <div className="p-4 text-gray-500 text-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-600 mx-auto mb-2"></div>
-                      Loading announcements...
+                    <div className="p-3 text-gray-600 text-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-600 mx-auto mb-2"></div>
+                      <span className="text-sm font-medium">
+                        Loading announcements...
+                      </span>
                     </div>
                   ) : announcementsError ? (
-                    <div className="p-4 text-red-500 text-center">
-                      <div className="text-sm mb-2">{announcementsError}</div>
+                    <div className="p-3 text-red-600 text-center">
+                      <div className="text-sm font-medium mb-2">
+                        {announcementsError}
+                      </div>
                       <button
                         onClick={() => {
                           const fetchAnnouncements = async () => {
@@ -332,40 +342,42 @@ function SimpleNavbar() {
                           };
                           fetchAnnouncements();
                         }}
-                        className="text-blue-600 hover:text-blue-700 text-sm font-medium underline"
+                        className="text-blue-700 hover:text-blue-800 text-sm font-semibold underline bg-blue-50 px-2 py-1 rounded-lg hover:bg-blue-100 transition-colors"
                       >
                         Try again
                       </button>
                     </div>
                   ) : getActiveAnnouncements().length === 0 ? (
-                    <div className="p-4 text-gray-500 text-center">
-                      No active announcements
+                    <div className="p-3 text-gray-600 text-center">
+                      <span className="text-sm font-medium">
+                        No active announcements
+                      </span>
                     </div>
                   ) : (
-                    <div className="p-4 space-y-3">
+                    <div className="p-3 space-y-2">
                       {getActiveAnnouncements().map((announcement) => (
                         <div
                           key={announcement._id}
-                          className={`p-3 rounded-lg border-l-4 ${
+                          className={`p-2.5 rounded-lg border-l-4 shadow-sm ${
                             announcement.type === "warning"
-                              ? "border-yellow-400 bg-yellow-50"
+                              ? "border-yellow-500 bg-yellow-50"
                               : announcement.type === "success"
-                              ? "border-green-400 bg-green-50"
+                              ? "border-green-500 bg-green-50"
                               : announcement.type === "error"
-                              ? "border-red-400 bg-red-50"
-                              : "border-blue-400 bg-blue-50"
+                              ? "border-red-500 bg-red-50"
+                              : "border-blue-500 bg-blue-50"
                           }`}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900 text-sm mb-1">
+                              <h4 className="font-bold text-gray-900 text-sm mb-1 leading-tight">
                                 {announcement.title}
                               </h4>
-                              <p className="text-gray-700 text-sm">
+                              <p className="text-gray-800 text-sm leading-relaxed mb-1.5">
                                 {announcement.message}
                               </p>
-                              <div className="flex items-center gap-2 mt-2">
-                                <span className="text-xs text-gray-500">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-600 font-medium">
                                   {new Date(
                                     announcement.createdAt
                                   ).toLocaleDateString()}
