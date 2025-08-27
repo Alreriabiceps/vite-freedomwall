@@ -20,7 +20,7 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
-import { API_ENDPOINTS } from "../config/api";
+import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 
 function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -41,84 +41,6 @@ function Admin() {
     totalContacts: 0,
   });
   const [contactMessages, setContactMessages] = useState([]);
-  const [sessionWarning, setSessionWarning] = useState(false);
-
-  // Auto logout system
-  useEffect(() => {
-    let sessionTimeout;
-    let warningTimeout;
-    let activityInterval;
-
-    const resetSession = () => {
-      // Reset session timeout on any activity
-      if (sessionTimeout) clearTimeout(sessionTimeout);
-      if (warningTimeout) clearTimeout(warningTimeout);
-
-      // Set new session timeout (15 minutes)
-      sessionTimeout = setTimeout(() => {
-        setSessionWarning(true);
-        // Give 1 minute warning before auto logout
-        warningTimeout = setTimeout(() => {
-          handleLogout();
-        }, 60000); // 1 minute warning
-      }, 14 * 60 * 1000); // 14 minutes
-    };
-
-    const trackActivity = () => {
-      if (isAuthenticated) {
-        resetSession();
-      }
-    };
-
-    // Set up activity tracking
-    if (isAuthenticated) {
-      resetSession();
-
-      // Track user activity
-      const events = [
-        "mousedown",
-        "mousemove",
-        "keypress",
-        "scroll",
-        "touchstart",
-        "click",
-      ];
-      events.forEach((event) => {
-        document.addEventListener(event, trackActivity, true);
-      });
-
-      // Check activity every minute
-      activityInterval = setInterval(() => {
-        const lastActivity = localStorage.getItem("lastAdminActivity");
-        if (lastActivity) {
-          const timeSinceActivity = Date.now() - parseInt(lastActivity);
-          if (timeSinceActivity > 15 * 60 * 1000) {
-            // 15 minutes
-            handleLogout();
-          }
-        }
-      }, 60000); // Check every minute
-    }
-
-    return () => {
-      if (sessionTimeout) clearTimeout(sessionTimeout);
-      if (warningTimeout) clearTimeout(warningTimeout);
-      if (activityInterval) clearInterval(activityInterval);
-
-      // Remove event listeners
-      const events = [
-        "mousedown",
-        "mousemove",
-        "keypress",
-        "scroll",
-        "touchstart",
-        "click",
-      ];
-      events.forEach((event) => {
-        document.removeEventListener(event, trackActivity, true);
-      });
-    };
-  }, [isAuthenticated]);
 
   // Check if already authenticated
   useEffect(() => {
@@ -149,7 +71,6 @@ function Admin() {
       if (response.ok) {
         setIsAuthenticated(true);
         localStorage.setItem("adminKey", adminKey);
-        localStorage.setItem("lastAdminActivity", Date.now().toString());
         fetchPosts(adminKey);
         fetchStats(adminKey);
         fetchContactMessages(adminKey); // Fetch contacts on login
@@ -165,9 +86,7 @@ function Admin() {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setSessionWarning(false);
     localStorage.removeItem("adminKey");
-    localStorage.removeItem("lastAdminActivity");
     setPosts([]);
     setStats({
       totalPosts: 0,
@@ -180,11 +99,6 @@ function Admin() {
     });
     setContactMessages([]);
     setExpandedComments({});
-  };
-
-  const extendSession = () => {
-    setSessionWarning(false);
-    localStorage.setItem("lastAdminActivity", Date.now().toString());
   };
 
   const fetchPosts = async (key) => {
@@ -273,7 +187,7 @@ function Admin() {
       }
 
       const response = await fetch(
-        `${API_ENDPOINTS.CONTACT}/${contactId}/status`,
+        buildEndpoint(API_ENDPOINTS.CONTACT, `/${contactId}/status`),
         {
           method: "PUT",
           headers: {
@@ -300,12 +214,15 @@ function Admin() {
 
     try {
       const key = localStorage.getItem("adminKey");
-      const response = await fetch(`${API_ENDPOINTS.CONTACT}/${contactId}`, {
-        method: "DELETE",
-        headers: {
-          "Admin-Key": key,
-        },
-      });
+      const response = await fetch(
+        buildEndpoint(API_ENDPOINTS.CONTACT, `/${contactId}`),
+        {
+          method: "DELETE",
+          headers: {
+            "Admin-Key": key,
+          },
+        }
+      );
 
       if (response.ok) {
         fetchContactMessages(key);
@@ -328,7 +245,7 @@ function Admin() {
     try {
       const key = localStorage.getItem("adminKey");
       const response = await fetch(
-        `${API_ENDPOINTS.POSTS}/${postId}/moderate`,
+        buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}/moderate`),
         {
           method: "POST",
           headers: {
@@ -358,7 +275,10 @@ function Admin() {
     try {
       const key = localStorage.getItem("adminKey");
       const response = await fetch(
-        `${API_ENDPOINTS.POSTS}/${postId}/comment/${commentIndex}`,
+        buildEndpoint(
+          API_ENDPOINTS.POSTS,
+          `/${postId}/comment/${commentIndex}`
+        ),
         {
           method: "DELETE",
           headers: {
@@ -481,38 +401,6 @@ function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Session Warning Modal */}
-      {sessionWarning && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full text-center shadow-2xl">
-            <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertTriangle className="text-white" size={32} />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3 font-['Comic_Sans_MS']">
-              Session Expiring Soon!
-            </h3>
-            <p className="text-gray-600 mb-6 font-['Comic_Sans_MS']">
-              Your admin session will expire in 1 minute due to inactivity.
-              Click "Stay Logged In" to continue your session.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={extendSession}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-xl transition-colors font-medium font-['Comic_Sans_MS']"
-              >
-                Stay Logged In
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-xl transition-colors font-medium font-['Comic_Sans_MS']"
-              >
-                Logout Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Mobile Sidebar Toggle */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
@@ -650,17 +538,6 @@ function Admin() {
       {/* Main Content */}
       <div className="lg:ml-64 min-h-screen">
         <div className="p-6">
-          {/* Session Status Bar */}
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
-            <div className="flex items-center gap-2 text-blue-700 font-['Comic_Sans_MS']">
-              <Shield size={16} />
-              <span className="text-sm">Admin Session Active</span>
-            </div>
-            <div className="text-xs text-blue-600 font-['Comic_Sans_MS']">
-              Auto-logout after 15 minutes of inactivity
-            </div>
-          </div>
-
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-gray-900 font-['Comic_Sans_MS']">
               {activeTab === "dashboard" && "Dashboard"}

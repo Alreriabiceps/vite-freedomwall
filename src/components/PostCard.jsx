@@ -246,11 +246,6 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
               </span>
             </div>
 
-            {/* Engagement Score */}
-            <span className="text-xs text-gray-400 font-['Comic_Sans_MS']">
-              Score: {getEngagementScore()}
-            </span>
-
             {post.reportCount > 0 && (
               <span className="flex items-center gap-1 text-orange-600">
                 <Flag size={14} />
