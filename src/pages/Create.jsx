@@ -36,7 +36,10 @@ function Create() {
         // Reset status after 3 seconds
         setTimeout(() => setSubmitStatus(null), 3000);
       } else {
+        const errorData = await response.json();
+        console.error("Backend error:", errorData);
         setSubmitStatus("error");
+        // You can add a more specific error message here if needed
       }
     } catch (error) {
       console.error("Error creating post:", error);

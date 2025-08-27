@@ -1,23 +1,9 @@
 import { useState } from "react";
-import {
-  Heart,
-  MessageSquare,
-  Flag,
-  Eye,
-  EyeOff,
-  Trash2,
-  Shield,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import CommentModal from "./CommentModal";
-import ReportModal from "./ReportModal";
+import { Heart, MessageSquare, Flag, MoreHorizontal } from "lucide-react";
+import PostModal from "./PostModal";
 
 function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
-  const [showComments, setShowComments] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const [showCommentModal, setShowCommentModal] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
+  const [showPostModal, setShowPostModal] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
 
   const formatDate = (dateString) => {
@@ -37,9 +23,13 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
     });
   };
 
+  const getMessagePreview = (message) => {
+    if (message.length <= 120) return message;
+    return message.substring(0, 120) + "...";
+  };
+
   const handleLike = async () => {
     if (isLiking) return;
-
     setIsLiking(true);
     try {
       if (onLike) {
@@ -52,272 +42,153 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
     }
   };
 
-  const openReportModal = () => {
-    setShowReportModal(true);
+  const openPostModal = () => {
+    setShowPostModal(true);
   };
 
-  const closeReportModal = () => {
-    setShowReportModal(false);
-  };
-
-  const handleReportSubmitted = () => {
-    // Trigger refresh of posts to show updated report count
-    if (onReport) {
-      onReport(post._id);
-    }
-  };
-
-  const toggleComments = () => {
-    setShowComments(!showComments);
-  };
-
-  const toggleExpanded = () => {
-    setExpanded(!expanded);
-  };
-
-  const openCommentModal = () => {
-    setShowCommentModal(true);
-  };
-
-  const closeCommentModal = () => {
-    setShowCommentModal(false);
-  };
-
-  const handleCommentAdded = () => {
-    // Trigger refresh of posts to show new comment
-    window.dispatchEvent(new Event("postsModified"));
-  };
-
-  const getMessagePreview = () => {
-    if (post.message.length <= 150 || expanded) {
-      return post.message;
-    }
-    return post.message.substring(0, 150) + "...";
+  const closePostModal = () => {
+    setShowPostModal(false);
   };
 
   return (
     <>
-      <div
-        className={`bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 overflow-hidden ${
-          post.isHidden ? "opacity-75" : ""
-        }`}
-      >
-        {/* Post Header */}
-        <div className="p-4 md:p-6">
-          <div className="flex items-start justify-between mb-3 md:mb-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 md:gap-3 mb-2 flex-wrap">
-                <h3 className="font-semibold text-gray-900 text-sm md:text-base font-['Comic_Sans_MS']">
-                  {post.name || "Anonymous"}
-                </h3>
-                <span className="text-xs md:text-sm text-gray-500 font-['Comic_Sans_MS']">
-                  {formatDate(post.createdAt)}
-                </span>
-                {post.isFlagged && (
-                  <span className="flex items-center gap-1 text-orange-600 text-xs md:text-sm">
-                    <Flag size={12} className="md:w-3.5 md:h-3.5" />
-                    <span className="hidden sm:inline">Flagged</span>
-                    <span className="sm:hidden">!</span>
-                  </span>
-                )}
-                {post.isHidden && (
-                  <span className="flex items-center gap-1 text-red-600 text-xs md:text-sm">
-                    <EyeOff size={12} className="md:w-3.5 md:h-3.5" />
-                    <span className="hidden sm:inline">Hidden</span>
-                    <span className="sm:hidden">H</span>
-                  </span>
-                )}
-              </div>
-
-              {/* Message Content */}
-              <div className="mb-3 md:mb-4">
-                <p className="text-gray-700 text-sm md:text-base font-['Comic_Sans_MS'] leading-relaxed">
-                  {getMessagePreview()}
-                </p>
-                {post.message.length > 150 && (
-                  <button
-                    onClick={toggleExpanded}
-                    className="text-blue-600 hover:text-blue-700 text-xs md:text-sm font-medium mt-2 font-['Comic_Sans_MS']"
-                  >
-                    {expanded ? "Show less" : "Read more"}
-                  </button>
-                )}
-              </div>
-
-              {/* Stats Row */}
-              <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm text-gray-500 font-['Comic_Sans_MS']">
-                <span className="flex items-center gap-1">
-                  <Heart size={12} className="md:w-3.5 md:h-3.5" />
-                  {post.likes || 0}{" "}
-                  <span className="hidden sm:inline">likes</span>
-                </span>
-                <span className="flex items-center gap-1">
-                  <MessageSquare size={12} className="md:w-3.5 md:h-3.5" />
-                  {post.comments ? post.comments.length : 0}{" "}
-                  <span className="hidden sm:inline">comments</span>
-                </span>
-                {post.reportCount > 0 && (
-                  <span className="flex items-center gap-1 text-red-600">
-                    <Flag size={12} className="md:w-3.5 md:h-3.5" />
-                    {post.reportCount}{" "}
-                    <span className="hidden sm:inline">reports</span>
-                  </span>
-                )}
-              </div>
+      {/* Instagram/Facebook Style Card */}
+      <div className="post-card group">
+        {/* Card Header */}
+        <div className="flex items-center justify-between p-4 pb-3">
+          <div className="flex items-center gap-3">
+            {/* Avatar */}
+            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg
+                className="w-5 h-5 text-gray-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </div>
 
-            {/* Admin Actions */}
-            {isAdmin && (
-              <div className="flex items-center gap-1 md:gap-2 ml-2 md:ml-4 flex-shrink-0">
-                {post.isHidden ? (
-                  <button
-                    onClick={() => onUpdate(post._id, "unhide")}
-                    className="p-1.5 md:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    title="Unhide post"
-                  >
-                    <Eye size={14} className="md:w-4 md:h-4" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => onUpdate(post._id, "hide")}
-                    className="p-1.5 md:p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                    title="Hide post"
-                  >
-                    <EyeOff size={14} className="md:w-4 md:h-4" />
-                  </button>
-                )}
+            {/* User Info */}
+            <div className="min-w-0">
+              <h3 className="font-semibold text-gray-900 text-sm truncate">
+                {post.name || "Anonymous"}
+              </h3>
+              <span className="text-xs text-gray-500">
+                {formatDate(post.createdAt)}
+              </span>
+            </div>
+          </div>
 
-                {post.isFlagged && (
-                  <button
-                    onClick={() => onUpdate(post._id, "unflag")}
-                    className="p-1.5 md:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                    title="Unflag post"
-                  >
-                    <Shield size={14} className="md:w-4 md:h-4" />
-                  </button>
-                )}
+          {/* Status Indicators */}
+          <div className="flex items-center gap-2">
+            {post.isFlagged && (
+              <div
+                className="w-2 h-2 bg-orange-500 rounded-full"
+                title="Flagged"
+              ></div>
+            )}
+            {post.isHidden && (
+              <div
+                className="w-2 h-2 bg-red-500 rounded-full"
+                title="Hidden"
+              ></div>
+            )}
+            <button className="p-1 hover:bg-gray-100 rounded-full transition-colors opacity-0 group-hover:opacity-100">
+              <MoreHorizontal size={16} className="text-gray-400" />
+            </button>
+          </div>
+        </div>
 
-                <button
-                  onClick={() => onUpdate(post._id, "delete")}
-                  className="p-1.5 md:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Delete post"
-                >
-                  <Trash2 size={14} className="md:w-4 md:h-4" />
-                </button>
-              </div>
+        {/* Card Content */}
+        <div className="post-card-content px-4 pb-3">
+          <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap line-clamp-4">
+            {getMessagePreview(post.message)}
+          </p>
+
+          {/* Show "Read more" if message is truncated */}
+          {post.message.length > 120 && (
+            <button
+              onClick={openPostModal}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-2 transition-colors"
+            >
+              Read more
+            </button>
+          )}
+        </div>
+
+        {/* Card Footer */}
+        <div className="post-card-footer px-4 pb-4">
+          {/* Stats Row */}
+          <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1">
+                <Heart size={14} className="text-red-500" />
+                {post.likes || 0}
+              </span>
+              <span className="flex items-center gap-1">
+                <MessageSquare size={14} className="text-blue-500" />
+                {post.comments ? post.comments.length : 0}
+              </span>
+            </div>
+
+            {post.reportCount > 0 && (
+              <span className="flex items-center gap-1 text-orange-600">
+                <Flag size={12} />
+                {post.reportCount}
+              </span>
             )}
           </div>
 
           {/* Action Buttons */}
-          {!isAdmin && (
-            <div className="flex items-center gap-2 md:gap-3 pt-3 border-t border-gray-100">
-              <button
-                onClick={handleLike}
-                disabled={isLiking}
-                className={`flex items-center gap-1.5 md:gap-2 px-3 py-2 rounded-lg transition-colors text-xs md:text-sm font-medium font-['Comic_Sans_MS'] ${
-                  post.userLiked
-                    ? "bg-red-100 text-red-600 hover:bg-red-200"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                <Heart size={14} className="md:w-4 md:h-4" />
-                <span className="hidden sm:inline">Like</span>
-              </button>
-
-              <button
-                onClick={openCommentModal}
-                className="flex items-center gap-1.5 md:gap-2 px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors text-xs md:text-sm font-medium font-['Comic_Sans_MS']"
-              >
-                <MessageSquare size={14} className="md:w-4 md:h-4" />
-                <span className="hidden sm:inline">Comment</span>
-                <span className="sm:hidden">
-                  ({post.comments ? post.comments.length : 0})
-                </span>
-              </button>
-
-              <button
-                onClick={openReportModal}
-                className="flex items-center gap-1.5 md:gap-2 px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors text-xs md:text-sm font-medium font-['Comic_Sans_MS']"
-              >
-                <Flag size={14} className="md:w-4 md:h-4" />
-                <span className="hidden sm:inline">Report</span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Comments Section */}
-        {post.comments && post.comments.length > 0 && (
-          <div className="border-t border-gray-100">
+          <div className="flex items-center gap-1 border-t border-gray-100 pt-3">
             <button
-              onClick={toggleComments}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+              onClick={handleLike}
+              disabled={isLiking}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm ${
+                post.userLiked
+                  ? "text-red-600 bg-red-50 hover:bg-red-100"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+              }`}
             >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-700 font-['Comic_Sans_MS']">
-                  Comments ({post.comments.length})
-                </span>
-                {showComments ? (
-                  <ChevronUp size={16} className="text-gray-500" />
-                ) : (
-                  <ChevronDown size={16} className="text-gray-500" />
-                )}
-              </div>
+              <Heart
+                size={18}
+                className={post.userLiked ? "fill-current" : ""}
+              />
+              {post.userLiked ? "Liked" : "Like"}
             </button>
 
-            {showComments && (
-              <div className="px-4 pb-4 space-y-3">
-                {post.comments.map((comment, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-3 md:p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-gray-900 text-xs md:text-sm font-['Comic_Sans_MS']">
-                            {comment.name || "Anonymous"}
-                          </span>
-                          <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
-                            {formatDate(comment.createdAt)}
-                          </span>
-                        </div>
-                        <p className="text-gray-700 text-xs md:text-sm font-['Comic_Sans_MS']">
-                          {comment.message}
-                        </p>
-                      </div>
+            <button
+              onClick={openPostModal}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            >
+              <MessageSquare size={18} />
+              Comment
+            </button>
 
-                      {isAdmin && (
-                        <button
-                          onClick={() =>
-                            onUpdate(post._id, "deleteComment", index)
-                          }
-                          className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors ml-2 flex-shrink-0"
-                          title="Delete comment"
-                        >
-                          <Trash2 size={12} className="md:w-3.5 md:h-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <button
+              onClick={openPostModal}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+            >
+              <Flag size={18} />
+              Report
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Comment Modal */}
-      <CommentModal
+      {/* Post Modal */}
+      <PostModal
         post={post}
-        isOpen={showCommentModal}
-        onClose={closeCommentModal}
-        onCommentAdded={handleCommentAdded}
-      />
-
-      {/* Report Modal */}
-      <ReportModal
-        post={post}
-        isOpen={showReportModal}
-        onClose={closeReportModal}
-        onReportSubmitted={handleReportSubmitted}
+        isOpen={showPostModal}
+        onClose={closePostModal}
+        onLike={onLike}
+        onReport={onReport}
+        onUpdate={onUpdate}
+        isAdmin={isAdmin}
       />
     </>
   );

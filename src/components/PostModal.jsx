@@ -1,0 +1,328 @@
+import { useState } from "react";
+import {
+  X,
+  Heart,
+  MessageSquare,
+  Flag,
+  Eye,
+  EyeOff,
+  Trash2,
+  Shield,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import CommentModal from "./CommentModal";
+import ReportModal from "./ReportModal";
+
+function PostModal({
+  post,
+  isOpen,
+  onClose,
+  onLike,
+  onReport,
+  onUpdate,
+  isAdmin = false,
+}) {
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) return "Today";
+    if (diffDays === 2) return "Yesterday";
+    if (diffDays <= 7) return `${diffDays - 1} days ago`;
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const handleLike = async () => {
+    if (isLiking) return;
+
+    setIsLiking(true);
+    try {
+      if (onLike) {
+        await onLike(post._id);
+      }
+    } catch (error) {
+      console.error("Error liking post:", error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  const openReportModal = () => {
+    setShowReportModal(true);
+  };
+
+  const closeReportModal = () => {
+    setShowReportModal(false);
+  };
+
+  const handleReportSubmitted = () => {
+    if (onReport) {
+      onReport(post._id);
+    }
+  };
+
+  const openCommentModal = () => {
+    setShowCommentModal(true);
+  };
+
+  const closeCommentModal = () => {
+    setShowCommentModal(false);
+  };
+
+  const handleCommentAdded = () => {
+    window.dispatchEvent(new Event("postsModified"));
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {/* Mobile-First Modal */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full h-[90vh] sm:h-auto sm:max-h-[90vh] sm:max-w-2xl overflow-hidden flex flex-col">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+            <h2 className="text-lg font-bold text-gray-900 font-['Comic_Sans_MS']">
+              Post Details
+            </h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors touch-manipulation"
+            >
+              <X size={20} className="text-gray-600" />
+            </button>
+          </div>
+
+          {/* Post Content */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-4 sm:p-6">
+              {/* Post Header with Avatar */}
+              <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+                {/* Avatar */}
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+
+                {/* User Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                    <h3 className="font-semibold text-gray-900 text-base sm:text-lg font-['Comic_Sans_MS']">
+                      {post.name || "Anonymous"}
+                    </h3>
+                    <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                      {formatDate(post.createdAt)}
+                    </span>
+                  </div>
+
+                  {/* Status Badges */}
+                  <div className="flex items-center gap-2">
+                    {post.isFlagged && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded-full">
+                        <Flag size={10} />
+                        Flagged
+                      </span>
+                    )}
+                    {post.isHidden && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-700 text-xs rounded-full">
+                        <EyeOff size={10} />
+                        Hidden
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Admin Actions */}
+                {isAdmin && (
+                  <div className="flex items-center gap-1">
+                    {post.isHidden ? (
+                      <button
+                        onClick={() => onUpdate(post._id, "unhide")}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-colors touch-manipulation"
+                        title="Unhide post"
+                      >
+                        <Eye size={16} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onUpdate(post._id, "hide")}
+                        className="p-2 text-orange-600 hover:bg-orange-50 rounded-xl transition-colors touch-manipulation"
+                        title="Hide post"
+                      >
+                        <EyeOff size={16} />
+                      </button>
+                    )}
+
+                    {post.isFlagged && (
+                      <button
+                        onClick={() => onUpdate(post._id, "unflag")}
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-xl transition-colors touch-manipulation"
+                        title="Unflag post"
+                      >
+                        <Shield size={16} />
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => onUpdate(post._id, "delete")}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-colors touch-manipulation"
+                      title="Delete post"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Full Message Content */}
+              <div className="mb-4 sm:mb-6">
+                <p className="text-gray-800 text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-['Comic_Sans_MS']">
+                  {post.message}
+                </p>
+              </div>
+
+              {/* Stats Row */}
+              <div className="flex items-center gap-4 sm:gap-6 text-sm text-gray-500 mb-4 sm:mb-6">
+                <span className="flex items-center gap-2">
+                  <Heart size={16} className="text-red-500" />
+                  {post.likes || 0} likes
+                </span>
+                <span className="flex items-center gap-2">
+                  <MessageSquare size={16} className="text-blue-500" />
+                  {post.comments ? post.comments.length : 0} comments
+                </span>
+                {post.reportCount > 0 && (
+                  <span className="flex items-center gap-2 text-red-600">
+                    <Flag size={16} />
+                    {post.reportCount} reports
+                  </span>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <button
+                  onClick={handleLike}
+                  disabled={isLiking}
+                  className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl transition-colors font-medium touch-manipulation ${
+                    post.userLiked
+                      ? "bg-red-100 text-red-700 hover:bg-red-200"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  <Heart
+                    size={18}
+                    className={post.userLiked ? "fill-current" : ""}
+                  />
+                  {post.userLiked ? "Liked" : "Like"}
+                </button>
+
+                <button
+                  onClick={openCommentModal}
+                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-xl transition-colors font-medium touch-manipulation"
+                >
+                  <MessageSquare size={18} />
+                  Comment
+                </button>
+
+                <button
+                  onClick={openReportModal}
+                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-orange-100 text-orange-700 hover:bg-orange-200 rounded-xl transition-colors font-medium touch-manipulation"
+                >
+                  <Flag size={18} />
+                  Report
+                </button>
+              </div>
+            </div>
+
+            {/* Comments Section */}
+            {post.comments && post.comments.length > 0 && (
+              <div className="border-t border-gray-100">
+                <div className="p-4 sm:p-6">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 font-['Comic_Sans_MS']">
+                    Comments ({post.comments.length})
+                  </h4>
+                  <div className="space-y-3 sm:space-y-4">
+                    {post.comments.map((comment, index) => (
+                      <div
+                        key={index}
+                        className="bg-gray-50 rounded-xl p-3 sm:p-4"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-semibold text-gray-900 text-sm font-['Comic_Sans_MS']">
+                                {comment.name || "Anonymous"}
+                              </span>
+                              <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                                {formatDate(comment.createdAt)}
+                              </span>
+                            </div>
+                            <p className="text-gray-700 text-sm font-['Comic_Sans_MS'] leading-relaxed whitespace-pre-wrap">
+                              {comment.message}
+                            </p>
+                          </div>
+
+                          {isAdmin && (
+                            <button
+                              onClick={() =>
+                                onUpdate(post._id, "deleteComment", index)
+                              }
+                              className="p-1 text-red-500 hover:bg-red-50 rounded-lg transition-colors ml-2 flex-shrink-0 touch-manipulation"
+                              title="Delete comment"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Comment Modal */}
+      <CommentModal
+        post={post}
+        isOpen={showCommentModal}
+        onClose={closeCommentModal}
+        onCommentAdded={handleCommentAdded}
+      />
+
+      {/* Report Modal */}
+      <ReportModal
+        post={post}
+        isOpen={showReportModal}
+        onClose={closeReportModal}
+        onReportSubmitted={handleReportSubmitted}
+      />
+    </>
+  );
+}
+
+export default PostModal;

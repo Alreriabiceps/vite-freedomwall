@@ -111,7 +111,7 @@ function Home() {
 
   if (loading) {
     return (
-      <div className="w-full max-w-4xl mx-auto">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-900 border-t-transparent mx-auto mb-4"></div>
           <p className="text-gray-600 font-['Comic_Sans_MS']">
@@ -124,7 +124,7 @@ function Home() {
 
   if (error) {
     return (
-      <div className="w-full max-w-4xl mx-auto">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
         <div className="text-center py-12">
           <p className="text-red-600 font-['Comic_Sans_MS']">{error}</p>
         </div>
@@ -133,9 +133,9 @@ function Home() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
       {/* Hero Section */}
-      <div className="text-center mb-8 md:mb-12">
+      <div className="text-center mb-8 md:mb-12 px-4 md:px-0">
         <div className="mb-4 md:mb-6">
           <img
             src="/image.png"
@@ -153,24 +153,24 @@ function Home() {
       </div>
 
       {/* Posts Section */}
-      <div className="space-y-4 md:space-y-6">
-        {posts.length === 0 ? (
-          <div className="text-center py-12 md:py-16">
-            <p className="text-gray-500 font-['Comic_Sans_MS'] text-lg">
-              No posts yet. Be the first to share your thoughts!
-            </p>
-          </div>
-        ) : (
-          posts.map((post) => (
+      {posts.length === 0 ? (
+        <div className="text-center py-12 md:py-16">
+          <p className="text-gray-500 font-['Comic_Sans_MS'] text-lg">
+            No posts yet. Be the first to share your thoughts!
+          </p>
+        </div>
+      ) : (
+        <div className="post-grid">
+          {posts.map((post) => (
             <PostCard
               key={post._id}
               post={post}
               onLike={handleLike}
               onReport={handleReport}
             />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Call to Action */}
       <div className="text-center mt-8 md:mt-12">
