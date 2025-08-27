@@ -41,6 +41,7 @@ function Admin() {
     totalContacts: 0,
   });
   const [contactMessages, setContactMessages] = useState([]);
+  const [polls, setPolls] = useState([]);
 
   // Check if already authenticated
   useEffect(() => {
@@ -50,6 +51,7 @@ function Admin() {
       fetchPosts(savedKey);
       fetchStats(savedKey);
       fetchContactMessages(savedKey);
+      fetchPolls(savedKey);
     }
   }, []);
 
@@ -73,7 +75,8 @@ function Admin() {
         localStorage.setItem("adminKey", adminKey);
         fetchPosts(adminKey);
         fetchStats(adminKey);
-        fetchContactMessages(adminKey); // Fetch contacts on login
+        fetchContactMessages(adminKey);
+        fetchPolls(adminKey);
       } else {
         setError("Invalid admin key");
       }
@@ -98,6 +101,7 @@ function Admin() {
       totalContacts: 0,
     });
     setContactMessages([]);
+    setPolls([]);
     setExpandedComments({});
   };
 
@@ -173,6 +177,76 @@ function Admin() {
     }
   };
 
+  const fetchPolls = async (key) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.POLLS_ADMIN, {
+        headers: {
+          "Admin-Key": key,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setPolls(data);
+      }
+    } catch {
+      console.error("Error fetching polls");
+    }
+  };
+
+  const handlePollStatus = async (pollId, isActive) => {
+    try {
+      const key = localStorage.getItem("adminKey");
+      const response = await fetch(
+        buildEndpoint(API_ENDPOINTS.POLLS, `/${pollId}/status`),
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Admin-Key": key,
+          },
+          body: JSON.stringify({ isActive }),
+        }
+      );
+
+      if (response.ok) {
+        // Update local state
+        setPolls((prevPolls) =>
+          prevPolls.map((poll) =>
+            poll._id === pollId ? { ...poll, isActive } : poll
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating poll status:", error);
+    }
+  };
+
+  const handleDeletePoll = async (pollId) => {
+    if (!window.confirm("Are you sure you want to delete this poll?")) return;
+
+    try {
+      const key = localStorage.getItem("adminKey");
+      const response = await fetch(
+        buildEndpoint(API_ENDPOINTS.POLLS, `/${pollId}`),
+        {
+          method: "DELETE",
+          headers: {
+            "Admin-Key": key,
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Remove from local state
+        setPolls((prevPolls) =>
+          prevPolls.filter((poll) => poll._id !== pollId)
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting poll:", error);
+    }
+  };
+
   const handleContactStatus = async (contactId, action, value = null) => {
     try {
       const key = localStorage.getItem("adminKey");
@@ -235,28 +309,59 @@ function Admin() {
   };
 
   const handleModerate = async (postId, action) => {
-    if (
-      action === "delete" &&
-      !window.confirm("Are you sure you want to permanently delete this post?")
-    ) {
-      return;
-    }
-
     try {
       const key = localStorage.getItem("adminKey");
-      const response = await fetch(
-        buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}/moderate`),
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ action, adminKey: key }),
+      let response;
+
+      if (action === "delete") {
+        if (
+          !window.confirm(
+            "Are you sure you want to permanently delete this post?"
+          )
+        ) {
+          return;
         }
-      );
+
+        response = await fetch(
+          buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}`),
+          {
+            method: "DELETE",
+            headers: {
+              "Admin-Key": key,
+            },
+          }
+        );
+      } else {
+        // For hide/unhide/flag actions, use the status endpoint
+        const body = {};
+        if (action === "hide") body.isHidden = true;
+        if (action === "unhide") body.isHidden = false;
+        if (action === "flag") body.isFlagged = true;
+        if (action === "unflag") body.isFlagged = false;
+
+        response = await fetch(
+          buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}/status`),
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Admin-Key": key,
+            },
+            body: JSON.stringify(body),
+          }
+        );
+      }
 
       if (response.ok) {
-        fetchPosts(key);
+        if (action === "delete") {
+          // Remove from local state
+          setPosts((prevPosts) =>
+            prevPosts.filter((post) => post._id !== postId)
+          );
+        } else {
+          // Refresh posts to get updated status
+          fetchPosts(key);
+        }
         fetchStats(key);
         localStorage.setItem("postsLastModified", Date.now().toString());
         window.dispatchEvent(new CustomEvent("postsModified"));
@@ -506,6 +611,22 @@ function Admin() {
               )}
             </button>
             <button
+              onClick={() => setActiveTab("polls")}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] ${
+                activeTab === "polls"
+                  ? "bg-purple-100 text-purple-700 border-r-2 border-purple-500"
+                  : "text-purple-700 hover:bg-purple-50"
+              }`}
+            >
+              <BarChart3 size={20} />
+              <span>Polls</span>
+              {polls.length > 0 && (
+                <span className="ml-auto bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
+                  {polls.length}
+                </span>
+              )}
+            </button>
+            <button
               onClick={() => setActiveTab("contact-messages")}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] ${
                 activeTab === "contact-messages"
@@ -545,6 +666,7 @@ function Admin() {
               {activeTab === "reported" && "Reported Posts"}
               {activeTab === "flagged" && "Flagged Posts"}
               {activeTab === "hidden" && "Hidden Posts"}
+              {activeTab === "polls" && "Polls"}
               {activeTab === "contact-messages" && "Contact Messages"}
             </h1>
             <p className="text-gray-600 text-lg font-['Comic_Sans_MS']">
@@ -554,6 +676,7 @@ function Admin() {
                 "Posts that have been reported by users"}
               {activeTab === "flagged" && "Posts flagged for moderation"}
               {activeTab === "hidden" && "Posts currently hidden from users"}
+              {activeTab === "polls" && "Manage all polls and voting"}
               {activeTab === "contact-messages" &&
                 "Messages from users via contact form"}
             </p>
@@ -666,11 +789,26 @@ function Admin() {
                   </div>
                 </div>
               </div>
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
+                      Total Polls
+                    </p>
+                    <p className="text-3xl font-bold text-purple-600 font-['Comic_Sans_MS']">
+                      {polls.length}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <BarChart3 className="text-purple-600" size={24} />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           <div>
-            {activeTab !== "contact-messages" && (
+            {activeTab !== "contact-messages" && activeTab !== "polls" && (
               <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
@@ -831,6 +969,119 @@ function Admin() {
                             )}
                           </div>
                         )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "polls" && (
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+                    Polls
+                  </h2>
+                  <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                    {polls.length} polls
+                  </span>
+                </div>
+
+                {polls.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8 font-['Comic_Sans_MS']">
+                    No polls created yet
+                  </p>
+                ) : (
+                  <div className="space-y-6">
+                    {polls.map((poll) => (
+                      <div
+                        key={poll._id}
+                        className={`border border-gray-200 rounded-xl p-6 ${
+                          poll.isActive ? "bg-green-50" : "bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2 flex-wrap">
+                              <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
+                                {poll.question}
+                              </h3>
+                              <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                                {formatDate(poll.createdAt)}
+                              </span>
+                              <span
+                                className={`text-sm px-2 py-1 rounded-full ${
+                                  poll.isActive
+                                    ? "bg-green-200 text-green-700"
+                                    : "bg-gray-200 text-gray-700"
+                                } font-['Comic_Sans_MS']`}
+                              >
+                                {poll.isActive ? "Active" : "Inactive"}
+                              </span>
+                              <span className="text-sm px-2 py-1 rounded-full bg-purple-200 text-purple-700 font-['Comic_Sans_MS']">
+                                {poll.totalVotes || 0} votes
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-gray-500 font-['Comic_Sans_MS'] mb-3">
+                              <span className="flex items-center gap-1">
+                                <BarChart3 size={14} />
+                                {poll.options.length} options
+                              </span>
+                              {poll.expiresAt && (
+                                <span className="flex items-center gap-1">
+                                  <AlertTriangle size={14} />
+                                  Expires: {formatDate(poll.expiresAt)}
+                                </span>
+                              )}
+                            </div>
+                            <div className="mb-3">
+                              <h4 className="font-semibold text-gray-800 font-['Comic_Sans_MS'] mb-2">
+                                Options:
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {poll.options.map((option, index) => (
+                                  <div
+                                    key={index}
+                                    className="text-sm text-gray-700 font-['Comic_Sans_MS']"
+                                  >
+                                    • {option.text} ({option.votes || 0} votes)
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
+                          <button
+                            onClick={() =>
+                              handlePollStatus(poll._id, !poll.isActive)
+                            }
+                            className={`p-2 rounded-lg transition-colors ${
+                              poll.isActive
+                                ? "bg-red-600 text-white hover:bg-red-700"
+                                : "bg-green-600 text-white hover:bg-green-700"
+                            }`}
+                            title={
+                              poll.isActive
+                                ? "Deactivate poll"
+                                : "Activate poll"
+                            }
+                          >
+                            {poll.isActive ? (
+                              <EyeOff size={16} />
+                            ) : (
+                              <Eye size={16} />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => handleDeletePoll(poll._id)}
+                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                            title="Delete poll"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
