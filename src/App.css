@@ -1,85 +1,8 @@
-/* Tailwind utilities only - no custom CSS needed */
-
-/* Custom CSS for consistent post card styling */
-.post-card {
-  position: relative;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Ensure gradient borders work properly */
-.post-card.border-gradient-to-r {
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(to right, var(--tw-gradient-stops)) border-box;
-  border: 2px solid transparent;
-}
-
-.post-card.border-gradient-to-r.from-purple-500.via-pink-500.to-red-500 {
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(to right, #8b5cf6, #ec4899, #ef4444) border-box;
-  border: 2px solid transparent;
-}
-
-.post-card.border-gradient-to-r.from-orange-400.to-red-500 {
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(to right, #fb923c, #ef4444) border-box;
-  border: 2px solid transparent;
-}
-
-.post-card.border-gradient-to-r.from-blue-400 {
-  background: linear-gradient(white, white) padding-box,
-              linear-gradient(to right, #60a5fa, #60a5fa) border-box;
-  border: 2px solid transparent;
-}
-
-/* Ensure consistent spacing and layout */
+/* Fixed heights for perfect consistency */
 .post-card-content {
-  min-height: 80px;
+  height: 100px !important;
+  min-height: 100px !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.post-card-footer {
-  border-top: 1px solid #e5e7eb;
-  margin-top: auto;
-}
-
-/* Consistent badge positioning */
-.post-card .absolute.top-3.right-3 {
-  top: 12px;
-  right: 12px;
-}
-
-/* Force gradient borders to show */
-.post-card.border-2 {
-  border-width: 2px !important;
-}
-
-.post-card.border {
-  border-width: 1px !important;
-}
-
-/* Ensure consistent comment section height */
-.post-card .border-t.border-gray-100 {
-  min-height: 60px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .post-card {
-    margin: 0 8px 16px 8px;
-  }
-}
-
-@media (min-width: 769px) {
-  .post-card {
-    margin: 0 0 20px 0;
-  }
 }
