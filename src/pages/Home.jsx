@@ -7,6 +7,9 @@ import {
   EyeOff,
   Trash2,
   BarChart3,
+  TrendingUp,
+  Clock,
+  Coffee,
 } from "lucide-react";
 import PostCard from "../components/PostCard";
 import PollCard from "../components/PollCard";
@@ -21,6 +24,7 @@ import {
   SlideIn,
 } from "../components/AnimatedComponents";
 import TextType from "../components/TextAnimations/TextType/TextType";
+import AdSense from "../components/AdSense";
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -29,6 +33,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPolls, setShowPolls] = useState(false);
+  const [sortBy, setSortBy] = useState("default"); // New: sorting state
 
   // Infinite scroll states
   const [hasMorePosts, setHasMorePosts] = useState(true);
@@ -49,6 +54,17 @@ function Home() {
     return () =>
       window.removeEventListener("postsModified", handlePostsModified);
   }, []);
+
+  // Refetch posts when sort changes
+  useEffect(() => {
+    if (posts.length > 0) {
+      console.log(`Sorting changed to: ${sortBy}, refetching posts...`);
+      setPosts([]);
+      setPage(1);
+      setHasMorePosts(true);
+      fetchPosts();
+    }
+  }, [sortBy]);
 
   // Infinite scroll effect
   useEffect(() => {
@@ -82,6 +98,13 @@ function Home() {
       );
       if (userId) {
         url.searchParams.set("userId", userId);
+      }
+      // Add sort parameter if not default
+      if (sortBy !== "default") {
+        url.searchParams.set("sort", sortBy);
+        console.log(`Fetching posts with sort: ${sortBy}`);
+      } else {
+        console.log("Fetching posts with default sort (popular first)");
       }
 
       const response = await fetch(url, {
@@ -309,6 +332,11 @@ function Home() {
                   {loading ? "..." : posts.length}
                 </span>{" "}
                 Secret Message{posts.length !== 1 ? "s" : ""} Found
+                {sortBy !== "default" && (
+                  <span className="text-blue-600 ml-2">
+                    (sorted by {sortBy === "recent" ? "recent" : "popular"})
+                  </span>
+                )}
               </span>
             </div>
           </div>
@@ -349,6 +377,41 @@ function Home() {
         )}
 
         {/* Posts Section */}
+        <StaggerItem className="mb-6">
+          {/* Sort Filter */}
+          <div className="flex flex-col items-center gap-3 mb-6">
+            <div className="text-sm text-gray-600 font-['Comic_Sans_MS']">
+              Currently showing: <span className="font-semibold text-gray-800">
+                {sortBy === "default" ? "Popular posts first, then recent" : "Most recent posts first"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 bg-white rounded-lg shadow-sm border border-gray-200 p-1">
+              <button
+                onClick={() => setSortBy("default")}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 font-['Comic_Sans_MS'] flex items-center gap-2 ${
+                  sortBy === "default"
+                    ? "bg-blue-500 text-white shadow-md transform scale-105"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:shadow-sm"
+                }`}
+              >
+                <TrendingUp size={16} />
+                Popular First
+              </button>
+              <button
+                onClick={() => setSortBy("recent")}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 font-['Comic_Sans_MS'] flex items-center gap-2 ${
+                  sortBy === "recent"
+                    ? "bg-green-500 text-white shadow-md transform scale-105"
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:shadow-sm"
+                }`}
+              >
+                <Clock size={16} />
+                Recent First
+              </button>
+            </div>
+          </div>
+        </StaggerItem>
+
         {posts.length === 0 ? (
           <StaggerItem className="text-center py-12 md:py-16">
             <p className="text-gray-500 font-['Comic_Sans_MS'] text-lg">
@@ -357,13 +420,25 @@ function Home() {
           </StaggerItem>
         ) : (
           <div className="post-grid">
-            {posts.map((post) => (
+            {posts.map((post, index) => (
               <StaggerItem key={post._id}>
                 <PostCard
                   post={post}
                   onLike={handleLike}
                   onReport={handleReport}
                 />
+                
+                {/* Inline Ad every 3 posts */}
+                {index > 0 && (index + 1) % 3 === 0 && (
+                  <div className="col-span-full my-6">
+                    <AdSense 
+                      adSlot={`inline-${Math.floor(index / 3)}`}
+                      adFormat="auto"
+                      className="w-full"
+                      style={{ minHeight: '250px' }}
+                    />
+                  </div>
+                )}
               </StaggerItem>
             ))}
 
@@ -417,6 +492,18 @@ function Home() {
               >
                 <BarChart3 size={18} />
                 Create Poll
+              </a>
+            </div>
+          </SlideIn>
+          
+          <SlideIn direction="up" delay={1.6}>
+            <div className="text-center mt-6">
+              <a
+                href="/buy-me-a-coffee"
+                className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium font-['Comic_Sans_MS'] transition-colors hover:underline"
+              >
+                <Coffee size={16} />
+                Support the project
               </a>
             </div>
           </SlideIn>

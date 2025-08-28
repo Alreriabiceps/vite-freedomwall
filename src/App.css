@@ -1,1 +1,33 @@
-/* Tailwind utilities only - no custom CSS needed */
+/* Main styling is now in index.css */
+/* PostCard component has been completely rebuilt */
+
+/* AdSense Styles */
+.ad-container {
+  text-align: center;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.ad-container ins {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Responsive ad adjustments */
+@media (max-width: 768px) {
+  .ad-container {
+    margin: 0.5rem 0;
+  }
+}
+
+/* Ad loading states */
+.ad-container:empty::before {
+  content: "Loading ad...";
+  display: block;
+  padding: 2rem;
+  background: #f3f4f6;
+  color: #6b7280;
+  text-align: center;
+  border-radius: 0.5rem;
+}

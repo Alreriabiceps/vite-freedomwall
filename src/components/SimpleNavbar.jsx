@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, PenTool, BarChart3, Info, Mail, Bell } from "lucide-react";
+import { Home, PenTool, BarChart3, Info, Mail, Bell, Coffee } from "lucide-react";
 import { API_ENDPOINTS } from "../config/api";
 import { ScaleOnHover } from "./AnimatedComponents";
 
@@ -79,6 +79,7 @@ function SimpleNavbar() {
     { to: "/create-poll", label: "Polls", icon: BarChart3 },
     { to: "/about", label: "About", icon: Info },
     { to: "/contact", label: "Contact", icon: Mail },
+    { to: "/buy-me-a-coffee", label: "Support", icon: Coffee },
   ];
 
   return (
@@ -107,7 +108,7 @@ function SimpleNavbar() {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 relative ${
                     location.pathname === item.to
                       ? "bg-gray-900 text-white"
                       : "text-gray-700 hover:bg-gray-100"
@@ -115,6 +116,11 @@ function SimpleNavbar() {
                 >
                   <Icon size={16} />
                   {item.label}
+                  {item.to === "/buy-me-a-coffee" && (
+                    <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                      ♥
+                    </span>
+                  )}
                 </Link>
               );
             })}

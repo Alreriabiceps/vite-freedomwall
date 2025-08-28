@@ -172,117 +172,134 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
           </div>
         )}
 
-        {/* Card Header */}
-        <div className="flex items-center justify-between p-4 pb-3">
-          <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-5 h-5 text-gray-600"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                  clipRule="evenodd"
-                />
-              </svg>
+        {/* Header */}
+        <div className="p-4 border-b border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 text-lg sm:text-xl font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  {post.name || "Anonymous"}
+                </h3>
+                <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  {formatDate(post.createdAt)}
+                </span>
+              </div>
             </div>
-
-            {/* User Info */}
-            <div className="min-w-0">
-              <h3 className="font-semibold text-gray-900 text-base font-['Comic_Sans_MS'] truncate">
-                {post.name || "Anonymous"}
-              </h3>
-              <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
-                {formatDate(post.createdAt)}
-              </span>
-            </div>
-          </div>
-
-          {/* Status Indicators */}
-          <div className="flex items-center gap-2">
-            {post.isFlagged && (
-              <div
-                className="w-2 h-2 bg-orange-500 rounded-full"
-                title="Flagged"
-              ></div>
-            )}
-            {post.isHidden && (
-              <div
-                className="w-2 h-2 bg-red-500 rounded-full"
-                title="Hidden"
-              ></div>
-            )}
-            <button className="p-1 hover:bg-gray-100 rounded-full transition-colors opacity-0 group-hover:opacity-100">
+            <button className="p-1 hover:bg-gray-100 rounded-full">
               <MoreHorizontal size={16} className="text-gray-400" />
             </button>
           </div>
         </div>
 
-        {/* Card Content */}
-        <LazyContent>
-          <div className="post-card-content px-4 pb-3">
-            <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap line-clamp-4 font-['Comic_Sans_MS']">
-              {getMessagePreview(post.message)}
-            </p>
+        {/* Content - Fixed height for consistency */}
+        <div className="post-card-content p-4 min-h-[120px] flex flex-col justify-center">
+          <p className="text-gray-800 text-lg sm:text-xl leading-relaxed line-clamp-4 font-['Arial'] sm:font-['Comic_Sans_MS']">
+            {post.message}
+          </p>
+          {post.message.length > 150 && (
+            <button
+              onClick={openPostModal}
+              className="text-blue-600 hover:text-blue-700 text-lg sm:text-xl font-medium mt-2 hover:underline font-['Arial'] sm:font-['Comic_Sans_MS']"
+            >
+              Read more
+            </button>
+          )}
+        </div>
 
-            {/* Show "Read more" if message is truncated */}
-            {post.message.length > 120 && (
-              <button
-                onClick={openPostModal}
-                className="text-blue-600 hover:text-blue-700 text-base font-medium mt-2 transition-colors font-['Comic_Sans_MS']"
-              >
-                Read more
-              </button>
-            )}
-          </div>
-        </LazyContent>
-
-        {/* Card Footer */}
-        <div className="post-card-footer px-4 pb-4">
-          {/* Stats Row */}
-          <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1">
-                <Heart size={16} className="text-red-500" />
-                {post.likes || 0}
-              </span>
-              <span className="flex items-center gap-1">
-                <MessageSquare size={16} className="text-blue-500" />
-                {post.comments ? post.comments.length : 0}
-              </span>
+        {/* Comment Preview Section - Fixed height for consistency */}
+        <div className="px-4 py-3 border-t border-gray-100 min-h-[80px] flex flex-col justify-center">
+          {post.comments && post.comments.length > 0 ? (
+            <div className="space-y-2">
+              {/* Recent Comment */}
+              <div className="flex items-start gap-2">
+                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg className="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-base sm:text-lg font-medium text-gray-700 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                      {post.comments[0].name || "Anonymous"}
+                    </span>
+                    <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                      {formatDate(post.comments[0].createdAt)}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-lg text-gray-600 line-clamp-2 leading-relaxed font-['Arial'] sm:font-['Comic_Sans_MS']">
+                    {post.comments[0].message}
+                  </p>
+                </div>
+              </div>
+              
+              {/* View all comments button */}
+              {post.comments.length > 1 && (
+                <button
+                  onClick={openPostModal}
+                  className="text-blue-600 hover:text-blue-700 text-base sm:text-lg font-medium hover:underline flex items-center gap-1 font-['Arial'] sm:font-['Comic_Sans_MS']"
+                >
+                  View all {post.comments.length} comments
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              )}
             </div>
+          ) : (
+            <div className="text-center py-2">
+              <div className="flex items-center justify-center gap-2 text-gray-400 mb-1">
+                <MessageSquare size={12} />
+                <span className="text-base sm:text-lg font-['Arial'] sm:font-['Comic_Sans_MS']">No comments yet</span>
+              </div>
+              <p className="text-base sm:text-lg text-gray-300 font-['Arial'] sm:font-['Comic_Sans_MS']">Be the first to comment!</p>
+            </div>
+          )}
+        </div>
 
-            {post.reportCount > 0 && (
-              <span className="flex items-center gap-1 text-orange-600">
-                <Flag size={14} />
-                {post.reportCount}
-              </span>
-            )}
+        {/* Footer */}
+        <div className="post-card-footer p-4 border-t border-gray-100">
+          {/* Stats */}
+          <div className="flex items-center gap-4 mb-3">
+            <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+              <Heart size={18} className="text-red-500" />
+              {post.likes || 0}
+            </span>
+            <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+              <MessageSquare size={18} className="text-blue-500" />
+              {post.comments ? post.comments.length : 0}
+            </span>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-center gap-4 border-t border-gray-100 pt-3">
-            <AnimatedLikeButton
-              isLiked={post.userLiked}
+          <div className="flex items-center gap-2">
+            <button
               onClick={handleLike}
-              size="md"
-              className="flex-1"
-            />
-
-            <AnimatedCommentButton
-              onClick={openPostModal}
-              size="md"
-              className="flex-1"
-            />
-
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Heart 
+                size={20} 
+                className={post.userLiked ? "text-red-500 fill-red-500" : "text-gray-400"} 
+              />
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Like</span>
+            </button>
             <button
               onClick={openPostModal}
-              className="flex-1 flex items-center justify-center p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <Flag size={20} className="text-orange-500" />
+              <MessageSquare size={20} className="text-gray-400" />
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Comment</span>
+            </button>
+            <button
+              onClick={openPostModal}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Flag size={20} className="text-gray-400" />
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Report</span>
             </button>
           </div>
         </div>

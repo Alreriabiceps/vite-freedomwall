@@ -869,8 +869,7 @@ function Admin() {
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-3 bg-white rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-          aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+          className="p-2 bg-white rounded-lg shadow-lg border border-gray-200"
         >
           {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -902,14 +901,14 @@ function Admin() {
           <nav className="flex-1 p-4 space-y-2">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`w-full flex items-center space-x-3 px-4 py-3 md:py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] ${
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] ${
                 activeTab === "dashboard"
                   ? "bg-red-100 text-red-700 border-r-2 border-red-500"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
               <BarChart3 size={20} />
-              <span className="text-sm md:text-base">Dashboard</span>
+              <span>Dashboard</span>
             </button>
             <button
               onClick={() => setActiveTab("all-posts")}
@@ -1023,10 +1022,10 @@ function Admin() {
           <div className="p-4 border-t border-gray-200">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center space-x-2 px-4 py-3 md:py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-['Comic_Sans_MS']"
+              className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-['Comic_Sans_MS']"
             >
               <LogOut size={18} />
-              <span className="text-sm md:text-base">Logout</span>
+              <span>Logout</span>
             </button>
           </div>
         </div>
@@ -1034,9 +1033,9 @@ function Admin() {
 
       {/* Main Content */}
       <div className="lg:ml-64 min-h-screen">
-        <div className="p-4 md:p-6">
-          <div className="mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+        <div className="p-6">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 font-['Comic_Sans_MS']">
               {activeTab === "dashboard" && "Dashboard"}
               {activeTab === "all-posts" && "All Posts"}
               {activeTab === "reported" && "Reported Posts"}
@@ -1046,7 +1045,7 @@ function Admin() {
               {activeTab === "announcements" && "Announcements"}
               {activeTab === "contact-messages" && "Contact Messages"}
             </h1>
-            <p className="text-gray-600 text-base md:text-lg font-['Comic_Sans_MS']">
+            <p className="text-gray-600 text-lg font-['Comic_Sans_MS']">
               {activeTab === "dashboard" && "Overview and statistics"}
               {activeTab === "all-posts" && "Manage all posts and comments"}
               {activeTab === "reported" &&
@@ -1062,139 +1061,139 @@ function Admin() {
           </div>
 
           {activeTab === "dashboard" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Total Posts
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-gray-900 font-['Comic_Sans_MS']">
                       {filteredPosts.length}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <MessageCircle className="text-blue-600" size={20} />
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <MessageCircle className="text-blue-600" size={24} />
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Flagged Posts
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-orange-600 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-orange-600 font-['Comic_Sans_MS']">
                       {stats.flaggedPosts}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                    <Flag className="text-orange-600" size={20} />
+                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <Flag className="text-orange-600" size={24} />
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Hidden Posts
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-red-600 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-red-600 font-['Comic_Sans_MS']">
                       {stats.hiddenPosts}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-full flex items-center justify-center">
-                    <EyeOff className="text-red-600" size={20} />
+                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                    <EyeOff className="text-red-600" size={24} />
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Total Comments
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-green-600 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-green-600 font-['Comic_Sans_MS']">
                       {stats.totalComments}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <Users className="text-green-600" size={20} />
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <Users className="text-green-600" size={24} />
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Total Likes
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-pink-600 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-pink-600 font-['Comic_Sans_MS']">
                       {stats.totalLikes}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-pink-100 rounded-full flex items-center justify-center">
-                    <Heart className="text-pink-600" size={20} />
+                  <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
+                    <Heart className="text-pink-600" size={24} />
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Total Reports
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-purple-600 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-purple-600 font-['Comic_Sans_MS']">
                       {stats.totalReports}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <BarChart3 className="text-purple-600" size={20} />
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <BarChart3 className="text-purple-600" size={24} />
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Contact Messages
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-blue-600 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-blue-600 font-['Comic_Sans_MS']">
                       {stats.totalContacts}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <MessageSquare className="text-blue-600" size={20} />
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <MessageSquare className="text-blue-600" size={24} />
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Total Polls
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-purple-600 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-purple-600 font-['Comic_Sans_MS']">
                       {polls.length}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <BarChart3 className="text-purple-600" size={20} />
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <BarChart3 className="text-purple-600" size={24} />
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Total Announcements
                     </p>
-                    <p className="text-2xl md:text-3xl font-bold text-orange-600 font-['Comic_Sans_MS']">
+                    <p className="text-3xl font-bold text-orange-600 font-['Comic_Sans_MS']">
                       {announcements.length}
                     </p>
                   </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                    <Megaphone className="text-orange-600" size={20} />
+                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <Megaphone className="text-orange-600" size={24} />
                   </div>
                 </div>
               </div>
@@ -1205,9 +1204,9 @@ function Admin() {
             {activeTab !== "contact-messages" &&
               activeTab !== "polls" &&
               activeTab !== "announcements" && (
-                <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
                       {activeTab === "dashboard" && "Recent Posts"}
                       {activeTab === "all-posts" && "All Posts"}
                       {activeTab === "reported" && "Reported Posts"}
@@ -1222,29 +1221,29 @@ function Admin() {
                   {/* Search and Filter Controls */}
                   <div className="mb-6 space-y-4">
                     {/* Search Bar */}
-                    <div className="flex items-center gap-2 md:gap-4">
+                    <div className="flex items-center gap-4">
                       <div className="flex-1">
                         <input
                           type="text"
                           placeholder="Search posts by content or author..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS'] text-sm md:text-base"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
                         />
                       </div>
                     </div>
 
                     {/* Filters Row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-start gap-3 md:gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                       {/* Status Filter */}
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                        <label className="text-xs md:text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
                           Status:
                         </label>
                         <select
                           value={statusFilter}
                           onChange={(e) => setStatusFilter(e.target.value)}
-                          className="px-2 md:px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-xs md:text-sm font-['Comic_Sans_MS']"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                         >
                           <option value="all">All Status</option>
                           <option value="flagged">Flagged</option>
@@ -1254,14 +1253,14 @@ function Admin() {
                       </div>
 
                       {/* Type Filter */}
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                        <label className="text-xs md:text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
                           Type:
                         </label>
                         <select
                           value={typeFilter}
                           onChange={(e) => setTypeFilter(e.target.value)}
-                          className="px-2 md:px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-xs md:text-sm font-['Comic_Sans_MS']"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                         >
                           <option value="all">All Types</option>
                           <option value="withComments">With Comments</option>
@@ -1271,14 +1270,14 @@ function Admin() {
                       </div>
 
                       {/* Sort By */}
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                        <label className="text-xs md:text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
                           Sort:
                         </label>
                         <select
                           value={sortBy}
                           onChange={(e) => setSortBy(e.target.value)}
-                          className="px-2 md:px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-xs md:text-sm font-['Comic_Sans_MS']"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                         >
                           <option value="newest">Newest First</option>
                           <option value="oldest">Oldest First</option>
@@ -1300,7 +1299,7 @@ function Admin() {
                             setTypeFilter("all");
                             setSortBy("newest");
                           }}
-                          className="px-3 md:px-4 py-2 text-xs md:text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
                         >
                           Clear Filters
                         </button>
@@ -1317,36 +1316,36 @@ function Admin() {
                       {filteredPosts.map((post) => (
                         <div
                           key={post._id}
-                          className={`border border-gray-200 rounded-xl p-4 md:p-6 ${
+                          className={`border border-gray-200 rounded-xl p-6 ${
                             post.isHidden ? "bg-gray-50 opacity-75" : "bg-white"
                           }`}
                         >
-                          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
+                          <div className="flex items-start justify-between mb-4">
                             <div className="flex-1">
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                                <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS'] text-base md:text-lg">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
                                   {post.name || "Anonymous"}
                                 </h3>
-                                <span className="text-xs md:text-sm text-gray-500 font-['Comic_Sans_MS']">
+                                <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
                                   {formatDate(post.createdAt)}
                                 </span>
                                 {post.isFlagged && (
-                                  <span className="flex items-center gap-1 text-orange-600 text-xs md:text-sm">
+                                  <span className="flex items-center gap-1 text-orange-600 text-sm">
                                     <Flag size={14} />
                                     Flagged ({post.reportCount} reports)
                                   </span>
                                 )}
                                 {post.isHidden && (
-                                  <span className="flex items-center gap-1 text-red-600 text-xs md:text-sm">
+                                  <span className="flex items-center gap-1 text-red-600 text-sm">
                                     <EyeOff size={14} />
                                     Hidden
                                   </span>
                                 )}
                               </div>
-                              <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-base md:text-lg">
+                              <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-lg">
                                 {post.message}
                               </p>
-                              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm text-gray-500 font-['Comic_Sans_MS']">
+                              <div className="flex items-center gap-4 text-sm text-gray-500 font-['Comic_Sans_MS']">
                                 <span className="flex items-center gap-1">
                                   <Heart size={14} />
                                   {post.likes} likes
@@ -1364,26 +1363,26 @@ function Admin() {
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-center md:justify-end gap-2 md:ml-4">
+                            <div className="flex items-center gap-2 ml-4">
                               {post.isHidden ? (
                                 <button
                                   onClick={() =>
                                     handleModerate(post._id, "unhide")
                                   }
-                                  className="p-2 md:p-2.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                   title="Unhide post"
                                 >
-                                  <Eye size={18} />
+                                  <Eye size={16} />
                                 </button>
                               ) : (
                                 <button
                                   onClick={() =>
                                     handleModerate(post._id, "hide")
                                   }
-                                  className="p-2 md:p-2.5 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                  className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                                   title="Hide post"
                                 >
-                                  <EyeOff size={18} />
+                                  <EyeOff size={16} />
                                 </button>
                               )}
                               {post.isFlagged && (
@@ -1391,20 +1390,20 @@ function Admin() {
                                   onClick={() =>
                                     handleModerate(post._id, "unflag")
                                   }
-                                  className="p-2 md:p-2.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                  className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                   title="Unflag post"
                                 >
-                                  <Shield size={18} />
+                                  <Shield size={16} />
                                 </button>
                               )}
                               <button
                                 onClick={() =>
                                   handleModerate(post._id, "delete")
                                 }
-                                className="p-2 md:p-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Delete post"
                               >
-                                <Trash2 size={18} />
+                                <Trash2 size={16} />
                               </button>
                             </div>
                           </div>
@@ -1428,10 +1427,10 @@ function Admin() {
                                   {post.comments.map((comment, index) => (
                                     <div
                                       key={index}
-                                      className="flex flex-col sm:flex-row sm:items-start sm:justify-between bg-gray-50 rounded-lg p-3 gap-2"
+                                      className="flex items-start justify-between bg-gray-50 rounded-lg p-3"
                                     >
                                       <div className="flex-1">
-                                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                                        <div className="flex items-center gap-2 mb-1">
                                           <span className="font-semibold text-gray-900 text-sm font-['Comic_Sans_MS']">
                                             {comment.name || "Anonymous"}
                                           </span>
@@ -1447,10 +1446,10 @@ function Admin() {
                                         onClick={() =>
                                           handleDeleteComment(post._id, index)
                                         }
-                                        className="p-2 text-red-500 hover:bg-red-50 rounded transition-colors self-end sm:self-start"
+                                        className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors ml-2"
                                         title="Delete comment"
                                       >
-                                        <Trash2 size={16} />
+                                        <Trash2 size={14} />
                                       </button>
                                     </div>
                                   ))}

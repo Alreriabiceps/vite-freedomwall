@@ -60,6 +60,14 @@ const Footer = () => {
                   Contact
                 </a>
               </li>
+              <li>
+                <a
+                  href="/buy-me-a-coffee"
+                  className="text-gray-300 hover:text-white transition-colors font-['Comic_Sans_MS']"
+                >
+                  Support Us
+                </a>
+              </li>
             </ul>
           </div>
 
