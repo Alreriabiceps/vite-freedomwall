@@ -21,21 +21,21 @@ import "./App.css";
 function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <MaintenanceWrapper>
-        <div className="App">
-          <SimpleNavbar />
+      <div className="App">
+        <SimpleNavbar />
 
-          {/* Top Banner Ad */}
-          <div className="w-full bg-white border-b border-gray-200">
-            <AdSense
-              adSlot="1234567890"
-              adFormat="auto"
-              className="w-full"
-              style={{ minHeight: "90px" }}
-            />
-          </div>
+        {/* Top Banner Ad */}
+        <div className="w-full bg-white border-b border-gray-200">
+          <AdSense
+            adSlot="1234567890"
+            adFormat="auto"
+            className="w-full"
+            style={{ minHeight: "90px" }}
+          />
+        </div>
 
-          <main className="pb-20 md:pb-0">
+        <main className="pb-20 md:pb-0">
+          <MaintenanceWrapper>
             <AnimatePresence mode="wait">
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -54,22 +54,22 @@ function App() {
                 <Route path="/admin" element={<Admin />} />
               </Routes>
             </AnimatePresence>
-          </main>
+          </MaintenanceWrapper>
+        </main>
 
-          {/* Bottom Banner Ad */}
-          <div className="w-full bg-white border-t border-gray-200">
-            <AdSense
-              adSlot="0987654321"
-              adFormat="auto"
-              className="w-full"
-              style={{ minHeight: "90px" }}
-            />
-          </div>
-
-          <Footer />
-          <BottomNavigation />
+        {/* Bottom Banner Ad */}
+        <div className="w-full bg-white border-t border-gray-200">
+          <AdSense
+            adSlot="0987654321"
+            adFormat="auto"
+            className="w-full"
+            style={{ minHeight: "90px" }}
+          />
         </div>
-      </MaintenanceWrapper>
+
+        <Footer />
+        <BottomNavigation />
+      </div>
     </Router>
   );
 }
