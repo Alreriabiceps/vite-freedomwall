@@ -165,6 +165,50 @@ function NotificationSettings() {
                     <Bell size={16} />
                     Test Real-time
                   </button>
+
+                  <button
+                    onClick={() => {
+                      console.log("=== DIRECT NOTIFICATION TEST ===");
+                      console.log(
+                        "Notification.permission:",
+                        Notification.permission
+                      );
+                      console.log(
+                        "'Notification' in window:",
+                        "Notification" in window
+                      );
+
+                      if (Notification.permission === "granted") {
+                        try {
+                          const notification = new Notification("Direct Test", {
+                            body: "This is a direct test notification! 🎉",
+                            icon: "/image.png",
+                            tag: "direct-test",
+                          });
+                          console.log(
+                            "✅ Direct notification created:",
+                            notification
+                          );
+
+                          setTimeout(() => {
+                            notification.close();
+                            console.log("Direct notification closed");
+                          }, 5000);
+                        } catch (error) {
+                          console.error(
+                            "❌ Direct notification failed:",
+                            error
+                          );
+                        }
+                      } else {
+                        console.log("❌ No permission for notifications");
+                      }
+                    }}
+                    className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors font-['Comic_Sans_MS'] flex items-center gap-2"
+                  >
+                    <Bell size={16} />
+                    Direct Test
+                  </button>
                 </div>
               </div>
             )}
