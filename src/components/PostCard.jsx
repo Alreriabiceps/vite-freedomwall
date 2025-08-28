@@ -182,10 +182,10 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 text-lg sm:text-xl">
+                <h3 className="font-semibold text-gray-900 text-lg sm:text-xl font-['Arial'] sm:font-['Comic_Sans_MS']">
                   {post.name || "Anonymous"}
                 </h3>
-                <span className="text-base sm:text-lg text-gray-500">
+                <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
                   {formatDate(post.createdAt)}
                 </span>
               </div>
@@ -198,13 +198,13 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
 
         {/* Content - Fixed height for consistency */}
         <div className="post-card-content p-4 min-h-[120px] flex flex-col justify-center">
-          <p className="text-gray-800 text-lg sm:text-xl leading-relaxed line-clamp-4">
+          <p className="text-gray-800 text-lg sm:text-xl leading-relaxed line-clamp-4 font-['Arial'] sm:font-['Comic_Sans_MS']">
             {post.message}
           </p>
           {post.message.length > 150 && (
             <button
               onClick={openPostModal}
-              className="text-blue-600 hover:text-blue-700 text-lg sm:text-xl font-medium mt-2 hover:underline"
+              className="text-blue-600 hover:text-blue-700 text-lg sm:text-xl font-medium mt-2 hover:underline font-['Arial'] sm:font-['Comic_Sans_MS']"
             >
               Read more
             </button>
@@ -224,14 +224,14 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-base sm:text-lg font-medium text-gray-700">
+                    <span className="text-base sm:text-lg font-medium text-gray-700 font-['Arial'] sm:font-['Comic_Sans_MS']">
                       {post.comments[0].name || "Anonymous"}
                     </span>
-                    <span className="text-base sm:text-lg text-gray-500">
+                    <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
                       {formatDate(post.comments[0].createdAt)}
                     </span>
                   </div>
-                  <p className="text-base sm:text-lg text-gray-600 line-clamp-2 leading-relaxed">
+                  <p className="text-base sm:text-lg text-gray-600 line-clamp-2 leading-relaxed font-['Arial'] sm:font-['Comic_Sans_MS']">
                     {post.comments[0].message}
                   </p>
                 </div>
@@ -241,7 +241,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
               {post.comments.length > 1 && (
                 <button
                   onClick={openPostModal}
-                  className="text-blue-600 hover:text-blue-700 text-base sm:text-lg font-medium hover:underline flex items-center gap-1"
+                  className="text-blue-600 hover:text-blue-700 text-base sm:text-lg font-medium hover:underline flex items-center gap-1 font-['Arial'] sm:font-['Comic_Sans_MS']"
                 >
                   View all {post.comments.length} comments
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,9 +254,9 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
             <div className="text-center py-2">
               <div className="flex items-center justify-center gap-2 text-gray-400 mb-1">
                 <MessageSquare size={12} />
-                <span className="text-base sm:text-lg">No comments yet</span>
+                <span className="text-base sm:text-lg font-['Arial'] sm:font-['Comic_Sans_MS']">No comments yet</span>
               </div>
-              <p className="text-base sm:text-lg text-gray-300">Be the first to comment!</p>
+              <p className="text-base sm:text-lg text-gray-300 font-['Arial'] sm:font-['Comic_Sans_MS']">Be the first to comment!</p>
             </div>
           )}
         </div>
@@ -265,11 +265,11 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
         <div className="post-card-footer p-4 border-t border-gray-100">
           {/* Stats */}
           <div className="flex items-center gap-4 mb-3">
-            <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500">
+            <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
               <Heart size={18} className="text-red-500" />
               {post.likes || 0}
             </span>
-            <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500">
+            <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
               <MessageSquare size={18} className="text-blue-500" />
               {post.comments ? post.comments.length : 0}
             </span>
@@ -285,21 +285,21 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
                 size={20} 
                 className={post.userLiked ? "text-red-500 fill-red-500" : "text-gray-400"} 
               />
-              <span className="text-lg sm:text-xl text-gray-600">Like</span>
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Like</span>
             </button>
             <button
               onClick={openPostModal}
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <MessageSquare size={20} className="text-gray-400" />
-              <span className="text-lg sm:text-xl text-gray-600">Comment</span>
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Comment</span>
             </button>
             <button
               onClick={openPostModal}
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Flag size={20} className="text-gray-400" />
-              <span className="text-lg sm:text-xl text-gray-600">Report</span>
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Report</span>
             </button>
           </div>
         </div>
