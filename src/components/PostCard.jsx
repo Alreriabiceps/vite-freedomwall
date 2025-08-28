@@ -240,6 +240,59 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
           </div>
         </LazyContent>
 
+        {/* Show at least 1 comment if available */}
+        {post.comments && post.comments.length > 0 && (
+          <button
+            onClick={openPostModal}
+            className="w-full text-left px-4 pb-3 border-t border-gray-100 bg-gray-50/30 hover:bg-gray-50/50 transition-colors duration-200 cursor-pointer"
+          >
+            <div className="pt-3">
+              {/* Comment header with icon */}
+              <div className="flex items-center gap-2 mb-3 text-xs text-gray-500 font-['Comic_Sans_MS']">
+                <MessageSquare size={14} className="text-blue-500" />
+                <span>Comments</span>
+              </div>
+              
+              {/* Show the most recent comment */}
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <svg
+                    className="w-3 h-3 text-gray-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                      {post.comments[0].name || "Anonymous"}
+                    </span>
+                    <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                      {formatDate(post.comments[0].createdAt)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 font-['Comic_Sans_MS'] line-clamp-2 leading-relaxed">
+                    {post.comments[0].message}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Show "View all comments" if there are more than 1 comment */}
+              {post.comments.length > 1 && (
+                <div className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-3 transition-colors font-['Comic_Sans_MS'] hover:underline">
+                  View all {post.comments.length} comments
+                </div>
+              )}
+            </div>
+          </button>
+        )}
+
         {/* Card Footer */}
         <div className="post-card-footer px-4 pb-4">
           {/* Stats Row */}
