@@ -1,4 +1,4 @@
-import { FileText, Shield, Users, AlertTriangle } from "lucide-react";
+import { FileText, Shield, AlertTriangle } from "lucide-react";
 
 function Terms() {
   return (

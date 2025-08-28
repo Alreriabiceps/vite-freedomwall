@@ -9,11 +9,7 @@ import {
 } from "lucide-react";
 import PostModal from "./PostModal";
 import LazyContent from "./LazyContent";
-import {
-  InteractiveCard,
-  AnimatedLikeButton,
-  AnimatedCommentButton,
-} from "./InteractiveElements";
+import { InteractiveCard } from "./InteractiveElements";
 import { getUserIdentifier } from "../utils/userIdentifier";
 
 function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
@@ -63,11 +59,6 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
         hour12: true,
       })
     );
-  };
-
-  const getMessagePreview = (message) => {
-    if (message.length <= 120) return message;
-    return message.substring(0, 120) + "...";
   };
 
   // Calculate engagement score and determine popularity
@@ -177,8 +168,16 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                <svg
+                  className="w-5 h-5 text-gray-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div>
@@ -218,8 +217,16 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
               {/* Recent Comment */}
               <div className="flex items-start gap-2">
                 <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3 h-3 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                  <svg
+                    className="w-3 h-3 text-gray-600"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -236,7 +243,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
                   </p>
                 </div>
               </div>
-              
+
               {/* View all comments button */}
               {post.comments.length > 1 && (
                 <button
@@ -244,8 +251,18 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
                   className="text-blue-600 hover:text-blue-700 text-base sm:text-lg font-medium hover:underline flex items-center gap-1 font-['Arial'] sm:font-['Comic_Sans_MS']"
                 >
                   View all {post.comments.length} comments
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               )}
@@ -254,9 +271,13 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
             <div className="text-center py-2">
               <div className="flex items-center justify-center gap-2 text-gray-400 mb-1">
                 <MessageSquare size={12} />
-                <span className="text-base sm:text-lg font-['Arial'] sm:font-['Comic_Sans_MS']">No comments yet</span>
+                <span className="text-base sm:text-lg font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  No comments yet
+                </span>
               </div>
-              <p className="text-base sm:text-lg text-gray-300 font-['Arial'] sm:font-['Comic_Sans_MS']">Be the first to comment!</p>
+              <p className="text-base sm:text-lg text-gray-300 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                Be the first to comment!
+              </p>
             </div>
           )}
         </div>
@@ -281,25 +302,33 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
               onClick={handleLike}
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <Heart 
-                size={20} 
-                className={post.userLiked ? "text-red-500 fill-red-500" : "text-gray-400"} 
+              <Heart
+                size={20}
+                className={
+                  post.userLiked ? "text-red-500 fill-red-500" : "text-gray-400"
+                }
               />
-              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Like</span>
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                Like
+              </span>
             </button>
             <button
               onClick={openPostModal}
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <MessageSquare size={20} className="text-gray-400" />
-              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Comment</span>
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                Comment
+              </span>
             </button>
             <button
               onClick={openPostModal}
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Flag size={20} className="text-gray-400" />
-              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">Report</span>
+              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                Report
+              </span>
             </button>
           </div>
         </div>

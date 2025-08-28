@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { X, Flag, AlertTriangle, CheckCircle, Shield, Users, Heart, Zap } from "lucide-react";
+import {
+  X,
+  Flag,
+  AlertTriangle,
+  CheckCircle,
+  Shield,
+  Users,
+  Zap,
+} from "lucide-react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 import { moderateContent } from "../utils/contentModeration";
 
@@ -16,43 +24,43 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
       label: "Inappropriate content",
       description: "Profanity, adult content, or unsuitable material",
       icon: Shield,
-      color: "text-red-600"
+      color: "text-red-600",
     },
     {
       value: "harassment",
       label: "Harassment or bullying",
       description: "Targeted attacks, threats, or intimidation",
       icon: Users,
-      color: "text-orange-600"
+      color: "text-orange-600",
     },
     {
       value: "violence",
       label: "Violence or threats",
       description: "Violent content, threats, or dangerous behavior",
       icon: AlertTriangle,
-      color: "text-red-700"
+      color: "text-red-700",
     },
     {
       value: "spam",
       label: "Spam or misleading",
       description: "Repetitive posts, false information, or scams",
       icon: Zap,
-      color: "text-yellow-600"
+      color: "text-yellow-600",
     },
     {
       value: "copyright",
       label: "Copyright violation",
       description: "Unauthorized use of someone else's content",
       icon: Flag,
-      color: "text-purple-600"
+      color: "text-purple-600",
     },
     {
       value: "other",
       label: "Other violation",
       description: "Other community guideline violations",
       icon: AlertTriangle,
-      color: "text-gray-600"
-    }
+      color: "text-gray-600",
+    },
   ];
 
   // Analyze post content when modal opens
@@ -75,7 +83,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
     if (diffMinutes < 60) return `${diffMinutes} min ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays <= 7) return `${diffDays - 1}d ago`;
-    
+
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -100,7 +108,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
             reason,
             details: details.trim() || undefined,
             contentAnalysis: contentAnalysis,
-            reportTimestamp: new Date().toISOString()
+            reportTimestamp: new Date().toISOString(),
           }),
         }
       );
@@ -141,7 +149,8 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
               Report Submitted
             </h3>
             <p className="text-gray-600 text-base font-['Comic_Sans_MS'] leading-relaxed">
-              Thank you for helping keep our community safe. We'll review your report and take appropriate action.
+              Thank you for helping keep our community safe. We'll review your
+              report and take appropriate action.
             </p>
           </div>
         </div>
@@ -198,7 +207,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                   </p>
                 </div>
               </div>
-              
+
               {/* Content Analysis */}
               {contentAnalysis && (
                 <div className="mt-3 p-3 bg-white rounded border-l-4 border-blue-500">
@@ -209,19 +218,25 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      contentAnalysis.category === 'safe' 
-                        ? 'bg-green-100 text-green-800' 
-                        : contentAnalysis.category === 'questionable'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {contentAnalysis.category === 'safe' ? '✅ Safe' : 
-                       contentAnalysis.category === 'questionable' ? '⚠️ Questionable' : '❌ Inappropriate'}
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        contentAnalysis.category === "safe"
+                          ? "bg-green-100 text-green-800"
+                          : contentAnalysis.category === "questionable"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {contentAnalysis.category === "safe"
+                        ? "✅ Safe"
+                        : contentAnalysis.category === "questionable"
+                        ? "⚠️ Questionable"
+                        : "❌ Inappropriate"}
                     </span>
                     {contentAnalysis.warnings.length > 0 && (
                       <span className="text-gray-600 font-['Comic_Sans_MS']">
-                        {contentAnalysis.warnings.length} warning{contentAnalysis.warnings.length !== 1 ? 's' : ''}
+                        {contentAnalysis.warnings.length} warning
+                        {contentAnalysis.warnings.length !== 1 ? "s" : ""}
                       </span>
                     )}
                   </div>
@@ -256,7 +271,9 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                       />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <reportReason.icon className={`w-4 h-4 ${reportReason.color}`} />
+                          <reportReason.icon
+                            className={`w-4 h-4 ${reportReason.color}`}
+                          />
                           <span className="font-medium text-gray-900 font-['Comic_Sans_MS']">
                             {reportReason.label}
                           </span>
@@ -299,8 +316,16 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                       Important Reminder
                     </h4>
                     <p className="text-sm text-yellow-700 font-['Comic_Sans_MS']">
-                      Only report posts that violate our community guidelines. False reports may result in account restrictions. 
-                      If you're unsure, please review our <a href="/community-guidelines" className="underline font-medium">Community Guidelines</a> first.
+                      Only report posts that violate our community guidelines.
+                      False reports may result in account restrictions. If
+                      you're unsure, please review our{" "}
+                      <a
+                        href="/community-guidelines"
+                        className="underline font-medium"
+                      >
+                        Community Guidelines
+                      </a>{" "}
+                      first.
                     </p>
                   </div>
                 </div>

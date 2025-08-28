@@ -17,8 +17,6 @@ import {
   FileText,
   ChevronDown,
   ChevronUp,
-  Mail,
-  Phone,
   Megaphone,
   User,
 } from "lucide-react";

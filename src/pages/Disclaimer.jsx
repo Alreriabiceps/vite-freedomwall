@@ -1,4 +1,4 @@
-import { AlertTriangle, Shield, Users, Info, Eye, Heart } from "lucide-react";
+import { AlertTriangle, Shield, Users } from "lucide-react";
 
 function Disclaimer() {
   return (

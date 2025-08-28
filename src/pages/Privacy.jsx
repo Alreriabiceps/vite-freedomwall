@@ -1,4 +1,4 @@
-import { Lock, Eye, Shield, Database, Users, Bell } from "lucide-react";
+import { Lock, Eye, Shield, Database, Users } from "lucide-react";
 
 function Privacy() {
   return (
