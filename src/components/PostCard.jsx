@@ -223,7 +223,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
 
         {/* Card Content */}
         <LazyContent>
-          <div className="post-card-content px-4 pb-3">
+          <div className="post-card-content px-4 py-4 min-h-[80px] flex flex-col justify-center">
             <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap line-clamp-4 font-['Comic_Sans_MS']">
               {getMessagePreview(post.message)}
             </p>
@@ -232,7 +232,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
             {post.message.length > 120 && (
               <button
                 onClick={openPostModal}
-                className="text-blue-600 hover:text-blue-700 text-base font-medium mt-2 transition-colors font-['Comic_Sans_MS']"
+                className="text-blue-600 hover:text-blue-700 text-base font-medium mt-3 transition-colors font-['Comic_Sans_MS'] hover:underline"
               >
                 Read more
               </button>
@@ -240,24 +240,94 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
           </div>
         </LazyContent>
 
-        {/* Show at least 1 comment if available */}
-        {post.comments && post.comments.length > 0 && (
-          <button
-            onClick={openPostModal}
-            className="w-full text-left px-4 pb-3 border-t border-gray-100 bg-gray-50/30 hover:bg-gray-50/50 transition-colors duration-200 cursor-pointer"
-          >
-            <div className="pt-3">
-              {/* Comment header with icon */}
-              <div className="flex items-center gap-2 mb-3 text-xs text-gray-500 font-['Comic_Sans_MS']">
-                <MessageSquare size={14} className="text-blue-500" />
-                <span>Comments</span>
+        {/* Engagement Stats - Always shown in consistent location */}
+        <div className="px-4 py-3 border-t border-gray-100 bg-gray-50/30">
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1.5">
+                <Heart size={16} className="text-red-500" />
+                {post.likes || 0}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <MessageSquare size={16} className="text-blue-500" />
+                {post.comments ? post.comments.length : 0}
+              </span>
+            </div>
+
+            {post.reportCount > 0 && (
+              <span className="flex items-center gap-1.5 text-orange-600">
+                <Flag size={14} />
+                {post.reportCount}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Comment Section - Always visible but with conditional content */}
+        <div className="border-t border-gray-100 h-[120px] flex flex-col">
+          {post.comments && post.comments.length > 0 ? (
+            /* Show comment preview if comments exist */
+            <button
+              onClick={openPostModal}
+              className="w-full h-full text-left px-4 py-3 bg-gray-50/50 hover:bg-gray-50/70 transition-colors duration-200 cursor-pointer flex flex-col justify-center"
+            >
+              <div className="pt-2">
+                {/* Comment header with icon */}
+                <div className="flex items-center gap-2 mb-3 text-xs text-gray-500 font-['Comic_Sans_MS']">
+                  <MessageSquare size={14} className="text-blue-500" />
+                  <span>Comments</span>
+                </div>
+                
+                {/* Show the most recent comment */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <svg
+                      className="w-3 h-3 text-gray-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        {post.comments[0].name || "Anonymous"}
+                      </span>
+                      <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                        {formatDate(post.comments[0].createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS'] line-clamp-2 leading-relaxed">
+                      {post.comments[0].message}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Show "View all comments" if there are more than 1 comment */}
+                {post.comments.length > 1 && (
+                  <div className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-3 transition-colors font-['Comic_Sans_MS'] hover:underline">
+                    View all {post.comments.length} comments
+                  </div>
+                )}
               </div>
-              
-              {/* Show the most recent comment */}
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+            </button>
+          ) : (
+            /* Show placeholder when no comments exist - same height as comment section */
+            <div className="w-full h-full px-4 py-3 bg-gray-50/30 flex flex-col justify-center">
+              <div className="flex items-center gap-2 text-xs text-gray-400 font-['Comic_Sans_MS']">
+                <MessageSquare size={14} className="text-gray-300" />
+                <span>No comments yet</span>
+              </div>
+              {/* Add some spacing to fill the height */}
+              <div className="mt-4">
+                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center mx-auto opacity-30">
                   <svg
-                    className="w-3 h-3 text-gray-600"
+                    className="w-3 h-3 text-gray-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -268,56 +338,17 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
                     />
                   </svg>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
-                      {post.comments[0].name || "Anonymous"}
-                    </span>
-                    <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
-                      {formatDate(post.comments[0].createdAt)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 font-['Comic_Sans_MS'] line-clamp-2 leading-relaxed">
-                    {post.comments[0].message}
-                  </p>
+                <div className="mt-2 text-xs text-gray-300 font-['Comic_Sans_MS'] text-center">
+                  Be the first to comment!
                 </div>
               </div>
-              
-              {/* Show "View all comments" if there are more than 1 comment */}
-              {post.comments.length > 1 && (
-                <div className="text-blue-600 hover:text-blue-700 text-sm font-medium mt-3 transition-colors font-['Comic_Sans_MS'] hover:underline">
-                  View all {post.comments.length} comments
-                </div>
-              )}
             </div>
-          </button>
-        )}
+          )}
+        </div>
 
-        {/* Card Footer */}
-        <div className="post-card-footer px-4 pb-4">
-          {/* Stats Row */}
-          <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1">
-                <Heart size={16} className="text-red-500" />
-                {post.likes || 0}
-              </span>
-              <span className="flex items-center gap-1">
-                <MessageSquare size={16} className="text-blue-500" />
-                {post.comments ? post.comments.length : 0}
-              </span>
-            </div>
-
-            {post.reportCount > 0 && (
-              <span className="flex items-center gap-1 text-orange-600">
-                <Flag size={14} />
-                {post.reportCount}
-              </span>
-            )}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-center gap-4 border-t border-gray-100 pt-3">
+        {/* Card Footer - Action Buttons */}
+        <div className="post-card-footer px-4 py-4 bg-gray-50/30 border-t border-gray-200">
+          <div className="flex items-center justify-center gap-4">
             <AnimatedLikeButton
               isLiked={post.userLiked}
               onClick={handleLike}
