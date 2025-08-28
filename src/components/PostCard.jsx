@@ -263,8 +263,8 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
           </div>
         </div>
 
-        {/* Comment Section - Fixed height for consistency */}
-        <div className="border-t border-gray-100 h-[80px] flex flex-col">
+        {/* Comment Section - Increased height for better balance */}
+        <div className="border-t border-gray-100 h-[90px] flex flex-col">
           {post.comments && post.comments.length > 0 ? (
             /* Show comment preview if comments exist */
             <button
@@ -349,8 +349,8 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
           )}
         </div>
 
-        {/* Card Footer - Action Buttons with better styling */}
-        <div className="post-card-footer px-3 py-2 bg-gradient-to-r from-gray-50/40 to-gray-50/60 border-t border-gray-200">
+        {/* Card Footer - Action Buttons with compact height */}
+        <div className="post-card-footer px-3 py-1.5 bg-gradient-to-r from-gray-50/40 to-gray-50/60 border-t border-gray-200">
           <div className="flex items-center justify-center gap-3">
             <AnimatedLikeButton
               isLiked={post.userLiked}
@@ -367,7 +367,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
 
             <button
               onClick={openPostModal}
-              className="flex-1 flex items-center justify-center p-1.5 hover:bg-gray-100 rounded-full transition-all duration-200 hover:scale-105 hover:shadow-sm"
+              className="flex-1 flex items-center justify-center p-1 hover:bg-gray-100 rounded-full transition-all duration-200 hover:scale-105 hover:shadow-sm"
             >
               <Flag size={16} className="text-orange-500" />
             </button>
