@@ -25,22 +25,8 @@ class WebSocketService {
       // Get the current hostname and port from the current URL
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const host = window.location.hostname;
-
-      // In production (Vercel), use the backend URL from environment or fallback
-      let wsUrl;
-      if (
-        window.location.hostname === "isfreedomwall.vercel.app" ||
-        window.location.hostname.includes("vercel.app")
-      ) {
-        // Production: use environment variable or fallback to a WebSocket service
-        const backendUrl =
-          import.meta.env.VITE_BACKEND_URL || "wss://your-backend-domain.com";
-        wsUrl = backendUrl;
-      } else {
-        // Development: use localhost:5000
-        const port = "5000";
-        wsUrl = `${protocol}//${host}:${port}`;
-      }
+      const port = "5000"; // Backend port
+      const wsUrl = `${protocol}//${host}:${port}`;
 
       console.log("Connecting to WebSocket:", wsUrl);
 
@@ -138,12 +124,85 @@ class WebSocketService {
       case "commentReaction":
       case "system":
       case "test":
-        // These are notifications - emit them to listeners
+        // These are notifications - show them as browser notifications
+        this.showBrowserNotification(data);
+
+        // Emit them to listeners
         this.emitNotification(data);
         break;
 
       default:
         console.log("Unknown message type:", data.type);
+    }
+  }
+
+  // Show browser notification for WebSocket messages
+  showBrowserNotification(data) {
+    // Check if browser notifications are supported and permitted
+    if (!("Notification" in window) || Notification.permission !== "granted") {
+      return;
+    }
+
+    try {
+      // Create notification based on message type
+      let title = "Freedom Wall Update";
+      let body = "Something new happened on the Freedom Wall!";
+
+      switch (data.type) {
+        case "newPost":
+          title = "New Post";
+          body = data.body || "Someone just shared a new anonymous post!";
+          break;
+        case "newComment":
+          title = "New Comment";
+          body = data.body || "A post received a new comment!";
+          break;
+        case "newPoll":
+          title = "New Poll";
+          body = data.body || "A new poll has been created!";
+          break;
+        case "pollResults":
+          title = "Poll Results";
+          body = data.body || "Poll results are in!";
+          break;
+        case "newAnnouncement":
+          title = "New Announcement";
+          body = data.body || "Important announcement from the Freedom Wall!";
+          break;
+        case "postLike":
+          title = "Post Liked";
+          body = data.body || "Someone liked a post!";
+          break;
+        case "test":
+          title = "Test Notification";
+          body =
+            data.body || "This is a test notification from the Freedom Wall!";
+          break;
+        default:
+          title = data.title || title;
+          body = data.body || body;
+      }
+
+      const notification = new Notification(title, {
+        body: body,
+        icon: "/image.png",
+        tag: data.type || "freedom-wall",
+      });
+
+      // Auto-close after 5 seconds
+      setTimeout(() => {
+        notification.close();
+      }, 5000);
+
+      // Handle notification click
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+
+      console.log("Browser notification shown:", { title, body });
+    } catch (error) {
+      console.error("Error showing browser notification:", error);
     }
   }
 
@@ -162,76 +221,6 @@ class WebSocketService {
           console.error("Error in notification listener:", error);
         }
       });
-    }
-  }
-
-  // Show browser notification
-  showBrowserNotification(notification) {
-    if (!("Notification" in window) || Notification.permission !== "granted") {
-      return;
-    }
-
-    try {
-      const browserNotification = new Notification(notification.title, {
-        body: notification.body,
-        icon: "/image.png",
-        badge: "/image.png",
-        tag: `notification-${notification.type}`,
-        requireInteraction: false,
-        data: notification.data,
-      });
-
-      // Auto-close after 8 seconds
-      setTimeout(() => {
-        browserNotification.close();
-      }, 8000);
-
-      // Handle notification click
-      browserNotification.onclick = () => {
-        window.focus();
-        browserNotification.close();
-
-        // Navigate to relevant content based on notification type
-        this.handleNotificationClick(notification);
-      };
-    } catch (error) {
-      console.error("Error showing browser notification:", error);
-    }
-  }
-
-  // Handle notification click
-  handleNotificationClick(notification) {
-    switch (notification.type) {
-      case "newPost":
-      case "newComment":
-        // Navigate to the post
-        if (notification.data.postId) {
-          window.location.href = `/?scrollTo=${notification.data.postId}`;
-        }
-        break;
-
-      case "newPoll":
-      case "pollResults":
-        // Navigate to polls section
-        window.location.href = "/create-poll";
-        break;
-
-      case "newAnnouncement":
-        // Could show announcements modal or navigate to announcements
-        break;
-
-      case "postLike":
-      case "postReport":
-      case "commentReaction":
-        // Navigate to the post
-        if (notification.data.postId) {
-          window.location.href = `/?scrollTo=${notification.data.postId}`;
-        }
-        break;
-
-      default:
-        // Default behavior - just focus the window
-        break;
     }
   }
 
