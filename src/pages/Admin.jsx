@@ -75,6 +75,28 @@ function Admin() {
   const [contactStatusFilter, setContactStatusFilter] = useState("all");
   const [contactSortBy, setContactSortBy] = useState("newest");
 
+  // Hide user navigation elements when admin page loads
+  useEffect(() => {
+    // Hide navigation elements
+    const navbar = document.querySelector("[data-navbar]");
+    const bottomNav = document.querySelector("[data-bottom-nav]");
+    const footer = document.querySelector("[data-footer]");
+    const ads = document.querySelectorAll("[data-ad-container]");
+
+    if (navbar) navbar.style.display = "none";
+    if (bottomNav) bottomNav.style.display = "none";
+    if (footer) footer.style.display = "none";
+    ads.forEach((ad) => (ad.style.display = "none"));
+
+    // Cleanup function to restore navigation when component unmounts
+    return () => {
+      if (navbar) navbar.style.display = "";
+      if (bottomNav) bottomNav.style.display = "";
+      if (footer) footer.style.display = "";
+      ads.forEach((ad) => (ad.style.display = ""));
+    };
+  }, []);
+
   // Check if already authenticated
   useEffect(() => {
     const savedKey = localStorage.getItem("adminKey");

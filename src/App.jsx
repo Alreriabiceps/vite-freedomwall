@@ -21,10 +21,7 @@ import "./App.css";
 import { useEffect } from "react";
 import websocketService from "./services/websocketService";
 import { getUserIdentifier } from "./utils/userIdentifier";
-import {
-  getNotificationSettings,
-  hasNotificationPermission,
-} from "./utils/notifications";
+import { hasNotificationPermission } from "./utils/notifications";
 
 function App() {
   // Initialize WebSocket connection when app loads
@@ -32,10 +29,17 @@ function App() {
     // Check if user has notification permission
     if (hasNotificationPermission()) {
       const userId = getUserIdentifier();
-      const settings = getNotificationSettings();
 
       // Connect to WebSocket for real-time notifications
-      websocketService.connect(userId, settings);
+      websocketService.connect(userId, {
+        enabled: true,
+        newPosts: true,
+        comments: true,
+        polls: true,
+        announcements: true,
+        postLike: true,
+        commentReactions: true,
+      });
 
       console.log(
         "WebSocket connection initialized for real-time notifications"

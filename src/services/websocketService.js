@@ -25,8 +25,22 @@ class WebSocketService {
       // Get the current hostname and port from the current URL
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const host = window.location.hostname;
-      const port = "5000"; // Backend port
-      const wsUrl = `${protocol}//${host}:${port}`;
+
+      // In production (Vercel), use the backend URL from environment or fallback
+      let wsUrl;
+      if (
+        window.location.hostname === "isfreedomwall.vercel.app" ||
+        window.location.hostname.includes("vercel.app")
+      ) {
+        // Production: use environment variable or fallback to a WebSocket service
+        const backendUrl =
+          import.meta.env.VITE_BACKEND_URL || "wss://your-backend-domain.com";
+        wsUrl = backendUrl;
+      } else {
+        // Development: use localhost:5000
+        const port = "5000";
+        wsUrl = `${protocol}//${host}:${port}`;
+      }
 
       console.log("Connecting to WebSocket:", wsUrl);
 

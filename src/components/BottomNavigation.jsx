@@ -79,6 +79,7 @@ function BottomNavigation() {
     <>
       {/* Bottom Navigation */}
       <motion.nav
+        data-bottom-nav
         className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg md:hidden"
         initial={{ y: 100 }}
         animate={{ y: isVisible ? 0 : 100 }}

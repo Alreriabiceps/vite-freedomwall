@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { Bell, X, CheckCircle, Smartphone, Monitor, Zap } from "lucide-react";
+import { Bell, X, CheckCircle, Zap } from "lucide-react";
 import {
   shouldShowNotificationPrompt,
   getNotificationPromptMessage,
   requestNotificationPermission,
-  markNotificationPermissionAsked,
-  isMobileDevice,
 } from "../utils/notifications";
 import "./NotificationPrompt.css";
 
@@ -16,7 +14,7 @@ function NotificationPrompt() {
   const [promptMessage, setPromptMessage] = useState(null);
 
   useEffect(() => {
-    // Check if we should show the prompt
+    // Simple check - show prompt if permission not set
     if (shouldShowNotificationPrompt()) {
       setPromptMessage(getNotificationPromptMessage());
       setShowPrompt(true);
@@ -52,13 +50,6 @@ function NotificationPrompt() {
   };
 
   const handleDismiss = () => {
-    markNotificationPermissionAsked();
-    setShowPrompt(false);
-  };
-
-  const handleLater = () => {
-    // Mark as asked but don't hide - user can still enable later
-    markNotificationPermissionAsked();
     setShowPrompt(false);
   };
 
@@ -66,9 +57,9 @@ function NotificationPrompt() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
-        {/* Header with gradient */}
-        <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -79,9 +70,7 @@ function NotificationPrompt() {
                   {promptMessage.title}
                 </h2>
                 <p className="text-blue-100 text-sm font-['Comic_Sans_MS']">
-                  {isMobileDevice()
-                    ? "Mobile Experience"
-                    : "Desktop Experience"}
+                  Stay updated with your community
                 </p>
               </div>
             </div>
@@ -112,17 +101,6 @@ function NotificationPrompt() {
             ))}
           </div>
 
-          {/* Device-specific icon */}
-          <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
-              {isMobileDevice() ? (
-                <Smartphone size={32} className="text-blue-600" />
-              ) : (
-                <Monitor size={32} className="text-purple-600" />
-              )}
-            </div>
-          </div>
-
           {/* Action buttons */}
           {requestResult === null && (
             <div className="space-y-3">
@@ -145,7 +123,7 @@ function NotificationPrompt() {
               </button>
 
               <button
-                onClick={handleLater}
+                onClick={handleDismiss}
                 className="w-full text-gray-500 hover:text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors font-['Comic_Sans_MS']"
               >
                 Maybe Later
