@@ -47,6 +47,8 @@ function NotificationSettings() {
 
   const handleTestRealTime = async () => {
     try {
+      console.log("Testing real-time notification...");
+
       const response = await fetch("/api/v1/posts/test-notification", {
         method: "POST",
         headers: {
@@ -57,15 +59,27 @@ function NotificationSettings() {
         }),
       });
 
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+
       if (response.ok) {
+        const result = await response.json();
+        console.log("Test notification result:", result);
         setTestResult("success");
         setTimeout(() => setTestResult(null), 3000);
       } else {
+        const errorText = await response.text();
+        console.error("Test notification failed:", response.status, errorText);
         setTestResult("error");
         setTimeout(() => setTestResult(null), 3000);
       }
     } catch (error) {
       console.error("Error testing real-time notification:", error);
+      console.error("Error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      });
       setTestResult("error");
       setTimeout(() => setTestResult(null), 3000);
     }
