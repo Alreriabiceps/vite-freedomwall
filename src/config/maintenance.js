@@ -29,13 +29,11 @@ export const getMaintenanceMessage = () => {
     const maintenance = localStorage.getItem("maintenanceMode");
     if (maintenance) {
       const config = JSON.parse(maintenance);
-      return (
-        config.message || "We're doing some maintenance and will be back soon!"
-      );
+      return config.message || "We're working hard to improve your experience!";
     }
-    return "We're doing some maintenance and will be back soon!";
+    return "We're working hard to improve your experience!";
   } catch {
-    return "We're doing some maintenance and will be back soon!";
+    return "We're working hard to improve your experience!";
   }
 };
 

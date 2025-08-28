@@ -102,7 +102,7 @@ function Admin() {
     const config = getMaintenanceConfig();
     if (config) {
       setMaintenanceMessage(
-        config.message || "We're doing some maintenance and will be back soon!"
+        config.message || "We're working hard to improve your experience!"
       );
       setMaintenanceEndTime(
         config.estimatedEndTime ? config.estimatedEndTime.replace(" ", "T") : ""
@@ -895,7 +895,7 @@ function Admin() {
         enabled: newStatus,
         message:
           maintenanceMessage ||
-          "We're doing some maintenance and will be back soon!",
+          "We're working hard to improve your experience!",
         endTime: maintenanceEndTime
           ? maintenanceEndTime.replace("T", " ")
           : null,
@@ -906,8 +906,7 @@ function Admin() {
     if (newStatus) {
       alert(
         `✅ Maintenance mode ENABLED!\n\n💬 Message: "${
-          maintenanceMessage ||
-          "We're doing some maintenance and will be back soon!"
+          maintenanceMessage || "We're working hard to improve your experience!"
         }"\n📅 End Time: ${
           maintenanceEndTime || "Not set"
         }\n\n🔄 To make this permanent, rebuild and deploy your app.\n\n💡 Users will now see the maintenance page!`
@@ -945,9 +944,7 @@ function Admin() {
   };
 
   const resetMaintenanceSettings = () => {
-    setMaintenanceMessage(
-      "We're doing some maintenance and will be back soon!"
-    );
+    setMaintenanceMessage("We're working hard to improve your experience!");
     setMaintenanceEndTime("");
     alert("Maintenance settings reset to default values.");
   };
