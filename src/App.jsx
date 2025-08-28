@@ -38,7 +38,7 @@ function App() {
           <MaintenanceWrapper>
             <AnimatePresence mode="wait">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/admin" element={<Home />} />
                 <Route path="/create" element={<Create />} />
                 <Route path="/create-poll" element={<CreatePoll />} />
                 <Route path="/about" element={<About />} />
@@ -51,7 +51,7 @@ function App() {
                   element={<CommunityGuidelines />}
                 />
                 <Route path="/buy-me-a-coffee" element={<BuyMeACoffee />} />
-                <Route path="/admin" element={<Admin />} />
+                <Route path="/admins" element={<Admin />} />
               </Routes>
             </AnimatePresence>
           </MaintenanceWrapper>
