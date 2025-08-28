@@ -168,6 +168,13 @@ function Create() {
                 Freedom Wall.
               </p>
             </div>
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-blue-800 text-sm font-['Comic_Sans_MS']">
+                💕 Remember: Spread love and kindness! Use your freedom to
+                inspire, not to harm others. Let's make our community a better
+                place together.
+              </p>
+            </div>
           </div>
         )}
 

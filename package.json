@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "maintenance:enable": "node scripts/toggle-maintenance.js enable",
+    "maintenance:disable": "node scripts/toggle-maintenance.js disable",
+    "maintenance:status": "node scripts/toggle-maintenance.js status",
+    "maintenance:help": "node scripts/toggle-maintenance.js help"
   },
   "dependencies": {
     "framer-motion": "^12.23.12",

@@ -864,50 +864,67 @@ function Admin() {
   const filteredContacts = getFilteredContacts();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Mobile Sidebar Toggle */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 bg-white rounded-lg shadow-lg border border-gray-200"
+          className="p-3 bg-white rounded-lg shadow-lg border border-gray-200 touch-manipulation"
+          aria-label="Toggle sidebar"
         >
           {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 w-80 sm:w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
-                <Shield className="text-white" size={24} />
+          <div className="p-4 md:p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                  <Shield className="text-white" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-base md:text-lg font-bold text-gray-900 font-['Comic_Sans_MS']">
+                    Admin Panel
+                  </h2>
+                  <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    IS Freedom Wall
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-bold text-gray-900 font-['Comic_Sans_MS']">
-                  Admin Panel
-                </h2>
-                <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
-                  IS Freedom Wall
-                </p>
-              </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
             </div>
           </div>
 
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-3 md:p-4 space-y-2">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] ${
+              className={`w-full flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] text-sm md:text-base ${
                 activeTab === "dashboard"
                   ? "bg-red-100 text-red-700 border-r-2 border-red-500"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
             >
-              <BarChart3 size={20} />
+              <BarChart3 size={18} />
               <span>Dashboard</span>
             </button>
             <button
@@ -1019,10 +1036,10 @@ function Admin() {
             </button>
           </nav>
 
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-3 md:p-4 border-t border-gray-200">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-['Comic_Sans_MS']"
+              className="w-full flex items-center justify-center space-x-2 px-3 md:px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-['Comic_Sans_MS'] text-sm md:text-base"
             >
               <LogOut size={18} />
               <span>Logout</span>
@@ -1033,9 +1050,9 @@ function Admin() {
 
       {/* Main Content */}
       <div className="lg:ml-64 min-h-screen">
-        <div className="p-6">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+        <div className="p-4 md:p-6 pb-20 lg:pb-6">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 font-['Comic_Sans_MS']">
               {activeTab === "dashboard" && "Dashboard"}
               {activeTab === "all-posts" && "All Posts"}
               {activeTab === "reported" && "Reported Posts"}
@@ -1045,7 +1062,7 @@ function Admin() {
               {activeTab === "announcements" && "Announcements"}
               {activeTab === "contact-messages" && "Contact Messages"}
             </h1>
-            <p className="text-gray-600 text-lg font-['Comic_Sans_MS']">
+            <p className="text-gray-600 text-base md:text-lg font-['Comic_Sans_MS']">
               {activeTab === "dashboard" && "Overview and statistics"}
               {activeTab === "all-posts" && "Manage all posts and comments"}
               {activeTab === "reported" &&
@@ -1061,19 +1078,19 @@ function Admin() {
           </div>
 
           {activeTab === "dashboard" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
+                    <p className="text-xs md:text-sm text-gray-600 font-['Comic_Sans_MS']">
                       Total Posts
                     </p>
-                    <p className="text-3xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+                    <p className="text-2xl md:text-3xl font-bold text-gray-900 font-['Comic_Sans_MS']">
                       {filteredPosts.length}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <MessageCircle className="text-blue-600" size={24} />
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <MessageCircle className="text-blue-600" size={20} />
                   </div>
                 </div>
               </div>
@@ -1228,22 +1245,22 @@ function Admin() {
                           placeholder="Search posts by content or author..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
+                          className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS'] text-sm"
                         />
                       </div>
                     </div>
 
                     {/* Filters Row */}
-                    <div className="flex flex-wrap items-center gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-center gap-3 md:gap-4">
                       {/* Status Filter */}
-                      <div className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                           Status:
                         </label>
                         <select
                           value={statusFilter}
                           onChange={(e) => setStatusFilter(e.target.value)}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                          className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                         >
                           <option value="all">All Status</option>
                           <option value="flagged">Flagged</option>
@@ -1253,14 +1270,14 @@ function Admin() {
                       </div>
 
                       {/* Type Filter */}
-                      <div className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                           Type:
                         </label>
                         <select
                           value={typeFilter}
                           onChange={(e) => setTypeFilter(e.target.value)}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                          className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                         >
                           <option value="all">All Types</option>
                           <option value="withComments">With Comments</option>
@@ -1270,14 +1287,14 @@ function Admin() {
                       </div>
 
                       {/* Sort By */}
-                      <div className="flex items-center gap-2">
-                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                           Sort:
                         </label>
                         <select
                           value={sortBy}
                           onChange={(e) => setSortBy(e.target.value)}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                          className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                         >
                           <option value="newest">Newest First</option>
                           <option value="oldest">Oldest First</option>
@@ -1299,7 +1316,7 @@ function Admin() {
                             setTypeFilter("all");
                             setSortBy("newest");
                           }}
-                          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                          className="w-full sm:w-auto px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
                         >
                           Clear Filters
                         </button>
@@ -1312,40 +1329,40 @@ function Admin() {
                       No posts found
                     </p>
                   ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-4 md:space-y-6">
                       {filteredPosts.map((post) => (
                         <div
                           key={post._id}
-                          className={`border border-gray-200 rounded-xl p-6 ${
+                          className={`border border-gray-200 rounded-xl p-4 md:p-6 ${
                             post.isHidden ? "bg-gray-50 opacity-75" : "bg-white"
                           }`}
                         >
-                          <div className="flex items-start justify-between mb-4">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                             <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                                <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS'] text-base">
                                   {post.name || "Anonymous"}
                                 </h3>
-                                <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                                <span className="text-xs sm:text-sm text-gray-500 font-['Comic_Sans_MS']">
                                   {formatDate(post.createdAt)}
                                 </span>
                                 {post.isFlagged && (
-                                  <span className="flex items-center gap-1 text-orange-600 text-sm">
+                                  <span className="flex items-center gap-1 text-orange-600 text-xs sm:text-sm">
                                     <Flag size={14} />
                                     Flagged ({post.reportCount} reports)
                                   </span>
                                 )}
                                 {post.isHidden && (
-                                  <span className="flex items-center gap-1 text-red-600 text-sm">
+                                  <span className="flex items-center gap-1 text-red-600 text-xs sm:text-sm">
                                     <EyeOff size={14} />
                                     Hidden
                                   </span>
                                 )}
                               </div>
-                              <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-lg">
+                              <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-base md:text-lg">
                                 {post.message}
                               </p>
-                              <div className="flex items-center gap-4 text-sm text-gray-500 font-['Comic_Sans_MS']">
+                              <div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs sm:text-sm text-gray-500 font-['Comic_Sans_MS']">
                                 <span className="flex items-center gap-1">
                                   <Heart size={14} />
                                   {post.likes} likes
@@ -1363,13 +1380,13 @@ function Admin() {
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-2 ml-4">
+                            <div className="flex items-center gap-2 sm:ml-4">
                               {post.isHidden ? (
                                 <button
                                   onClick={() =>
                                     handleModerate(post._id, "unhide")
                                   }
-                                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                  className="p-2 md:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                   title="Unhide post"
                                 >
                                   <Eye size={16} />
@@ -1379,7 +1396,7 @@ function Admin() {
                                   onClick={() =>
                                     handleModerate(post._id, "hide")
                                   }
-                                  className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                  className="p-2 md:p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                                   title="Hide post"
                                 >
                                   <EyeOff size={16} />
@@ -1390,7 +1407,7 @@ function Admin() {
                                   onClick={() =>
                                     handleModerate(post._id, "unflag")
                                   }
-                                  className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                  className="p-2 md:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                   title="Unflag post"
                                 >
                                   <Shield size={16} />
@@ -1400,7 +1417,7 @@ function Admin() {
                                 onClick={() =>
                                   handleModerate(post._id, "delete")
                                 }
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 md:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Delete post"
                               >
                                 <Trash2 size={16} />
@@ -1427,10 +1444,10 @@ function Admin() {
                                   {post.comments.map((comment, index) => (
                                     <div
                                       key={index}
-                                      className="flex items-start justify-between bg-gray-50 rounded-lg p-3"
+                                      className="flex flex-col sm:flex-row sm:items-start sm:justify-between bg-gray-50 rounded-lg p-3 gap-2"
                                     >
                                       <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-1">
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
                                           <span className="font-semibold text-gray-900 text-sm font-['Comic_Sans_MS']">
                                             {comment.name || "Anonymous"}
                                           </span>
@@ -1446,7 +1463,7 @@ function Admin() {
                                         onClick={() =>
                                           handleDeleteComment(post._id, index)
                                         }
-                                        className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors ml-2"
+                                        className="self-end sm:self-auto p-1 text-red-500 hover:bg-red-50 rounded transition-colors sm:ml-2"
                                         title="Delete comment"
                                       >
                                         <Trash2 size={14} />
@@ -1465,14 +1482,14 @@ function Admin() {
               )}
 
             {activeTab === "announcements" && (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
                     Announcements
                   </h2>
                   <button
                     onClick={() => setShowCreateForm(true)}
-                    className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                    className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
                   >
                     Create Announcement
                   </button>
@@ -1496,10 +1513,10 @@ function Admin() {
                   </div>
 
                   {/* Filters Row */}
-                  <div className="flex flex-wrap items-center gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-center gap-3 md:gap-4">
                     {/* Type Filter */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                         Type:
                       </label>
                       <select
@@ -1507,7 +1524,7 @@ function Admin() {
                         onChange={(e) =>
                           setAnnouncementTypeFilter(e.target.value)
                         }
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                       >
                         <option value="all">All Types</option>
                         <option value="info">Info</option>
@@ -1518,8 +1535,8 @@ function Admin() {
                     </div>
 
                     {/* Status Filter */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                         Status:
                       </label>
                       <select
@@ -1527,7 +1544,7 @@ function Admin() {
                         onChange={(e) =>
                           setAnnouncementStatusFilter(e.target.value)
                         }
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                       >
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
@@ -1536,14 +1553,14 @@ function Admin() {
                     </div>
 
                     {/* Sort By */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                         Sort:
                       </label>
                       <select
                         value={announcementSortBy}
                         onChange={(e) => setAnnouncementSortBy(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                       >
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
@@ -1563,7 +1580,7 @@ function Admin() {
                           setAnnouncementStatusFilter("all");
                           setAnnouncementSortBy("newest");
                         }}
-                        className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
                       >
                         Clear Filters
                       </button>
@@ -1572,8 +1589,8 @@ function Admin() {
                 </div>
 
                 {showCreateForm && (
-                  <div className="mb-8 p-6 bg-orange-50 border border-orange-200 rounded-xl">
-                    <h3 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS'] mb-4">
+                  <div className="mb-8 p-4 md:p-6 bg-orange-50 border border-orange-200 rounded-xl">
+                    <h3 className="text-lg md:text-xl font-bold text-gray-900 font-['Comic_Sans_MS'] mb-4">
                       Create New Announcement
                     </h3>
                     <form
@@ -1591,7 +1608,7 @@ function Admin() {
                             onChange={(e) =>
                               handleInputChange("title", e.target.value)
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                             placeholder="Announcement title"
                             required
                             maxLength={200}
@@ -1606,7 +1623,7 @@ function Admin() {
                             onChange={(e) =>
                               handleInputChange("type", e.target.value)
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                           >
                             <option value="info">Info</option>
                             <option value="warning">Warning</option>
@@ -1663,17 +1680,17 @@ function Admin() {
                         />
                       </div>
 
-                      <div className="flex items-center gap-3 pt-4">
+                      <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
                         <button
                           type="submit"
-                          className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                          className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
                         >
                           Create Announcement
                         </button>
                         <button
                           type="button"
                           onClick={() => setShowCreateForm(false)}
-                          className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                          className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
                         >
                           Cancel
                         </button>
@@ -1687,17 +1704,17 @@ function Admin() {
                     No announcements found
                   </p>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4 md:space-y-6">
                     {filteredAnnouncements.map((announcement) => (
                       <div
                         key={announcement._id}
-                        className={`border border-gray-200 rounded-xl p-6 ${
+                        className={`border border-gray-200 rounded-xl p-4 md:p-6 ${
                           announcement.isActive ? "bg-green-50" : "bg-gray-50"
                         }`}
                       >
-                        <div className="flex items-start justify-between mb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2 flex-wrap">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2 flex-wrap">
                               <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
                                 {announcement.title}
                               </h3>
