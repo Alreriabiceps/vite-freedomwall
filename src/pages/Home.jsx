@@ -9,6 +9,7 @@ import {
   BarChart3,
   TrendingUp,
   Clock,
+  Coffee,
 } from "lucide-react";
 import PostCard from "../components/PostCard";
 import PollCard from "../components/PollCard";
@@ -478,6 +479,18 @@ function Home() {
               >
                 <BarChart3 size={18} />
                 Create Poll
+              </a>
+            </div>
+          </SlideIn>
+          
+          <SlideIn direction="up" delay={1.6}>
+            <div className="text-center mt-6">
+              <a
+                href="/buy-me-a-coffee"
+                className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-700 font-medium font-['Comic_Sans_MS'] transition-colors hover:underline"
+              >
+                <Coffee size={16} />
+                Support the project
               </a>
             </div>
           </SlideIn>

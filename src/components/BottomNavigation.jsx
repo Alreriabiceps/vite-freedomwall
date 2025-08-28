@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, PenTool, BarChart3, Info, Mail, Menu, X } from "lucide-react";
+import { Home, PenTool, BarChart3, Info, Mail, Menu, X, Coffee } from "lucide-react";
 
 function BottomNavigation() {
   const location = useLocation();
@@ -42,6 +42,7 @@ function BottomNavigation() {
   const moreMenuItems = [
     { to: "/about", label: "About", icon: Info, color: "text-orange-600" },
     { to: "/contact", label: "Contact", icon: Mail, color: "text-red-600" },
+    { to: "/buy-me-a-coffee", label: "Support", icon: Coffee, color: "text-amber-600" },
   ];
 
   const quickActions = moreMenuItems.map((item) => ({
@@ -177,7 +178,7 @@ function BottomNavigation() {
                       <motion.button
                         key={action.label}
                         onClick={action.action}
-                        className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
+                        className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 relative"
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.95 }}
                         initial={{ opacity: 0, y: 20 }}
@@ -188,6 +189,11 @@ function BottomNavigation() {
                         <span className="text-xs font-medium text-gray-700">
                           {action.label}
                         </span>
+                        {action.label === "Support" && (
+                          <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                            ♥
+                          </span>
+                        )}
                       </motion.button>
                     );
                   })}

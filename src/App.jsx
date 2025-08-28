@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import SimpleNavbar from "./components/SimpleNavbar";
 import BottomNavigation from "./components/BottomNavigation";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
 import CreatePoll from "./pages/CreatePoll";
@@ -10,12 +11,13 @@ import Contact from "./pages/Contact";
 import Disclaimer from "./pages/Disclaimer";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import BuyMeACoffee from "./pages/BuyMeACoffee";
 import Admin from "./pages/Admin";
 import "./App.css";
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="App">
         <SimpleNavbar />
         <main className="pb-20 md:pb-0">
@@ -29,10 +31,12 @@ function App() {
               <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/buy-me-a-coffee" element={<BuyMeACoffee />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>
           </AnimatePresence>
         </main>
+        <Footer />
         <BottomNavigation />
       </div>
     </Router>
