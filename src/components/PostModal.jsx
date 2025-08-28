@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   X,
   Heart,
@@ -10,8 +10,6 @@ import {
   Shield,
   ChevronDown,
   ChevronUp,
-  ThumbsUp,
-  ThumbsDown,
 } from "lucide-react";
 import CommentModal from "./CommentModal";
 import ReportModal from "./ReportModal";
@@ -30,96 +28,6 @@ function PostModal({
   const [showCommentModal, setShowCommentModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
-  const [commentReactions, setCommentReactions] = useState({});
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
-
-  // Initialize comment reactions when post changes
-  useEffect(() => {
-    if (post?.comments) {
-      const initialReactions = {};
-      post.comments.forEach((comment, index) => {
-        initialReactions[index] = {
-          thumbsUp: comment.thumbsUp || 0,
-          thumbsDown: comment.thumbsDown || 0,
-          userThumbsUp: comment.userThumbsUp || false,
-          userThumbsDown: comment.userThumbsDown || false,
-        };
-      });
-      setCommentReactions(initialReactions);
-    }
-  }, [post]);
-
-  const handleThumbsUp = (commentIndex) => {
-    setCommentReactions(prev => {
-      const current = prev[commentIndex] || { thumbsUp: 0, thumbsDown: 0, userThumbsUp: false, userThumbsDown: false };
-      
-      if (current.userThumbsUp) {
-        // User already thumbs up, remove it
-        return {
-          ...prev,
-          [commentIndex]: {
-            ...current,
-            thumbsUp: Math.max(0, current.thumbsUp - 1),
-            userThumbsUp: false,
-          }
-        };
-      } else {
-        // Add thumbs up, remove thumbs down if exists
-        return {
-          ...prev,
-          [commentIndex]: {
-            ...current,
-            thumbsUp: current.thumbsUp + 1,
-            thumbsDown: current.userThumbsDown ? Math.max(0, current.thumbsDown - 1) : current.thumbsDown,
-            userThumbsUp: true,
-            userThumbsDown: false,
-          }
-        };
-      }
-    });
-  };
-
-  const handleThumbsDown = (commentIndex) => {
-    setCommentReactions(prev => {
-      const current = prev[commentIndex] || { thumbsUp: 0, thumbsDown: 0, userThumbsUp: false, userThumbsDown: false };
-      
-      if (current.userThumbsDown) {
-        // User already thumbs down, remove it
-        return {
-          ...prev,
-          [commentIndex]: {
-            ...current,
-            thumbsDown: Math.max(0, current.thumbsDown - 1),
-            userThumbsDown: false,
-          }
-        };
-      } else {
-        // Add thumbs down, remove thumbs up if exists
-        return {
-          ...prev,
-          [commentIndex]: {
-            ...current,
-            thumbsDown: current.thumbsDown + 1,
-            thumbsUp: current.userThumbsUp ? Math.max(0, current.thumbsUp - 1) : current.thumbsUp,
-            userThumbsDown: true,
-            userThumbsUp: false,
-          }
-        };
-      }
-    });
-  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -238,7 +146,7 @@ function PostModal({
           </div>
 
           {/* Post Content */}
-          <div className="flex-1 overflow-y-auto pb-20 sm:pb-6">
+          <div className="flex-1 overflow-y-auto">
             <div className="p-4 sm:p-6">
               {/* Post Header with Avatar */}
               <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -414,38 +322,6 @@ function PostModal({
                             <p className="text-gray-700 text-base font-['Comic_Sans_MS'] leading-relaxed whitespace-pre-wrap">
                               {comment.message}
                             </p>
-                            
-                            {/* Comment Reactions - Only Thumbs Up/Down */}
-                            <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-200">
-                              <button 
-                                onClick={() => handleThumbsUp(index)}
-                                className={`flex items-center gap-1 text-sm transition-colors touch-manipulation ${
-                                  commentReactions[index]?.userThumbsUp 
-                                    ? 'text-green-600' 
-                                    : 'text-gray-500 hover:text-green-500'
-                                }`}
-                              >
-                                <ThumbsUp 
-                                  size={16} 
-                                  className={commentReactions[index]?.userThumbsUp ? 'fill-current' : ''}
-                                />
-                                <span>{commentReactions[index]?.thumbsUp || 0}</span>
-                              </button>
-                              <button 
-                                onClick={() => handleThumbsDown(index)}
-                                className={`flex items-center gap-1 text-sm transition-colors touch-manipulation ${
-                                  commentReactions[index]?.userThumbsDown 
-                                    ? 'text-orange-600' 
-                                    : 'text-gray-500 hover:text-orange-500'
-                                }`}
-                              >
-                                <ThumbsDown 
-                                  size={16} 
-                                  className={commentReactions[index]?.userThumbsDown ? 'fill-current' : ''}
-                                />
-                                <span>{commentReactions[index]?.thumbsDown || 0}</span>
-                              </button>
-                            </div>
                           </div>
 
                           {isAdmin && (

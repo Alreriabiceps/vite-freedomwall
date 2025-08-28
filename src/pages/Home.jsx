@@ -24,6 +24,7 @@ import {
   SlideIn,
 } from "../components/AnimatedComponents";
 import TextType from "../components/TextAnimations/TextType/TextType";
+import AdSense from "../components/AdSense";
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -419,13 +420,25 @@ function Home() {
           </StaggerItem>
         ) : (
           <div className="post-grid">
-            {posts.map((post) => (
+            {posts.map((post, index) => (
               <StaggerItem key={post._id}>
                 <PostCard
                   post={post}
                   onLike={handleLike}
                   onReport={handleReport}
                 />
+                
+                {/* Inline Ad every 3 posts */}
+                {index > 0 && (index + 1) % 3 === 0 && (
+                  <div className="col-span-full my-6">
+                    <AdSense 
+                      adSlot={`inline-${Math.floor(index / 3)}`}
+                      adFormat="auto"
+                      className="w-full"
+                      style={{ minHeight: '250px' }}
+                    />
+                  </div>
+                )}
               </StaggerItem>
             ))}
 
