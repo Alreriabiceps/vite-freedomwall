@@ -13,7 +13,7 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.message.trim() || !formData.name.trim()) return;
+    if (!formData.message || !formData.name) return;
 
     setIsSubmitting(true);
     setSubmitStatus(null);
@@ -161,7 +161,6 @@ function Contact() {
                   onChange={handleInputChange}
                   placeholder="Your nickname"
                   className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
-                  required
                 />
               </div>
 
@@ -184,7 +183,6 @@ function Contact() {
                   onChange={handleInputChange}
                   placeholder="What's this about?"
                   className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
-                  required
                 />
               </div>
 
@@ -207,7 +205,6 @@ function Contact() {
                   placeholder="Tell us what you'd like to discuss..."
                   rows={6}
                   className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 resize-none font-['Comic_Sans_MS'] text-sm md:text-base"
-                  required
                 />
               </div>
 

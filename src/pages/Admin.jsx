@@ -1609,7 +1609,6 @@ function Admin() {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                             placeholder="Announcement title"
                             required
-                            maxLength={200}
                           />
                         </div>
                         <div>
@@ -1658,7 +1657,6 @@ function Admin() {
                           placeholder="Announcement message"
                           rows={4}
                           required
-                          maxLength={1000}
                         />
                       </div>
 
@@ -1674,7 +1672,6 @@ function Admin() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                           placeholder="Internal notes for admins"
                           rows={2}
-                          maxLength={500}
                         />
                       </div>
 

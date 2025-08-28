@@ -18,7 +18,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
     if (diffMinutes < 60) return `${diffMinutes} min ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays <= 7) return `${diffDays - 1}d ago`;
-    
+
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -28,7 +28,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.message.trim()) return;
+    if (!formData.message) return;
 
     setIsSubmitting(true);
     try {
@@ -118,7 +118,6 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
                 onChange={handleInputChange}
                 placeholder="Anonymous or your name"
                 className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-base transition-all duration-200"
-                maxLength={100}
               />
             </div>
 
@@ -140,19 +139,14 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
                 onChange={handleInputChange}
                 placeholder="Share your thoughts..."
                 rows={6}
-                required
                 className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-base resize-none transition-all duration-200"
-                maxLength={500}
               />
-              <div className="mt-2 text-sm text-gray-500 text-right">
-                {formData.message.length}/500
-              </div>
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting || !formData.message.trim()}
+              disabled={isSubmitting || !formData.message}
               className="w-full py-4 px-6 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 touch-manipulation text-base font-['Comic_Sans_MS'] flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
@@ -175,5 +169,3 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
 }
 
 export default CommentModal;
-
-

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   X,
   Flag,
@@ -9,14 +9,12 @@ import {
   Zap,
 } from "lucide-react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
-import { moderateContent } from "../utils/contentModeration";
 
 function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [contentAnalysis, setContentAnalysis] = useState(null);
 
   const reportReasons = [
     {
@@ -63,14 +61,6 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
     },
   ];
 
-  // Analyze post content when modal opens
-  useEffect(() => {
-    if (isOpen && post) {
-      const analysis = moderateContent(post.message);
-      setContentAnalysis(analysis);
-    }
-  }, [isOpen, post]);
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -93,7 +83,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!reason.trim()) return;
+    if (!reason) return;
 
     setIsSubmitting(true);
     try {
@@ -106,8 +96,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
           },
           body: JSON.stringify({
             reason,
-            details: details.trim() || undefined,
-            contentAnalysis: contentAnalysis,
+            details: details,
             reportTimestamp: new Date().toISOString(),
           }),
         }
@@ -207,41 +196,6 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                   </p>
                 </div>
               </div>
-
-              {/* Content Analysis */}
-              {contentAnalysis && (
-                <div className="mt-3 p-3 bg-white rounded border-l-4 border-blue-500">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Shield className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-medium text-gray-900 font-['Comic_Sans_MS']">
-                      Content Analysis
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        contentAnalysis.category === "safe"
-                          ? "bg-green-100 text-green-800"
-                          : contentAnalysis.category === "questionable"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {contentAnalysis.category === "safe"
-                        ? "✅ Safe"
-                        : contentAnalysis.category === "questionable"
-                        ? "⚠️ Questionable"
-                        : "❌ Inappropriate"}
-                    </span>
-                    {contentAnalysis.warnings.length > 0 && (
-                      <span className="text-gray-600 font-['Comic_Sans_MS']">
-                        {contentAnalysis.warnings.length} warning
-                        {contentAnalysis.warnings.length !== 1 ? "s" : ""}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Report Form */}
@@ -296,15 +250,9 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
                   rows={4}
-                  maxLength={500}
                   placeholder="Please provide any additional context that will help us understand your report..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none font-['Comic_Sans_MS']"
                 />
-                <div className="text-right mt-1">
-                  <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
-                    {details.length}/500
-                  </span>
-                </div>
               </div>
 
               {/* Warning Message */}
@@ -348,7 +296,7 @@ function ReportModal({ post, isOpen, onClose, onReportSubmitted }) {
             <button
               type="submit"
               onClick={handleSubmit}
-              disabled={!reason.trim() || isSubmitting}
+              disabled={!reason || isSubmitting}
               className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium font-['Comic_Sans_MS'] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSubmitting ? (

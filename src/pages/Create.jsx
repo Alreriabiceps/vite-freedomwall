@@ -12,7 +12,7 @@ function Create() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.message.trim()) return;
+    if (!formData.message) return;
 
     setIsSubmitting(true);
     setSubmitStatus(null);
@@ -96,7 +96,6 @@ function Create() {
               onChange={handleInputChange}
               placeholder="Your name or leave blank for anonymous"
               className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
-              maxLength={50}
             />
           </div>
 
@@ -119,24 +118,14 @@ function Create() {
               placeholder="Share your thoughts, ideas, or experiences..."
               rows={6}
               className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 resize-none font-['Comic_Sans_MS'] text-sm md:text-base"
-              maxLength={1000}
-              required
             />
-            <div className="flex justify-between items-center mt-2">
-              <span className="text-xs md:text-sm text-gray-500 font-['Comic_Sans_MS']">
-                {formData.message.length}/1000 characters
-              </span>
-              <span className="text-xs md:text-sm text-gray-500 font-['Comic_Sans_MS']">
-                {formData.message.length > 800 ? "Almost there!" : ""}
-              </span>
-            </div>
           </div>
 
           {/* Submit Button */}
           <div className="pt-2 md:pt-4">
             <button
               type="submit"
-              disabled={isSubmitting || !formData.message.trim()}
+              disabled={isSubmitting || !formData.message}
               className="w-full bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white py-3 md:py-4 px-6 rounded-lg md:rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold text-sm md:text-base"
             >
               {isSubmitting ? (

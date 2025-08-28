@@ -10,18 +10,13 @@ function CreatePoll() {
   const [expiresAt, setExpiresAt] = useState("");
   const [topics, setTopics] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   const addOption = () => {
-    if (options.length < 6) {
-      setOptions([...options, ""]);
-    }
+    setOptions([...options, ""]);
   };
 
   const removeOption = (index) => {
-    if (options.length > 2) {
-      setOptions(options.filter((_, i) => i !== index));
-    }
+    setOptions(options.filter((_, i) => i !== index));
   };
 
   const updateOption = (index, value) => {
@@ -34,35 +29,15 @@ function CreatePoll() {
     e.preventDefault();
 
     // Validation
-    if (!question.trim()) {
-      setError("Question is required");
-      return;
-    }
-
-    if (options.filter((opt) => opt.trim()).length < 2) {
-      setError("At least 2 options are required");
-      return;
-    }
-
-    if (options.some((opt) => opt.trim().length > 100)) {
-      setError("Options cannot exceed 100 characters");
-      return;
-    }
 
     setIsSubmitting(true);
-    setError("");
 
     try {
       const pollData = {
-        question: question.trim(),
-        options: options.filter((opt) => opt.trim()),
+        question: question,
+        options: options,
         expiresAt: expiresAt || null,
-        topics: topics
-          ? topics
-              .split(",")
-              .map((t) => t.trim())
-              .filter((t) => t)
-          : [],
+        topics: topics ? topics.split(",") : [],
         name: "Anonymous", // Always anonymous for polls
       };
 
@@ -79,11 +54,9 @@ function CreatePoll() {
         navigate("/?showPolls=true");
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Failed to create poll");
       }
     } catch (error) {
       console.error("Error creating poll:", error);
-      setError("Error connecting to server");
     } finally {
       setIsSubmitting(false);
     }
@@ -133,15 +106,8 @@ function CreatePoll() {
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder="e.g., What's your favorite cafeteria food?"
                 rows={3}
-                maxLength={200}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none font-['Comic_Sans_MS'] text-base"
-                required
               />
-              <div className="flex justify-end mt-1">
-                <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
-                  {question.length}/200 characters
-                </span>
-              </div>
             </div>
 
             {/* Options */}
@@ -157,11 +123,9 @@ function CreatePoll() {
                       value={option}
                       onChange={(e) => updateOption(index, e.target.value)}
                       placeholder={`Option ${index + 1}`}
-                      maxLength={100}
                       className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-['Comic_Sans_MS'] text-base"
-                      required
                     />
-                    {options.length > 2 && (
+                    {
                       <button
                         type="button"
                         onClick={() => removeOption(index)}
@@ -169,12 +133,12 @@ function CreatePoll() {
                       >
                         <X size={20} />
                       </button>
-                    )}
+                    }
                   </div>
                 ))}
               </div>
 
-              {options.length < 6 && (
+              {
                 <button
                   type="button"
                   onClick={addOption}
@@ -183,11 +147,7 @@ function CreatePoll() {
                   <Plus size={20} />
                   Add Option
                 </button>
-              )}
-
-              <p className="text-sm text-gray-500 mt-2 font-['Comic_Sans_MS']">
-                Minimum 2 options, maximum 6 options
-              </p>
+              }
             </div>
 
             {/* Expiration Date */}
@@ -222,13 +182,6 @@ function CreatePoll() {
                 Separate multiple topics with commas
               </p>
             </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-600 font-['Comic_Sans_MS']">{error}</p>
-              </div>
-            )}
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
