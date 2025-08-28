@@ -14,7 +14,12 @@ import {
 import PostCard from "../components/PostCard";
 import PollCard from "../components/PollCard";
 
-import { getUserIdentifier } from "../utils/userIdentifier";
+import {
+  getUserIdentifier,
+  markPostAsLiked,
+  markPostAsUnliked,
+  hasUserLikedPost,
+} from "../utils/userIdentifier";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 import { PostSkeleton, PollSkeleton } from "../components/SkeletonLoading";
 import {
@@ -116,10 +121,13 @@ function Home() {
       if (response.ok) {
         const data = await response.json();
 
-        // Use userLiked status from backend if available, otherwise default to false
+        // Use userLiked status from backend if available, otherwise check local storage
         const postsWithUserLiked = data.posts.map((post) => ({
           ...post,
-          userLiked: post.userLiked !== undefined ? post.userLiked : false,
+          userLiked:
+            post.userLiked !== undefined
+              ? post.userLiked
+              : hasUserLikedPost(post._id),
         }));
 
         if (isLoadMore) {
@@ -184,6 +192,14 @@ function Home() {
 
       if (response.ok) {
         const result = await response.json();
+
+        // Update local storage based on like status
+        if (result.liked) {
+          markPostAsLiked(postId);
+        } else {
+          markPostAsUnliked(postId);
+        }
+
         // Update the post's like count and userLiked status
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
@@ -381,8 +397,11 @@ function Home() {
           {/* Sort Filter */}
           <div className="flex flex-col items-center gap-3 mb-6">
             <div className="text-sm text-gray-600 font-['Comic_Sans_MS']">
-              Currently showing: <span className="font-semibold text-gray-800">
-                {sortBy === "default" ? "Popular posts first, then recent" : "Most recent posts first"}
+              Currently showing:{" "}
+              <span className="font-semibold text-gray-800">
+                {sortBy === "default"
+                  ? "Popular posts first, then recent"
+                  : "Most recent posts first"}
               </span>
             </div>
             <div className="flex items-center gap-2 bg-white rounded-lg shadow-sm border border-gray-200 p-1">
@@ -427,15 +446,15 @@ function Home() {
                   onLike={handleLike}
                   onReport={handleReport}
                 />
-                
+
                 {/* Inline Ad every 3 posts */}
                 {index > 0 && (index + 1) % 3 === 0 && (
                   <div className="col-span-full my-6">
-                    <AdSense 
+                    <AdSense
                       adSlot={`inline-${Math.floor(index / 3)}`}
                       adFormat="auto"
                       className="w-full"
-                      style={{ minHeight: '250px' }}
+                      style={{ minHeight: "250px" }}
                     />
                   </div>
                 )}
@@ -495,7 +514,7 @@ function Home() {
               </a>
             </div>
           </SlideIn>
-          
+
           <SlideIn direction="up" delay={1.6}>
             <div className="text-center mt-6">
               <a

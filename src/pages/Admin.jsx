@@ -99,7 +99,7 @@ function Admin() {
       // Test admin access by fetching admin posts
       const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
         headers: {
-          "Admin-Key": adminKey,
+          "admin-key": adminKey,
         },
       });
 
@@ -144,7 +144,7 @@ function Admin() {
     try {
       const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
         headers: {
-          "Admin-Key": key,
+          "admin-key": key,
         },
       });
       if (response.ok) {
@@ -160,7 +160,7 @@ function Admin() {
     try {
       const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
         headers: {
-          "Admin-Key": key,
+          "admin-key": key,
         },
       });
       if (response.ok) {
@@ -192,7 +192,7 @@ function Admin() {
     try {
       const response = await fetch(API_ENDPOINTS.CONTACT_ADMIN, {
         headers: {
-          "Admin-Key": key,
+          "admin-key": key,
         },
       });
 
@@ -213,7 +213,7 @@ function Admin() {
     try {
       const response = await fetch(API_ENDPOINTS.POLLS_ADMIN, {
         headers: {
-          "Admin-Key": key,
+          "admin-key": key,
         },
       });
       if (response.ok) {
@@ -229,7 +229,7 @@ function Admin() {
     try {
       const response = await fetch(API_ENDPOINTS.ANNOUNCEMENTS_ADMIN, {
         headers: {
-          "Admin-Key": key,
+          "admin-key": key,
         },
       });
       if (response.ok) {
@@ -250,7 +250,7 @@ function Admin() {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Admin-Key": key,
+            "admin-key": key,
           },
           body: JSON.stringify({ isActive }),
         }
@@ -279,7 +279,7 @@ function Admin() {
         {
           method: "DELETE",
           headers: {
-            "Admin-Key": key,
+            "admin-key": key,
           },
         }
       );
@@ -304,7 +304,7 @@ function Admin() {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Admin-Key": key,
+            "admin-key": key,
           },
           body: JSON.stringify({ isActive }),
         }
@@ -336,7 +336,7 @@ function Admin() {
         {
           method: "DELETE",
           headers: {
-            "Admin-Key": key,
+            "admin-key": key,
           },
         }
       );
@@ -363,7 +363,7 @@ function Admin() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Admin-Key": key,
+          "admin-key": key,
         },
         body: JSON.stringify({
           ...newAnnouncement,
@@ -418,7 +418,7 @@ function Admin() {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Admin-Key": key,
+            "admin-key": key,
           },
           body: JSON.stringify(body),
         }
@@ -445,7 +445,7 @@ function Admin() {
         {
           method: "DELETE",
           headers: {
-            "Admin-Key": key,
+            "admin-key": key,
           },
         }
       );
@@ -479,7 +479,7 @@ function Admin() {
           {
             method: "DELETE",
             headers: {
-              "Admin-Key": key,
+              "admin-key": key,
             },
           }
         );
@@ -497,7 +497,7 @@ function Admin() {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              "Admin-Key": key,
+              "admin-key": key,
             },
             body: JSON.stringify(body),
           }
@@ -539,7 +539,7 @@ function Admin() {
         {
           method: "DELETE",
           headers: {
-            "Admin-Key": key,
+            "admin-key": key,
           },
         }
       );
