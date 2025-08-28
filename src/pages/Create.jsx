@@ -168,6 +168,19 @@ function Create() {
                 Freedom Wall.
               </p>
             </div>
+
+            {/* Lovely Reminder Message */}
+            <div className="mt-3 p-3 bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-lg">
+              <div className="flex items-center gap-2 text-pink-700">
+                <div className="w-4 h-4 bg-pink-200 rounded-full flex items-center justify-center">
+                  <span className="text-pink-600 text-xs">❤️</span>
+                </div>
+                <p className="text-sm font-['Comic_Sans_MS'] text-pink-700">
+                  Remember: Spread love, not hate. Use your freedom to inspire
+                  and uplift others! 💕
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
