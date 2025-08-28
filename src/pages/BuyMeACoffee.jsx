@@ -47,7 +47,7 @@ function BuyMeACoffee() {
             
             <div className="bg-white rounded-xl p-4 inline-block">
               <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
-                💙 Any amount helps support the project! Even $1 buys me a kopi-o kosong! 😄
+                💙 Your support means the world to us! Every contribution helps keep the project running! ☕
               </p>
             </div>
           </div>
