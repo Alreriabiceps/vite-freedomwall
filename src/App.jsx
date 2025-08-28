@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import Disclaimer from "./pages/Disclaimer";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import CommunityGuidelines from "./pages/CommunityGuidelines";
 import BuyMeACoffee from "./pages/BuyMeACoffee";
 import Admin from "./pages/Admin";
 import "./App.css";
@@ -43,6 +44,7 @@ function App() {
               <Route path="/disclaimer" element={<Disclaimer />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/community-guidelines" element={<CommunityGuidelines />} />
               <Route path="/buy-me-a-coffee" element={<BuyMeACoffee />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>
