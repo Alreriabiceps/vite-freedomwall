@@ -21,11 +21,8 @@ import {
   Phone,
   Megaphone,
   User,
-  Settings,
-  Wrench,
 } from "lucide-react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
-import { isMaintenanceMode, getMaintenanceConfig } from "../config/maintenance";
 
 function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -80,10 +77,6 @@ function Admin() {
   const [contactStatusFilter, setContactStatusFilter] = useState("all");
   const [contactSortBy, setContactSortBy] = useState("newest");
 
-  // Maintenance mode state
-  const [maintenanceMessage, setMaintenanceMessage] = useState("");
-  const [maintenanceEndTime, setMaintenanceEndTime] = useState("");
-
   // Check if already authenticated
   useEffect(() => {
     const savedKey = localStorage.getItem("adminKey");
@@ -94,19 +87,6 @@ function Admin() {
       fetchContactMessages(savedKey);
       fetchPolls(savedKey);
       fetchAnnouncements(savedKey);
-    }
-  }, []);
-
-  // Load maintenance settings
-  useEffect(() => {
-    const config = getMaintenanceConfig();
-    if (config) {
-      setMaintenanceMessage(
-        config.message || "We're working hard to improve your experience!"
-      );
-      setMaintenanceEndTime(
-        config.estimatedEndTime ? config.estimatedEndTime.replace(" ", "T") : ""
-      );
     }
   }, []);
 
@@ -883,72 +863,6 @@ function Admin() {
   const filteredAnnouncements = getFilteredAnnouncements();
   const filteredContacts = getFilteredContacts();
 
-  // Maintenance mode functions
-  const toggleMaintenanceMode = () => {
-    const currentStatus = isMaintenanceMode();
-    const newStatus = !currentStatus;
-
-    // Store maintenance status in localStorage for immediate effect
-    localStorage.setItem(
-      "maintenanceMode",
-      JSON.stringify({
-        enabled: newStatus,
-        message:
-          maintenanceMessage ||
-          "We're working hard to improve your experience!",
-        endTime: maintenanceEndTime
-          ? maintenanceEndTime.replace("T", " ")
-          : null,
-      })
-    );
-
-    // Show success message with instructions
-    if (newStatus) {
-      alert(
-        `✅ Maintenance mode ENABLED!\n\n💬 Message: "${
-          maintenanceMessage || "We're working hard to improve your experience!"
-        }"\n📅 End Time: ${
-          maintenanceEndTime || "Not set"
-        }\n\n🔄 To make this permanent, rebuild and deploy your app.\n\n💡 Users will now see the maintenance page!`
-      );
-    } else {
-      alert(
-        `✅ Maintenance mode DISABLED!\n\n🔄 To make this permanent, rebuild and deploy your app.\n\n💡 Users will now see the normal website!`
-      );
-    }
-
-    // Force reload to see changes
-    window.location.reload();
-  };
-
-  const updateMaintenanceSettings = () => {
-    // Update localStorage with new settings
-    const currentMaintenance = JSON.parse(
-      localStorage.getItem("maintenanceMode") || "{}"
-    );
-    const updatedMaintenance = {
-      ...currentMaintenance,
-      message: maintenanceMessage,
-      endTime: maintenanceEndTime ? maintenanceEndTime.replace("T", " ") : null,
-    };
-
-    localStorage.setItem("maintenanceMode", JSON.stringify(updatedMaintenance));
-
-    alert(
-      '✅ Maintenance settings updated successfully!\n\n💬 Message: "' +
-        maintenanceMessage +
-        '"\n📅 End Time: ' +
-        (maintenanceEndTime || "Not set") +
-        "\n\n🔄 To make these changes permanent, rebuild and deploy your app."
-    );
-  };
-
-  const resetMaintenanceSettings = () => {
-    setMaintenanceMessage("We're working hard to improve your experience!");
-    setMaintenanceEndTime("");
-    alert("Maintenance settings reset to default values.");
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Mobile Sidebar Toggle */}
@@ -1120,18 +1034,6 @@ function Admin() {
                 </span>
               )}
             </button>
-
-            <button
-              onClick={() => setActiveTab("settings")}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors font-['Comic_Sans_MS'] ${
-                activeTab === "settings"
-                  ? "bg-gray-100 text-gray-700 border-r-2 border-gray-500"
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              <Settings size={20} />
-              <span>Settings</span>
-            </button>
           </nav>
 
           <div className="p-3 md:p-4 border-t border-gray-200">
@@ -1159,7 +1061,6 @@ function Admin() {
               {activeTab === "polls" && "Polls"}
               {activeTab === "announcements" && "Announcements"}
               {activeTab === "contact-messages" && "Contact Messages"}
-              {activeTab === "settings" && "Settings"}
             </h1>
             <p className="text-gray-600 text-base md:text-lg font-['Comic_Sans_MS']">
               {activeTab === "dashboard" && "Overview and statistics"}
@@ -1173,8 +1074,6 @@ function Admin() {
                 "Create and manage announcements"}
               {activeTab === "contact-messages" &&
                 "Messages from users via contact form"}
-              {activeTab === "settings" &&
-                "Configure system settings and maintenance mode"}
             </p>
           </div>
 
@@ -2276,132 +2175,6 @@ function Admin() {
                     ))}
                   </div>
                 )}
-              </div>
-            )}
-
-            {activeTab === "settings" && (
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
-                <div className="mb-6">
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
-                    System Settings
-                  </h2>
-                  <p className="text-gray-600 font-['Comic_Sans_MS']">
-                    Configure system settings and maintenance mode
-                  </p>
-                </div>
-
-                {/* Maintenance Mode Settings */}
-                <div className="space-y-6">
-                  <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-4 md:p-6">
-                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
-                          <Wrench className="text-white" size={24} />
-                        </div>
-                        <div>
-                          <h3 className="text-lg md:text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
-                            Maintenance Mode
-                          </h3>
-                          <p className="text-gray-600 font-['Comic_Sans_MS']">
-                            Temporarily disable the website and show maintenance
-                            page
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col sm:flex-row items-center gap-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-semibold font-['Comic_Sans_MS'] ${
-                            isMaintenanceMode()
-                              ? "bg-red-100 text-red-700"
-                              : "bg-green-100 text-green-700"
-                          }`}
-                        >
-                          {isMaintenanceMode() ? "ENABLED" : "DISABLED"}
-                        </span>
-                        <button
-                          onClick={toggleMaintenanceMode}
-                          className={`px-6 py-3 rounded-lg font-semibold font-['Comic_Sans_MS'] transition-all duration-200 ${
-                            isMaintenanceMode()
-                              ? "bg-green-600 hover:bg-green-700 text-white"
-                              : "bg-red-600 hover:bg-red-700 text-white"
-                          }`}
-                        >
-                          {isMaintenanceMode() ? "Disable" : "Enable"}
-                        </button>
-                      </div>
-                    </div>
-
-                    {isMaintenanceMode() && (
-                      <div className="mt-4 p-4 bg-white rounded-lg border border-orange-200">
-                        <h4 className="font-semibold text-gray-900 font-['Comic_Sans_MS'] mb-3">
-                          Current Maintenance Settings
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] mb-2">
-                              Custom Message
-                            </label>
-                            <input
-                              type="text"
-                              value={maintenanceMessage}
-                              onChange={(e) =>
-                                setMaintenanceMessage(e.target.value)
-                              }
-                              placeholder="Enter maintenance message..."
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] mb-2">
-                              Estimated End Time
-                            </label>
-                            <input
-                              type="datetime-local"
-                              value={maintenanceEndTime}
-                              onChange={(e) =>
-                                setMaintenanceEndTime(e.target.value)
-                              }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
-                          <button
-                            onClick={updateMaintenanceSettings}
-                            className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold font-['Comic_Sans_MS'] transition-colors"
-                          >
-                            Update Settings
-                          </button>
-                          <button
-                            onClick={resetMaintenanceSettings}
-                            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold font-['Comic_Sans_MS'] transition-colors"
-                          >
-                            Reset to Default
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-4 text-sm text-gray-600 font-['Comic_Sans_MS']">
-                      <p>
-                        <strong>Note:</strong> When maintenance mode is enabled,
-                        users will see a maintenance page instead of the normal
-                        website. Admins can still access the system.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Other Settings can be added here */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 md:p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 font-['Comic_Sans_MS'] mb-3">
-                      Additional Settings
-                    </h3>
-                    <p className="text-gray-600 font-['Comic_Sans_MS']">
-                      More system configuration options will be added here in
-                      future updates.
-                    </p>
-                  </div>
-                </div>
               </div>
             )}
           </div>

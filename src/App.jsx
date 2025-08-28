@@ -15,7 +15,6 @@ import Terms from "./pages/Terms";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
 import BuyMeACoffee from "./pages/BuyMeACoffee";
 import Admin from "./pages/Admin";
-import MaintenanceWrapper from "./components/MaintenanceWrapper";
 import "./App.css";
 
 function App() {
@@ -35,26 +34,24 @@ function App() {
         </div>
 
         <main className="pb-20 md:pb-0">
-          <MaintenanceWrapper>
-            <AnimatePresence mode="wait">
-              <Routes>
-                <Route path="/admin" element={<Home />} />
-                <Route path="/create" element={<Create />} />
-                <Route path="/create-poll" element={<CreatePoll />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/disclaimer" element={<Disclaimer />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route
-                  path="/community-guidelines"
-                  element={<CommunityGuidelines />}
-                />
-                <Route path="/buy-me-a-coffee" element={<BuyMeACoffee />} />
-                <Route path="/admins" element={<Admin />} />
-              </Routes>
-            </AnimatePresence>
-          </MaintenanceWrapper>
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/create" element={<Create />} />
+              <Route path="/create-poll" element={<CreatePoll />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/disclaimer" element={<Disclaimer />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route
+                path="/community-guidelines"
+                element={<CommunityGuidelines />}
+              />
+              <Route path="/buy-me-a-coffee" element={<BuyMeACoffee />} />
+              <Route path="/admin" element={<Admin />} />
+            </Routes>
+          </AnimatePresence>
         </main>
 
         {/* Bottom Banner Ad */}
