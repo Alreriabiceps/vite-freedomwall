@@ -10,7 +10,6 @@ import {
   Menu,
   X,
   Coffee,
-  Settings,
 } from "lucide-react";
 
 function BottomNavigation() {
@@ -53,12 +52,6 @@ function BottomNavigation() {
     { to: "/about", label: "About", icon: Info, color: "text-orange-600" },
     { to: "/contact", label: "Contact", icon: Mail, color: "text-red-600" },
     {
-      to: "/notifications",
-      label: "Notifications",
-      icon: Settings,
-      color: "text-blue-600",
-    },
-    {
       to: "/buy-me-a-coffee",
       label: "Support",
       icon: Coffee,
@@ -79,7 +72,6 @@ function BottomNavigation() {
     <>
       {/* Bottom Navigation */}
       <motion.nav
-        data-bottom-nav
         className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg md:hidden"
         initial={{ y: 100 }}
         animate={{ y: isVisible ? 0 : 100 }}

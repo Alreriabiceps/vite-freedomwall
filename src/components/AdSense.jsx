@@ -24,7 +24,6 @@ const AdSense = ({
       <div
         className={`bg-gray-200 border-2 border-dashed border-gray-400 p-4 text-center text-gray-600 ${className}`}
         style={style}
-        data-ad-container
       >
         <p className="text-sm font-medium">Ad Space</p>
         <p className="text-xs">AdSense Ad - {adSlot}</p>
@@ -34,11 +33,7 @@ const AdSense = ({
   }
 
   return (
-    <div
-      className={`ad-container ${className}`}
-      style={style}
-      data-ad-container
-    >
+    <div className={`ad-container ${className}`} style={style}>
       <ins
         className="adsbygoogle"
         style={{ display: "block" }}
