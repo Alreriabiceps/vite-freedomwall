@@ -4,6 +4,7 @@ import SimpleNavbar from "./components/SimpleNavbar";
 import BottomNavigation from "./components/BottomNavigation";
 import Footer from "./components/Footer";
 import AdSense from "./components/AdSense";
+import NotificationPrompt from "./components/NotificationPrompt";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
 import CreatePoll from "./pages/CreatePoll";
@@ -14,6 +15,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
 import BuyMeACoffee from "./pages/BuyMeACoffee";
+import NotificationSettings from "./pages/NotificationSettings";
 import Admin from "./pages/Admin";
 import "./App.css";
 
@@ -22,6 +24,9 @@ function App() {
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="App">
         <SimpleNavbar />
+
+        {/* Notification Permission Prompt */}
+        <NotificationPrompt />
 
         {/* Top Banner Ad */}
         <div className="w-full bg-white border-b border-gray-200">
@@ -49,6 +54,7 @@ function App() {
                 element={<CommunityGuidelines />}
               />
               <Route path="/buy-me-a-coffee" element={<BuyMeACoffee />} />
+              <Route path="/notifications" element={<NotificationSettings />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>
           </AnimatePresence>

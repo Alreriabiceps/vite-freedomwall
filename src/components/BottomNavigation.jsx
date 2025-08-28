@@ -1,7 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, PenTool, BarChart3, Info, Mail, Menu, X, Coffee } from "lucide-react";
+import {
+  Home,
+  PenTool,
+  BarChart3,
+  Info,
+  Mail,
+  Menu,
+  X,
+  Coffee,
+  Settings,
+} from "lucide-react";
 
 function BottomNavigation() {
   const location = useLocation();
@@ -42,7 +52,18 @@ function BottomNavigation() {
   const moreMenuItems = [
     { to: "/about", label: "About", icon: Info, color: "text-orange-600" },
     { to: "/contact", label: "Contact", icon: Mail, color: "text-red-600" },
-    { to: "/buy-me-a-coffee", label: "Support", icon: Coffee, color: "text-amber-600" },
+    {
+      to: "/notifications",
+      label: "Notifications",
+      icon: Settings,
+      color: "text-blue-600",
+    },
+    {
+      to: "/buy-me-a-coffee",
+      label: "Support",
+      icon: Coffee,
+      color: "text-amber-600",
+    },
   ];
 
   const quickActions = moreMenuItems.map((item) => ({
