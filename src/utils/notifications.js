@@ -114,6 +114,8 @@ export const getNotificationSettings = () => {
     comments: true,
     polls: true,
     announcements: true,
+    postLike: true,
+    commentReactions: true,
   };
 
   try {

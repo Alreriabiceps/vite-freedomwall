@@ -18,8 +18,31 @@ import BuyMeACoffee from "./pages/BuyMeACoffee";
 import NotificationSettings from "./pages/NotificationSettings";
 import Admin from "./pages/Admin";
 import "./App.css";
+import { useEffect } from "react";
+import websocketService from "./services/websocketService";
+import { getUserIdentifier } from "./utils/userIdentifier";
+import {
+  getNotificationSettings,
+  hasNotificationPermission,
+} from "./utils/notifications";
 
 function App() {
+  // Initialize WebSocket connection when app loads
+  useEffect(() => {
+    // Check if user has notification permission
+    if (hasNotificationPermission()) {
+      const userId = getUserIdentifier();
+      const settings = getNotificationSettings();
+
+      // Connect to WebSocket for real-time notifications
+      websocketService.connect(userId, settings);
+
+      console.log(
+        "WebSocket connection initialized for real-time notifications"
+      );
+    }
+  }, []);
+
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="App">

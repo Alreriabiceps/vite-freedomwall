@@ -8,6 +8,8 @@ import {
   Monitor,
   CheckCircle,
   XCircle,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import {
   getNotificationSettings,
@@ -18,6 +20,8 @@ import {
   isMobileDevice,
   getNotificationPermission,
 } from "../utils/notifications";
+import websocketService from "../services/websocketService";
+import { getUserIdentifier } from "../utils/userIdentifier";
 
 function NotificationSettings() {
   const [settings, setSettings] = useState(getNotificationSettings());
@@ -30,15 +34,43 @@ function NotificationSettings() {
   const [isRequesting, setIsRequesting] = useState(false);
   const [testResult, setTestResult] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [wsStatus, setWsStatus] = useState(websocketService.getStatus());
+  const [realTimeNotifications, setRealTimeNotifications] = useState([]);
 
   useEffect(() => {
     setIsMobile(isMobileDevice());
-  }, []);
+
+    // Connect to WebSocket if user has permission
+    if (hasPermission) {
+      const userId = getUserIdentifier();
+      websocketService.connect(userId, settings);
+
+      // Add listener for real-time notifications
+      const listenerId = websocketService.addListener((notification) => {
+        setRealTimeNotifications((prev) => [notification, ...prev.slice(0, 9)]); // Keep last 10
+      });
+
+      // Update WebSocket status
+      const updateStatus = () => setWsStatus(websocketService.getStatus());
+      updateStatus();
+
+      // Check status every 2 seconds
+      const statusInterval = setInterval(updateStatus, 2000);
+
+      return () => {
+        websocketService.removeListener(listenerId);
+        clearInterval(statusInterval);
+      };
+    }
+  }, [hasPermission, settings]);
 
   const handleSettingChange = (key, value) => {
     const newSettings = { ...settings, [key]: value };
     setSettings(newSettings);
     updateNotificationSettings(newSettings);
+
+    // Update WebSocket settings
+    websocketService.updateSettings(newSettings);
   };
 
   const handleRequestPermission = async () => {
@@ -200,7 +232,45 @@ function NotificationSettings() {
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors font-['Comic_Sans_MS'] flex items-center gap-2"
                 >
                   <TestTube size={16} />
-                  Test Notification
+                  Test Browser Notification
+                </button>
+
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(
+                        "/api/v1/posts/test-notification",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            userId: getUserIdentifier(),
+                          }),
+                        }
+                      );
+
+                      if (response.ok) {
+                        setTestResult("success");
+                        setTimeout(() => setTestResult(null), 3000);
+                      } else {
+                        setTestResult("error");
+                        setTimeout(() => setTestResult(null), 3000);
+                      }
+                    } catch (error) {
+                      console.error(
+                        "Error testing real-time notification:",
+                        error
+                      );
+                      setTestResult("error");
+                      setTimeout(() => setTestResult(null), 3000);
+                    }
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors font-['Comic_Sans_MS'] flex items-center gap-2 ml-3"
+                >
+                  <Wifi size={16} />
+                  Test Real-time Notification
                 </button>
               </div>
             )}
@@ -234,6 +304,41 @@ function NotificationSettings() {
                   </>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* WebSocket Connection Status */}
+          {hasPermission && (
+            <div className="mt-4 p-4 border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-medium text-gray-900 font-['Comic_Sans_MS']">
+                  Real-time Connection Status
+                </h3>
+                <div
+                  className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                    wsStatus.isConnected
+                      ? "text-green-600 bg-green-100"
+                      : "text-red-600 bg-red-100"
+                  }`}
+                >
+                  {wsStatus.isConnected ? (
+                    <>
+                      <Wifi size={16} />
+                      Connected
+                    </>
+                  ) : (
+                    <>
+                      <WifiOff size={16} />
+                      Disconnected
+                    </>
+                  )}
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
+                {wsStatus.isConnected
+                  ? "Real-time notifications are active. You'll receive instant updates for new posts, comments, and activities."
+                  : "Connecting to real-time notification service..."}
+              </p>
             </div>
           )}
         </div>
@@ -356,12 +461,66 @@ function NotificationSettings() {
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
               </div>
+
+              <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                    <Bell size={20} className="text-pink-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900 font-['Comic_Sans_MS']">
+                      Post Likes
+                    </h3>
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
+                      Get notified when posts receive likes
+                    </p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.postLike}
+                    onChange={(e) =>
+                      handleSettingChange("postLike", e.target.checked)
+                    }
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <Bell size={20} className="text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900 font-['Comic_Sans_MS']">
+                      Comment Reactions
+                    </h3>
+                    <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
+                      Get notified when comments receive reactions
+                    </p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.commentReactions}
+                    onChange={(e) =>
+                      handleSettingChange("commentReactions", e.target.checked)
+                    }
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
             </div>
           </div>
         )}
 
         {/* Information Card */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-4 font-['Comic_Sans_MS']">
             About Notifications
           </h2>
@@ -380,6 +539,58 @@ function NotificationSettings() {
             </p>
           </div>
         </div>
+
+        {/* Real-time Notifications Display */}
+        {hasPermission && wsStatus.isConnected && (
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4 font-['Comic_Sans_MS']">
+              Live Notifications
+            </h2>
+            <p className="text-gray-600 text-sm mb-6 font-['Comic_Sans_MS']">
+              Recent real-time notifications from the Freedom Wall
+            </p>
+
+            {realTimeNotifications.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 font-['Comic_Sans_MS']">
+                <Bell size={48} className="mx-auto mb-3 text-gray-300" />
+                <p>No notifications yet</p>
+                <p className="text-sm">
+                  Notifications will appear here as they happen
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {realTimeNotifications.map((notification, index) => (
+                  <div
+                    key={`${notification.timestamp}-${index}`}
+                    className="p-4 border border-gray-200 rounded-lg bg-gray-50"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900 text-sm font-['Comic_Sans_MS']">
+                          {notification.title}
+                        </h4>
+                        <p className="text-gray-600 text-xs font-['Comic_Sans_MS'] mt-1">
+                          {notification.body}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-xs text-gray-500 font-['Comic_Sans_MS']">
+                            {new Date(
+                              notification.timestamp
+                            ).toLocaleTimeString()}
+                          </span>
+                          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full font-['Comic_Sans_MS']">
+                            {notification.type}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
