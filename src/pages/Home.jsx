@@ -29,7 +29,7 @@ import {
   SlideIn,
 } from "../components/AnimatedComponents";
 import TextType from "../components/TextAnimations/TextType/TextType";
-import AdSense from "../components/AdSense";
+import ContentAwareAd from "../components/ContentAwareAd";
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -447,14 +447,22 @@ function Home() {
                   onReport={handleReport}
                 />
 
-                {/* Inline Ad every 3 posts */}
+                {/* Inline Ad every 3 posts - Only show when there's substantial content */}
                 {index > 0 && (index + 1) % 3 === 0 && (
                   <div className="col-span-full my-6">
-                    <AdSense
+                    <ContentAwareAd
                       adSlot={`inline-${Math.floor(index / 3)}`}
                       adFormat="auto"
                       className="w-full"
                       style={{ minHeight: "250px" }}
+                      minPosts={3}
+                      posts={posts}
+                      content={posts
+                        .slice(0, index + 1)
+                        .map((p) => p.message)
+                        .join(" ")}
+                      minContentLength={100}
+                      delay={500}
                     />
                   </div>
                 )}
@@ -526,6 +534,31 @@ function Home() {
               </a>
             </div>
           </SlideIn>
+        </div>
+      </FadeIn>
+
+      {/* Bottom Content Ad - Only show when there's substantial content */}
+      <FadeIn delay={1.8} className="mt-8 md:mt-12">
+        <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg border border-gray-200">
+          <ContentAwareAd
+            adSlot="home-bottom-content"
+            adFormat="auto"
+            className="w-full"
+            style={{ minHeight: "250px" }}
+            minPosts={5}
+            posts={posts}
+            content={posts
+              .slice(0, 10)
+              .map((p) => p.message)
+              .join(" ")}
+            minContentLength={200}
+            delay={1000}
+            fallbackContent={
+              <div className="text-center py-8 text-gray-500">
+                <p className="text-sm">More content needed to display ads</p>
+              </div>
+            }
+          />
         </div>
       </FadeIn>
     </div>

@@ -1,9 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import SimpleNavbar from "./components/SimpleNavbar";
 import BottomNavigation from "./components/BottomNavigation";
 import Footer from "./components/Footer";
-import AdSense from "./components/AdSense";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
 import CreatePoll from "./pages/CreatePoll";
@@ -15,23 +19,43 @@ import Terms from "./pages/Terms";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
 import BuyMeACoffee from "./pages/BuyMeACoffee";
 import Admin from "./pages/Admin";
+import FilterTest from "./pages/FilterTest";
 import "./App.css";
+
+// Component to conditionally render navbar
+const ConditionalNavbar = () => {
+  const location = useLocation();
+  const isAdminPage = location.pathname === "/admin";
+
+  if (isAdminPage) {
+    return null; // Don't render navbar on admin page
+  }
+
+  return <SimpleNavbar />;
+};
+
+// Component to conditionally render footer and bottom navigation
+const ConditionalFooter = () => {
+  const location = useLocation();
+  const isAdminPage = location.pathname === "/admin";
+
+  if (isAdminPage) {
+    return null; // Don't render footer/bottom nav on admin page
+  }
+
+  return (
+    <>
+      <Footer />
+      <BottomNavigation />
+    </>
+  );
+};
 
 function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="App">
-        <SimpleNavbar />
-
-        {/* Top Banner Ad */}
-        <div className="w-full bg-white border-b border-gray-200">
-          <AdSense
-            adSlot="1234567890"
-            adFormat="auto"
-            className="w-full"
-            style={{ minHeight: "90px" }}
-          />
-        </div>
+        <ConditionalNavbar />
 
         <main className="pb-20 md:pb-0">
           <AnimatePresence mode="wait">
@@ -50,22 +74,12 @@ function App() {
               />
               <Route path="/buy-me-a-coffee" element={<BuyMeACoffee />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/filter-test" element={<FilterTest />} />
             </Routes>
           </AnimatePresence>
         </main>
 
-        {/* Bottom Banner Ad */}
-        <div className="w-full bg-white border-t border-gray-200">
-          <AdSense
-            adSlot="0987654321"
-            adFormat="auto"
-            className="w-full"
-            style={{ minHeight: "90px" }}
-          />
-        </div>
-
-        <Footer />
-        <BottomNavigation />
+        <ConditionalFooter />
       </div>
     </Router>
   );

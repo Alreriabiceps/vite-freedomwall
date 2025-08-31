@@ -1,6 +1,14 @@
 import { useState } from "react";
-import { PenTool, Send, User, MessageSquare } from "lucide-react";
+import {
+  PenTool,
+  Send,
+  User,
+  MessageSquare,
+  Shield,
+  AlertTriangle,
+} from "lucide-react";
 import { API_ENDPOINTS } from "../config/api";
+import ContentFilter from "../components/ContentFilter";
 
 function Create() {
   const [formData, setFormData] = useState({
@@ -9,6 +17,8 @@ function Create() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [foulLanguageDetected, setFoulLanguageDetected] = useState(false);
+  const [censoredMessage, setCensoredMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,17 +28,29 @@ function Create() {
     setSubmitStatus(null);
 
     try {
+      // Use censored message if foul language was detected
+      const messageToSend = foulLanguageDetected
+        ? censoredMessage
+        : formData.message;
+
       const response = await fetch(API_ENDPOINTS.POSTS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          message: messageToSend,
+          originalMessage: foulLanguageDetected ? formData.message : null,
+          wasCensored: foulLanguageDetected,
+        }),
       });
 
       if (response.ok) {
         setSubmitStatus("success");
         setFormData({ name: "", message: "" });
+        setFoulLanguageDetected(false);
+        setCensoredMessage("");
 
         // Trigger event to refresh posts on home page
         window.dispatchEvent(new Event("postsModified"));
@@ -39,7 +61,6 @@ function Create() {
         const errorData = await response.json();
         console.error("Backend error:", errorData);
         setSubmitStatus("error");
-        // You can add a more specific error message here if needed
       }
     } catch (error) {
       console.error("Error creating post:", error);
@@ -55,6 +76,15 @@ function Create() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleMessageChange = (value) => {
+    setFormData((prev) => ({ ...prev, message: value }));
+  };
+
+  const handleFoulLanguageDetected = (data) => {
+    setFoulLanguageDetected(true);
+    setCensoredMessage(data.censored);
   };
 
   return (
@@ -74,6 +104,11 @@ function Create() {
         </h1>
         <p className="text-sm md:text-lg text-gray-600 font-['Comic_Sans_MS'] max-w-2xl md:max-w-3xl mx-auto px-4 md:px-0">
           Share your thoughts anonymously with your school community.
+          <br />
+          <span className="text-xs text-blue-600 mt-2 inline-block">
+            <Shield size={14} className="inline mr-1" />
+            Content is automatically filtered for inappropriate language
+          </span>
         </p>
       </div>
 
@@ -98,11 +133,11 @@ function Create() {
               value={formData.name}
               onChange={handleInputChange}
               placeholder="Your name or leave blank for anonymous"
-              className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm md:text-base"
+              className="w-full p-3 md:p-4 border border-gray-300 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-['Comic_Sans_MS'] text-sm md:text-base transition-all duration-200"
             />
           </div>
 
-          {/* Message Field */}
+          {/* Message Field with Content Filter */}
           <div>
             <label
               htmlFor="message"
@@ -110,38 +145,47 @@ function Create() {
             >
               <div className="flex items-center gap-2">
                 <MessageSquare size={16} className="md:w-5 md:h-5" />
-                Your Message
+                Message
+                {foulLanguageDetected && (
+                  <span className="ml-2 inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">
+                    <AlertTriangle size={12} />
+                    Will be censored
+                  </span>
+                )}
               </div>
             </label>
-            <textarea
-              id="message"
-              name="message"
+
+            <ContentFilter
               value={formData.message}
-              onChange={handleInputChange}
-              placeholder="Share your thoughts, ideas, or experiences..."
-              rows={6}
-              className="w-full px-4 py-3 md:py-4 border border-gray-300 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-gray-50 text-gray-900 placeholder-gray-500 resize-none font-['Comic_Sans_MS'] text-sm md:text-base"
+              onChange={handleMessageChange}
+              placeholder="Share your thoughts, questions, or experiences..."
+              maxLength={2000}
+              showPreview={true}
+              showWarnings={true}
+              onFoulLanguageDetected={handleFoulLanguageDetected}
             />
           </div>
 
           {/* Submit Button */}
-          <div className="pt-2 md:pt-4">
+          <div className="flex justify-end">
             <button
               type="submit"
-              disabled={isSubmitting || !formData.message}
-              className="w-full bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white py-3 md:py-4 px-6 rounded-lg md:rounded-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 font-['Comic_Sans_MS'] font-semibold text-sm md:text-base"
+              disabled={isSubmitting || !formData.message.trim()}
+              className={`flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-semibold text-sm md:text-base transition-all duration-200 transform hover:scale-105 font-['Comic_Sans_MS'] ${
+                isSubmitting || !formData.message.trim()
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl"
+              }`}
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-2 border-white border-t-transparent"></div>
-                  <span className="hidden sm:inline">Creating Post...</span>
-                  <span className="sm:hidden">Creating...</span>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Posting...
                 </>
               ) : (
                 <>
-                  <Send size={16} className="md:w-5 md:h-5" />
-                  <span className="hidden sm:inline">Create Post</span>
-                  <span className="sm:hidden">Post</span>
+                  <Send size={18} className="md:w-5 md:h-5" />
+                  Post Message
                 </>
               )}
             </button>
@@ -149,67 +193,56 @@ function Create() {
         </form>
 
         {/* Status Messages */}
-        {submitStatus === "success" && (
-          <div className="mt-4 md:mt-6 p-4 bg-green-50 border border-green-200 rounded-lg md:rounded-xl">
-            <div className="flex items-center gap-2 text-green-800">
-              <div className="w-5 h-5 bg-green-200 rounded-full flex items-center justify-center">
-                <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-              </div>
-              <p className="font-medium font-['Comic_Sans_MS'] text-sm md:text-base">
-                Post created successfully! Your message is now live on the
-                Freedom Wall.
-              </p>
+        {submitStatus && (
+          <div
+            className={`mt-4 p-4 rounded-lg border ${
+              submitStatus === "success"
+                ? "bg-green-50 border-green-200 text-green-700"
+                : "bg-red-50 border-red-200 text-red-700"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              {submitStatus === "success" ? (
+                <>
+                  <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                  <span className="font-medium">
+                    Post created successfully!
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs">✗</span>
+                  </div>
+                  <span className="font-medium">
+                    Failed to create post. Please try again.
+                  </span>
+                </>
+              )}
             </div>
           </div>
         )}
 
-        {submitStatus === "error" && (
-          <div className="mt-4 md:mt-6 p-4 bg-red-50 border border-red-200 rounded-lg md:rounded-xl">
-            <div className="flex items-center gap-2 text-red-800">
-              <div className="w-5 h-5 bg-red-200 rounded-full flex items-center justify-center">
-                <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+        {/* Foul Language Warning */}
+        {foulLanguageDetected && (
+          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-semibold text-yellow-800 mb-1">
+                  Content Filtered
+                </h4>
+                <p className="text-sm text-yellow-700">
+                  Your message contains language that will be automatically
+                  censored when posted. The preview above shows how your post
+                  will appear to others.
+                </p>
               </div>
-              <p className="font-medium font-['Comic_Sans_MS'] text-sm md:text-base">
-                Failed to create post. Please try again.
-              </p>
             </div>
           </div>
         )}
-      </div>
-
-      {/* Guidelines */}
-      <div className="mt-6 md:mt-8">
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl md:rounded-2xl p-4 md:p-6 border border-gray-200">
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4 font-['Comic_Sans_MS']">
-            Posting Guidelines
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-sm md:text-base">
-            <div className="flex items-start gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-              <span className="text-gray-700 font-['Comic_Sans_MS']">
-                Be respectful and kind
-              </span>
-            </div>
-            <div className="flex items-start gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-              <span className="text-gray-700 font-['Comic_Sans_MS']">
-                Share constructive thoughts
-              </span>
-            </div>
-            <div className="flex items-start gap-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-              <span className="text-gray-700 font-['Comic_Sans_MS']">
-                No hate speech or bullying
-              </span>
-            </div>
-            <div className="flex items-start gap-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
-              <span className="text-gray-700 font-['Comic_Sans_MS']">
-                No personal attacks
-              </span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
