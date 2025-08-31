@@ -1,25 +1,26 @@
 import React, { useState } from "react";
-import { Plus, Edit, Trash2, Ban } from "lucide-react";
+import { Plus, Edit, Trash2, Ban, X } from "lucide-react";
 
 const WordBanManager = ({
   bannedWords,
   showAddForm,
-  newWord,
   onAddWord,
   onDeleteWord,
   onUpdateWord,
-  onInputChange,
-  onResetForm,
   setShowAddForm,
 }) => {
   const [editingWord, setEditingWord] = useState(null);
   const [editData, setEditData] = useState({});
+  const [wordFields, setWordFields] = useState(
+    Array(16)
+      .fill("")
+      .map(() => ({ word: "" }))
+  );
 
   const handleEdit = (word) => {
     setEditingWord(word._id);
     setEditData({
       word: word.word,
-      reason: word.reason || "",
       isActive: word.isActive,
     });
   };
@@ -41,6 +42,65 @@ const WordBanManager = ({
     await onUpdateWord(word._id, { isActive: !word.isActive });
   };
 
+  // Add new word field (expand grid if needed)
+  const addWordField = () => {
+    setWordFields([...wordFields, { word: "" }]);
+  };
+
+  // Remove word field
+  const removeWordField = (index) => {
+    if (wordFields.length > 1) {
+      const newFields = wordFields.filter((_, i) => i !== index);
+      setWordFields(newFields);
+    }
+  };
+
+  // Update word field
+  const updateWordField = (index, value) => {
+    const newFields = [...wordFields];
+    newFields[index].word = value;
+    setWordFields(newFields);
+  };
+
+  // Handle bulk add submission
+  const handleBulkAdd = async (e) => {
+    e.preventDefault();
+
+    // Filter out empty word fields
+    const validFields = wordFields.filter((field) => field.word.trim() !== "");
+
+    if (validFields.length === 0) {
+      alert("Please add at least one word to ban");
+      return;
+    }
+
+    // Add each word
+    for (const field of validFields) {
+      if (field.word.trim()) {
+        await onAddWord(e, {
+          word: field.word.trim(),
+        });
+      }
+    }
+
+    // Reset form
+    setWordFields(
+      Array(16)
+        .fill("")
+        .map(() => ({ word: "" }))
+    );
+    setShowAddForm(false);
+  };
+
+  // Calculate grid columns based on number of fields
+  const getGridCols = (count) => {
+    if (count <= 4) return "grid-cols-2";
+    if (count <= 8) return "grid-cols-3";
+    if (count <= 12) return "grid-cols-4";
+    if (count <= 16) return "grid-cols-4";
+    return "grid-cols-5";
+  };
+
   return (
     <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -52,55 +112,82 @@ const WordBanManager = ({
           className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold touch-manipulation flex items-center justify-center gap-2"
         >
           <Plus size={18} />
-          Add Banned Word
+          Add Banned Words
         </button>
       </div>
 
-      {/* Add Form */}
+      {/* Dynamic Add Form */}
       {showAddForm && (
         <div className="mb-8 p-4 md:p-6 bg-red-50 border border-red-200 rounded-xl">
-          <h3 className="text-lg md:text-xl font-bold text-gray-900 font-['Comic_Sans_MS'] mb-4">
-            Add New Banned Word
-          </h3>
-          <form onSubmit={onAddWord} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-['Comic_Sans_MS']">
-                  Word *
-                </label>
-                <input
-                  type="text"
-                  value={newWord.word}
-                  onChange={(e) => onInputChange("word", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
-                  placeholder="Enter word to ban"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-['Comic_Sans_MS']">
-                  Reason (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={newWord.reason}
-                  onChange={(e) => onInputChange("reason", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
-                  placeholder="Why is this word banned?"
-                />
-              </div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+              Add Multiple Banned Words
+            </h3>
+            <button
+              onClick={() => setShowAddForm(false)}
+              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-red-100 rounded-full transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <form onSubmit={handleBulkAdd} className="space-y-4">
+            {/* Compact Grid Layout */}
+            <div className={`grid ${getGridCols(wordFields.length)} gap-3`}>
+              {wordFields.map((field, index) => (
+                <div key={index} className="relative">
+                  <input
+                    type="text"
+                    value={field.word}
+                    onChange={(e) => updateWordField(index, e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS'] text-sm"
+                    placeholder={`Word ${index + 1}`}
+                  />
+                  {wordFields.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeWordField(index)}
+                      className="absolute -top-2 -right-2 p-1 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full transition-colors bg-white border border-red-200"
+                      title="Remove this word field"
+                    >
+                      <X size={12} />
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
-            <div className="flex gap-3">
+
+            {/* Add More Fields Button */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={addWordField}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-['Comic_Sans_MS'] font-medium"
+              >
+                <Plus size={18} />
+                Add More Fields
+              </button>
+            </div>
+
+            {/* Submit Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-red-200">
               <button
                 type="submit"
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
               >
-                Add Word
+                Add All Words ({wordFields.filter((f) => f.word.trim()).length})
               </button>
               <button
                 type="button"
-                onClick={onResetForm}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setWordFields(
+                    Array(16)
+                      .fill("")
+                      .map(() => ({ word: "" }))
+                  );
+                }}
+                className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
               >
                 Cancel
               </button>
@@ -109,8 +196,8 @@ const WordBanManager = ({
         </div>
       )}
 
-      {/* Banned Words List */}
-      <div className="space-y-3">
+      {/* Banned Words List - Compact Grid */}
+      <div className="space-y-4">
         {bannedWords.length === 0 ? (
           <div className="text-center py-8 text-gray-500 font-['Comic_Sans_MS']">
             <Ban size={48} className="mx-auto mb-4 text-gray-300" />
@@ -120,72 +207,61 @@ const WordBanManager = ({
             </p>
           </div>
         ) : (
-          bannedWords.map((word) => (
-            <div
-              key={word._id}
-              className={`p-4 border rounded-lg ${
-                word.isActive
-                  ? "border-red-200 bg-red-50"
-                  : "border-gray-200 bg-gray-50"
-              }`}
-            >
-              {editingWord === word._id ? (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className={`grid ${getGridCols(bannedWords.length)} gap-3`}>
+            {bannedWords.map((word) => (
+              <div
+                key={word._id}
+                className={`p-3 border rounded-lg ${
+                  word.isActive
+                    ? "border-red-200 bg-red-50"
+                    : "border-gray-200 bg-gray-50"
+                }`}
+              >
+                {editingWord === word._id ? (
+                  <div className="space-y-2">
                     <input
                       type="text"
                       value={editData.word}
                       onChange={(e) =>
                         setEditData({ ...editData, word: e.target.value })
                       }
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
+                      className="w-full px-2 py-1 border border-gray-300 rounded text-sm font-['Comic_Sans_MS']"
                     />
-                    <input
-                      type="text"
-                      value={editData.reason}
-                      onChange={(e) =>
-                        setEditData({ ...editData, reason: e.target.value })
-                      }
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent font-['Comic_Sans_MS']"
-                      placeholder="Reason (optional)"
-                    />
+                    <div className="flex items-center gap-1">
+                      <label className="flex items-center gap-1 text-xs font-medium text-gray-700 font-['Comic_Sans_MS']">
+                        <input
+                          type="checkbox"
+                          checked={editData.isActive}
+                          onChange={(e) =>
+                            setEditData({
+                              ...editData,
+                              isActive: e.target.checked,
+                            })
+                          }
+                          className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                        />
+                        Active
+                      </label>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleSaveEdit(word._id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs font-['Comic_Sans_MS']"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={handleCancelEdit}
+                        className="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs font-['Comic_Sans_MS']"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
-                      <input
-                        type="checkbox"
-                        checked={editData.isActive}
-                        onChange={(e) =>
-                          setEditData({
-                            ...editData,
-                            isActive: e.target.checked,
-                          })
-                        }
-                        className="rounded border-gray-300 text-red-600 focus:ring-red-500"
-                      />
-                      Active
-                    </label>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleSaveEdit(word._id)}
-                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-['Comic_Sans_MS']"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm font-['Comic_Sans_MS']"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <span className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-gray-900 font-['Comic_Sans_MS'] text-sm truncate">
                         {word.word}
                       </span>
                       <span
@@ -198,45 +274,42 @@ const WordBanManager = ({
                         {word.isActive ? "Active" : "Inactive"}
                       </span>
                     </div>
-                    {word.reason && (
-                      <p className="text-sm text-gray-600 mt-1 font-['Comic_Sans_MS']">
-                        Reason: {word.reason}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-500 mt-1 font-['Comic_Sans_MS']">
+
+                    <p className="text-xs text-gray-500 font-['Comic_Sans_MS']">
                       Added: {new Date(word.createdAt).toLocaleDateString()}
                     </p>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => handleToggleActive(word)}
+                        className={`px-2 py-1 rounded text-xs font-['Comic_Sans_MS'] ${
+                          word.isActive
+                            ? "bg-yellow-500 hover:bg-yellow-600 text-white"
+                            : "bg-green-500 hover:bg-green-600 text-white"
+                        }`}
+                      >
+                        {word.isActive ? "Deactivate" : "Activate"}
+                      </button>
+                      <button
+                        onClick={() => handleEdit(word)}
+                        className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                        title="Edit"
+                      >
+                        <Edit size={12} />
+                      </button>
+                      <button
+                        onClick={() => onDeleteWord(word._id)}
+                        className="p-1 text-red-600 hover:bg-red-100 rounded transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleToggleActive(word)}
-                      className={`px-3 py-1 rounded text-sm font-['Comic_Sans_MS'] ${
-                        word.isActive
-                          ? "bg-yellow-500 hover:bg-yellow-600 text-white"
-                          : "bg-green-500 hover:bg-green-600 text-white"
-                      }`}
-                    >
-                      {word.isActive ? "Deactivate" : "Activate"}
-                    </button>
-                    <button
-                      onClick={() => handleEdit(word)}
-                      className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                      title="Edit"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => onDeleteWord(word._id)}
-                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
+                )}
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
@@ -258,6 +331,9 @@ const WordBanManager = ({
           <li>
             • Words are case-insensitive (e.g., "Bobo" and "bobo" are both
             censored)
+          </li>
+          <li>
+            • Use the compact grid to efficiently ban multiple words at once
           </li>
         </ul>
       </div>

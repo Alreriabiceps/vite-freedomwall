@@ -9,7 +9,6 @@ export const useWordBan = (adminKey) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newWord, setNewWord] = useState({
     word: "",
-    reason: "",
   });
 
   const fetchBannedWords = useCallback(async () => {
@@ -34,10 +33,11 @@ export const useWordBan = (adminKey) => {
     }
   }, [adminKey]);
 
-  const handleAddWord = async (e) => {
-    e.preventDefault();
+  const handleAddWord = async (e, wordData = null) => {
+    if (e) e.preventDefault();
 
     try {
+      const wordToAdd = wordData || newWord;
       const response = await fetch(API_ENDPOINTS.BANNED_WORDS, {
         method: "POST",
         headers: {
@@ -45,19 +45,22 @@ export const useWordBan = (adminKey) => {
           "admin-key": adminKey,
         },
         body: JSON.stringify({
-          ...newWord,
-          word: newWord.word.toLowerCase().trim(),
+          ...wordToAdd,
+          word: wordToAdd.word.toLowerCase().trim(),
         }),
       });
 
       if (response.ok) {
         const newWordData = await response.json();
         setBannedWords((prev) => [newWordData, ...prev]);
-        setNewWord({
-          word: "",
-          reason: "",
-        });
-        setShowAddForm(false);
+
+        // Only reset form if it's a single word add (not bulk add)
+        if (!wordData) {
+          setNewWord({
+            word: "",
+          });
+          setShowAddForm(false);
+        }
         return true;
       } else {
         setError("Failed to add banned word");
@@ -146,7 +149,6 @@ export const useWordBan = (adminKey) => {
   const resetForm = () => {
     setNewWord({
       word: "",
-      reason: "",
     });
     setShowAddForm(false);
   };

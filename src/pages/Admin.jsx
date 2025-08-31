@@ -302,12 +302,9 @@ function Admin() {
               <WordBanManager
                 bannedWords={bannedWords}
                 showAddForm={showWordAddForm}
-                newWord={newWord}
                 onAddWord={handleAddWord}
                 onDeleteWord={handleDeleteWord}
                 onUpdateWord={handleUpdateWord}
-                onInputChange={handleWordInputChange}
-                onResetForm={resetWordForm}
                 setShowAddForm={setShowWordAddForm}
               />
             )}
