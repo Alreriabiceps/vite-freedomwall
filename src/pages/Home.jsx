@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import PostCard from "../components/PostCard";
 import PollCard from "../components/PollCard";
+import { usePublicBannedWords } from "../hooks/usePublicBannedWords";
+import { filterBannedWords } from "../utils/wordFilter";
 
 import {
   getUserIdentifier,
@@ -40,6 +42,34 @@ function Home() {
   const [showPolls, setShowPolls] = useState(false);
   const [sortBy, setSortBy] = useState("default"); // New: sorting state
 
+  // Word filtering
+  const { bannedWords } = usePublicBannedWords();
+
+  // Filter posts with banned words censored
+  const filteredPosts = posts.map((post) => ({
+    ...post,
+    name: filterBannedWords(post.name, bannedWords || []),
+    message: filterBannedWords(post.message, bannedWords || []),
+    comments: post.comments
+      ? post.comments.map((comment) => ({
+          ...comment,
+          name: filterBannedWords(comment.name, bannedWords || []),
+          message: filterBannedWords(comment.message, bannedWords || []),
+        }))
+      : [],
+  }));
+
+  // Filter polls with banned words censored
+  const filteredPolls = polls.map((poll) => ({
+    ...poll,
+    createdBy: filterBannedWords(poll.createdBy, bannedWords || []),
+    question: filterBannedWords(poll.question, bannedWords || []),
+    options: poll.options.map((option) => ({
+      ...option,
+      text: filterBannedWords(option.text, bannedWords || []),
+    })),
+  }));
+
   // Infinite scroll states
   const [hasMorePosts, setHasMorePosts] = useState(true);
   const [page, setPage] = useState(1);
@@ -63,7 +93,6 @@ function Home() {
   // Refetch posts when sort changes
   useEffect(() => {
     if (posts.length > 0) {
-      console.log(`Sorting changed to: ${sortBy}, refetching posts...`);
       setPosts([]);
       setPage(1);
       setHasMorePosts(true);
@@ -107,9 +136,6 @@ function Home() {
       // Add sort parameter if not default
       if (sortBy !== "default") {
         url.searchParams.set("sort", sortBy);
-        console.log(`Fetching posts with sort: ${sortBy}`);
-      } else {
-        console.log("Fetching posts with default sort (popular first)");
       }
 
       const response = await fetch(url, {
@@ -379,7 +405,7 @@ function Home() {
 
             {showPolls && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                {polls.map((poll) => (
+                {filteredPolls.map((poll) => (
                   <StaggerItem key={poll._id}>
                     <PollCard
                       poll={poll}
@@ -439,12 +465,17 @@ function Home() {
           </StaggerItem>
         ) : (
           <div className="post-grid">
-            {posts.map((post, index) => (
+            {filteredPosts.map((post, index) => (
               <StaggerItem key={post._id}>
                 <PostCard
                   post={post}
                   onLike={handleLike}
                   onReport={handleReport}
+                  onCommentAdded={() => {
+                    console.log("Comment added, refetching posts..."); // Debug log
+                    // Refetch posts to get the updated data with new comments
+                    fetchPosts();
+                  }}
                 />
 
                 {/* Inline Ad every 3 posts - Only show when there's substantial content */}

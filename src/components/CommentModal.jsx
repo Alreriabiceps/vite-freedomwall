@@ -45,7 +45,11 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
 
       if (response.ok) {
         setFormData({ name: "", message: "" });
+
+        // Since there's no single post endpoint, just call onCommentAdded
+        // The parent component will handle refreshing the posts
         onCommentAdded();
+
         onClose();
       }
     } catch (error) {
@@ -141,8 +145,9 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
                 value={formData.message}
                 onChange={handleInputChange}
                 placeholder="Share your thoughts..."
-                rows={5}
-                className="w-full px-3 sm:px-4 py-3 sm:py-4 border border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm sm:text-base resize-none transition-all duration-200"
+                maxLength={500}
+                rows={4}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-['Comic_Sans_MS'] text-sm resize-none"
               />
             </div>
 

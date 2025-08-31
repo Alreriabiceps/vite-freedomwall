@@ -10,6 +10,8 @@ export const API_ENDPOINTS = {
   CONTACT_ADMIN: `${API_BASE_URL}/api/v1/contact/admin`,
   ANNOUNCEMENTS: `${API_BASE_URL}/api/v1/announcements`,
   ANNOUNCEMENTS_ADMIN: `${API_BASE_URL}/api/v1/announcements/admin`,
+  BANNED_WORDS: `${API_BASE_URL}/api/v1/banned-words`,
+  BANNED_WORDS_ADMIN: `${API_BASE_URL}/api/v1/banned-words/admin`,
 };
 
 export const buildEndpoint = (base, path) => `${base}${path}`;

@@ -21,7 +21,7 @@ import Terms from "./pages/Terms";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
 import BuyMeACoffee from "./pages/BuyMeACoffee";
 import Admin from "./pages/Admin";
-import FilterTest from "./pages/FilterTest";
+
 import "./App.css";
 
 // Component to conditionally render navbar
@@ -112,7 +112,6 @@ function App() {
               />
               <Route path="/buy-me-a-coffee" element={<BuyMeACoffee />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/filter-test" element={<FilterTest />} />
             </Routes>
           </AnimatePresence>
         </main>

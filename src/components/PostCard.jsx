@@ -12,7 +12,14 @@ import LazyContent from "./LazyContent";
 import { InteractiveCard } from "./InteractiveElements";
 import { getUserIdentifier } from "../utils/userIdentifier";
 
-function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
+function PostCard({
+  post,
+  onLike,
+  onReport,
+  onUpdate,
+  onCommentAdded,
+  isAdmin = false,
+}) {
   const [showPostModal, setShowPostModal] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
 
@@ -342,13 +349,7 @@ function PostCard({ post, onLike, onReport, onUpdate, isAdmin = false }) {
         onLike={onLike}
         onReport={onReport}
         onUpdate={onUpdate}
-        onCommentAdded={(updatedPost) => {
-          // Update the local post state with the actual comment data from backend
-          // This ensures the comment appears immediately with correct data
-          if (updatedPost && updatedPost.comments) {
-            post.comments = updatedPost.comments;
-          }
-        }}
+        onCommentAdded={onCommentAdded}
         isAdmin={isAdmin}
       />
     </>

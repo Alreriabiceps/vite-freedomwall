@@ -118,11 +118,6 @@ function PostModal({
     }
     // Close the comment modal
     closeCommentModal();
-
-    // Update the local post state with the actual comment data from backend
-    if (updatedPost && updatedPost.comments) {
-      post.comments = updatedPost.comments;
-    }
   };
 
   if (!isOpen) return null;

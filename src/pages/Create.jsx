@@ -1,14 +1,6 @@
 import { useState } from "react";
-import {
-  PenTool,
-  Send,
-  User,
-  MessageSquare,
-  Shield,
-  AlertTriangle,
-} from "lucide-react";
+import { PenTool, Send, User, MessageSquare } from "lucide-react";
 import { API_ENDPOINTS } from "../config/api";
-import ContentFilter from "../components/ContentFilter";
 
 function Create() {
   const [formData, setFormData] = useState({
@@ -17,8 +9,6 @@ function Create() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [foulLanguageDetected, setFoulLanguageDetected] = useState(false);
-  const [censoredMessage, setCensoredMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,29 +18,17 @@ function Create() {
     setSubmitStatus(null);
 
     try {
-      // Use censored message if foul language was detected
-      const messageToSend = foulLanguageDetected
-        ? censoredMessage
-        : formData.message;
-
       const response = await fetch(API_ENDPOINTS.POSTS, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          message: messageToSend,
-          originalMessage: foulLanguageDetected ? formData.message : null,
-          wasCensored: foulLanguageDetected,
-        }),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         setSubmitStatus("success");
         setFormData({ name: "", message: "" });
-        setFoulLanguageDetected(false);
-        setCensoredMessage("");
 
         // Trigger event to refresh posts on home page
         window.dispatchEvent(new Event("postsModified"));
@@ -78,15 +56,6 @@ function Create() {
     }));
   };
 
-  const handleMessageChange = (value) => {
-    setFormData((prev) => ({ ...prev, message: value }));
-  };
-
-  const handleFoulLanguageDetected = (data) => {
-    setFoulLanguageDetected(true);
-    setCensoredMessage(data.censored);
-  };
-
   return (
     <div className="w-full max-w-4xl mx-auto">
       {/* Header */}
@@ -104,11 +73,6 @@ function Create() {
         </h1>
         <p className="text-sm md:text-lg text-gray-600 font-['Comic_Sans_MS'] max-w-2xl md:max-w-3xl mx-auto px-4 md:px-0">
           Share your thoughts anonymously with your school community.
-          <br />
-          <span className="text-xs text-blue-600 mt-2 inline-block">
-            <Shield size={14} className="inline mr-1" />
-            Content is automatically filtered for inappropriate language
-          </span>
         </p>
       </div>
 
@@ -146,23 +110,18 @@ function Create() {
               <div className="flex items-center gap-2">
                 <MessageSquare size={16} className="md:w-5 md:h-5" />
                 Message
-                {foulLanguageDetected && (
-                  <span className="ml-2 inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">
-                    <AlertTriangle size={12} />
-                    Will be censored
-                  </span>
-                )}
               </div>
             </label>
 
-            <ContentFilter
+            <textarea
+              id="message"
+              name="message"
               value={formData.message}
-              onChange={handleMessageChange}
+              onChange={handleInputChange}
               placeholder="Share your thoughts, questions, or experiences..."
               maxLength={2000}
-              showPreview={true}
-              showWarnings={true}
-              onFoulLanguageDetected={handleFoulLanguageDetected}
+              rows={6}
+              className="w-full p-3 md:p-4 border border-gray-300 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-['Comic_Sans_MS'] text-sm md:text-base transition-all duration-200 resize-none"
             />
           </div>
 
@@ -221,25 +180,6 @@ function Create() {
                   </span>
                 </>
               )}
-            </div>
-          </div>
-        )}
-
-        {/* Foul Language Warning */}
-        {foulLanguageDetected && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <h4 className="font-semibold text-yellow-800 mb-1">
-                  Content Filtered
-                </h4>
-                <p className="text-sm text-yellow-700">
-                  Your message contains language that will be automatically
-                  censored when posted. The preview above shows how your post
-                  will appear to others.
-                </p>
-              </div>
             </div>
           </div>
         )}
