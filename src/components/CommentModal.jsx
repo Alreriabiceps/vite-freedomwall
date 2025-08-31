@@ -70,7 +70,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
       <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full h-[90vh] sm:h-auto sm:max-h-[90vh] sm:max-w-md overflow-hidden flex flex-col">
         {/* Modal Header */}
         <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
-          <h3 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
             Add Comment
           </h3>
           <button
@@ -84,29 +84,29 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 sm:pb-6">
           {/* Post Preview */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-            <h4 className="font-semibold text-gray-900 mb-3 font-['Comic_Sans_MS'] text-base">
+          <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 font-['Comic_Sans_MS'] text-sm sm:text-base">
               Commenting on:
             </h4>
-            <p className="text-gray-700 text-base font-['Comic_Sans_MS'] leading-relaxed">
+            <p className="text-gray-700 text-sm sm:text-base font-['Comic_Sans_MS'] leading-relaxed">
               {post?.message && post.message.length > 100
                 ? post.message.substring(0, 100) + "..."
                 : post?.message || "Post content"}
             </p>
-            <div className="mt-3 text-sm text-gray-500 font-['Comic_Sans_MS'] flex items-center gap-2">
+            <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-500 font-['Comic_Sans_MS'] flex items-center gap-2">
               <span>Posted {formatDate(post.createdAt)}</span>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Name Field */}
             <div>
               <label
                 htmlFor="commentName"
-                className="block text-base font-semibold text-gray-700 mb-3 font-['Comic_Sans_MS']"
+                className="block text-sm sm:text-base font-semibold text-gray-700 mb-2 sm:mb-3 font-['Comic_Sans_MS']"
               >
                 <div className="flex items-center gap-2">
-                  <User size={18} />
+                  <User size={16} className="sm:w-[18px] sm:h-[18px]" />
                   Your Name (Optional)
                 </div>
               </label>
@@ -117,7 +117,7 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Anonymous or your name"
-                className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-base transition-all duration-200"
+                className="w-full px-3 sm:px-4 py-3 sm:py-4 border border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm sm:text-base transition-all duration-200"
               />
             </div>
 
@@ -125,10 +125,13 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
             <div>
               <label
                 htmlFor="commentMessage"
-                className="block text-base font-semibold text-gray-700 mb-3 font-['Comic_Sans_MS']"
+                className="block text-sm sm:text-base font-semibold text-gray-700 mb-2 sm:mb-3 font-['Comic_Sans_MS']"
               >
                 <div className="flex items-center gap-2">
-                  <MessageSquare size={18} />
+                  <MessageSquare
+                    size={16}
+                    className="sm:w-[18px] sm:h-[18px]"
+                  />
                   Your Comment
                 </div>
               </label>
@@ -138,8 +141,8 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
                 value={formData.message}
                 onChange={handleInputChange}
                 placeholder="Share your thoughts..."
-                rows={6}
-                className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-base resize-none transition-all duration-200"
+                rows={5}
+                className="w-full px-3 sm:px-4 py-3 sm:py-4 border border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500 font-['Comic_Sans_MS'] text-sm sm:text-base resize-none transition-all duration-200"
               />
             </div>
 
@@ -147,16 +150,19 @@ function CommentModal({ post, isOpen, onClose, onCommentAdded }) {
             <button
               type="submit"
               disabled={isSubmitting || !formData.message}
-              className="w-full py-4 px-6 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 touch-manipulation text-base font-['Comic_Sans_MS'] flex items-center justify-center gap-2"
+              className="w-full py-3 sm:py-4 px-4 sm:px-6 bg-blue-600 text-white font-semibold rounded-lg sm:rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 touch-manipulation text-sm sm:text-base font-['Comic_Sans_MS'] flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   Posting...
                 </>
               ) : (
                 <>
-                  <MessageSquare size={18} />
+                  <MessageSquare
+                    size={16}
+                    className="sm:w-[18px] sm:h-[18px]"
+                  />
                   Post Comment
                 </>
               )}

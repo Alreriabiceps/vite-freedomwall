@@ -61,8 +61,11 @@ function Contact() {
       {/* Header */}
       <div className="text-center mb-8 md:mb-12">
         <div className="mb-4 md:mb-6">
-          <div className="w-16 h-16 md:w-24 md:h-16 bg-gradient-to-r from-gray-900 to-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-xl">
-            <MessageSquare className="text-white" size={24} />
+          <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-gradient-to-r from-gray-900 to-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-xl">
+            <MessageSquare
+              className="text-white md:w-6 md:h-6 lg:w-8 lg:h-8"
+              size={20}
+            />
           </div>
         </div>
         <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-3 md:mb-4 font-['Comic_Sans_MS']">

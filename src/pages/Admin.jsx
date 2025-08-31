@@ -1487,7 +1487,7 @@ function Admin() {
                   </h2>
                   <button
                     onClick={() => setShowCreateForm(true)}
-                    className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                    className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold touch-manipulation"
                   >
                     Create Announcement
                   </button>
@@ -1511,7 +1511,7 @@ function Admin() {
                   </div>
 
                   {/* Filters Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap items-center gap-3 md:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                     {/* Type Filter */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                       <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
@@ -1678,14 +1678,14 @@ function Admin() {
                       <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
                         <button
                           type="submit"
-                          className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                          className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold touch-manipulation"
                         >
                           Create Announcement
                         </button>
                         <button
                           type="button"
                           onClick={() => setShowCreateForm(false)}
-                          className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold"
+                          className="w-full sm:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors font-['Comic_Sans_MS'] font-semibold touch-manipulation"
                         >
                           Cancel
                         </button>
@@ -1707,10 +1707,10 @@ function Admin() {
                           announcement.isActive ? "bg-green-50" : "bg-gray-50"
                         }`}
                       >
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                        <div className="flex flex-col gap-3 mb-4">
                           <div className="flex-1">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2 flex-wrap">
-                              <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
+                              <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS'] text-base md:text-lg">
                                 {announcement.title}
                               </h3>
                               <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
@@ -1740,7 +1740,7 @@ function Admin() {
                                 {announcement.type}
                               </span>
                             </div>
-                            <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-lg">
+                            <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-base md:text-lg">
                               {announcement.message}
                             </p>
                             {announcement.expiresAt && (
@@ -1761,7 +1761,7 @@ function Admin() {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2 pt-4 border-t border-gray-100 flex-wrap">
                           <button
                             onClick={() =>
                               handleAnnouncementStatus(
@@ -1769,7 +1769,7 @@ function Admin() {
                                 !announcement.isActive
                               )
                             }
-                            className={`p-2 rounded-lg transition-colors ${
+                            className={`p-2 rounded-lg transition-colors touch-manipulation ${
                               announcement.isActive
                                 ? "bg-red-600 text-white hover:bg-red-700"
                                 : "bg-green-600 text-white hover:bg-green-700"
@@ -1790,7 +1790,7 @@ function Admin() {
                             onClick={() =>
                               handleDeleteAnnouncement(announcement._id)
                             }
-                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors touch-manipulation"
                             title="Delete announcement"
                           >
                             <Trash2 size={16} />
@@ -1804,9 +1804,9 @@ function Admin() {
             )}
 
             {activeTab === "polls" && (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
                     Polls
                   </h2>
                   <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
@@ -1830,16 +1830,16 @@ function Admin() {
                   </div>
 
                   {/* Filters Row */}
-                  <div className="flex flex-wrap items-center gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                     {/* Status Filter */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                         Status:
                       </label>
                       <select
                         value={pollStatusFilter}
                         onChange={(e) => setPollStatusFilter(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                       >
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
@@ -1848,14 +1848,14 @@ function Admin() {
                     </div>
 
                     {/* Sort By */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                         Sort:
                       </label>
                       <select
                         value={pollSortBy}
                         onChange={(e) => setPollSortBy(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                       >
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
@@ -1874,7 +1874,7 @@ function Admin() {
                           setPollStatusFilter("all");
                           setPollSortBy("newest");
                         }}
-                        className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
                       >
                         Clear Filters
                       </button>
@@ -1887,18 +1887,18 @@ function Admin() {
                     No polls found
                   </p>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4 md:space-y-6">
                     {filteredPolls.map((poll) => (
                       <div
                         key={poll._id}
-                        className={`border border-gray-200 rounded-xl p-6 ${
+                        className={`border border-gray-200 rounded-xl p-4 md:p-6 ${
                           poll.isActive ? "bg-green-50" : "bg-gray-50"
                         }`}
                       >
-                        <div className="flex items-start justify-between mb-4">
+                        <div className="flex flex-col gap-3 mb-4">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2 flex-wrap">
-                              <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                              <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS'] text-base md:text-lg">
                                 {poll.question}
                               </h3>
                               <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
@@ -1917,7 +1917,7 @@ function Admin() {
                                 {poll.totalVotes || 0} votes
                               </span>
                             </div>
-                            <div className="flex items-center gap-4 text-sm text-gray-500 font-['Comic_Sans_MS'] mb-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500 font-['Comic_Sans_MS'] mb-3">
                               <span className="flex items-center gap-1">
                                 <BarChart3 size={14} />
                                 {poll.options.length} options
@@ -1947,12 +1947,12 @@ function Admin() {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2 pt-4 border-t border-gray-100 flex-wrap">
                           <button
                             onClick={() =>
                               handlePollStatus(poll._id, !poll.isActive)
                             }
-                            className={`p-2 rounded-lg transition-colors ${
+                            className={`p-2 rounded-lg transition-colors touch-manipulation ${
                               poll.isActive
                                 ? "bg-red-600 text-white hover:bg-red-700"
                                 : "bg-green-600 text-white hover:bg-green-700"
@@ -1971,7 +1971,7 @@ function Admin() {
                           </button>
                           <button
                             onClick={() => handleDeletePoll(poll._id)}
-                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors touch-manipulation"
                             title="Delete poll"
                           >
                             <Trash2 size={16} />
@@ -1985,9 +1985,9 @@ function Admin() {
             )}
 
             {activeTab === "contact-messages" && (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900 font-['Comic_Sans_MS']">
                     Contact Messages
                   </h2>
                   <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
@@ -2011,16 +2011,16 @@ function Admin() {
                   </div>
 
                   {/* Filters Row */}
-                  <div className="flex flex-wrap items-center gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                     {/* Status Filter */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                         Status:
                       </label>
                       <select
                         value={contactStatusFilter}
                         onChange={(e) => setContactStatusFilter(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                       >
                         <option value="all">All Status</option>
                         <option value="new">New</option>
@@ -2030,14 +2030,14 @@ function Admin() {
                     </div>
 
                     {/* Sort By */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS']">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <label className="text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] whitespace-nowrap">
                         Sort:
                       </label>
                       <select
                         value={contactSortBy}
                         onChange={(e) => setContactSortBy(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm font-['Comic_Sans_MS']"
                       >
                         <option value="newest">Newest First</option>
                         <option value="oldest">Oldest First</option>
@@ -2056,7 +2056,7 @@ function Admin() {
                           setContactStatusFilter("all");
                           setContactSortBy("newest");
                         }}
-                        className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
+                        className="w-full sm:w-auto px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-['Comic_Sans_MS']"
                       >
                         Clear Filters
                       </button>
@@ -2069,18 +2069,18 @@ function Admin() {
                     No contact messages found
                   </p>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4 md:space-y-6">
                     {filteredContacts.map((contact) => (
                       <div
                         key={contact._id}
-                        className={`border border-gray-200 rounded-xl p-6 ${
+                        className={`border border-gray-200 rounded-xl p-4 md:p-6 ${
                           contact.isRead ? "bg-gray-50" : "bg-blue-50"
                         }`}
                       >
-                        <div className="flex items-start justify-between mb-4">
+                        <div className="flex flex-col gap-3 mb-4">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2 flex-wrap">
-                              <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS']">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                              <h3 className="font-semibold text-gray-900 font-['Comic_Sans_MS'] text-base md:text-lg">
                                 {contact.name}
                               </h3>
                               <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
@@ -2109,7 +2109,7 @@ function Admin() {
                                 {contact.status.replace("-", " ")}
                               </span>
                             </div>
-                            <div className="flex items-center gap-4 text-sm text-gray-500 font-['Comic_Sans_MS'] mb-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-500 font-['Comic_Sans_MS'] mb-3">
                               <span className="flex items-center gap-1">
                                 <User size={14} />
                                 From: {contact.name}
@@ -2118,18 +2118,18 @@ function Admin() {
                             <h4 className="font-semibold text-gray-800 font-['Comic_Sans_MS'] mb-2">
                               {contact.subject}
                             </h4>
-                            <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-lg">
+                            <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-base md:text-lg">
                               {contact.message}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2 pt-4 border-t border-gray-100 flex-wrap">
                           <button
                             onClick={() =>
                               handleContactStatus(contact._id, "read")
                             }
-                            className={`p-2 rounded-lg transition-colors ${
+                            className={`p-2 rounded-lg transition-colors touch-manipulation ${
                               contact.isRead
                                 ? "bg-gray-200 text-gray-700"
                                 : "bg-blue-600 text-white hover:bg-blue-700"
@@ -2160,7 +2160,7 @@ function Admin() {
 
                           <button
                             onClick={() => handleContactDelete(contact._id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors touch-manipulation"
                             title="Delete message"
                           >
                             <Trash2 size={16} />

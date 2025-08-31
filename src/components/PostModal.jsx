@@ -133,8 +133,8 @@ function PostModal({
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full h-[90vh] sm:h-auto sm:max-h-[90vh] sm:max-w-2xl overflow-hidden flex flex-col">
           {/* Modal Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-            <h2 className="text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
+          <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 flex-shrink-0">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 font-['Comic_Sans_MS']">
               Post Details
             </h2>
             <button
@@ -147,13 +147,13 @@ function PostModal({
 
           {/* Post Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className="p-4 sm:p-6">
+            <div className="p-3 sm:p-4 md:p-6">
               {/* Post Header with Avatar */}
-              <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4 md:mb-6">
                 {/* Avatar */}
-                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-gray-600"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -167,17 +167,17 @@ function PostModal({
 
                 {/* User Info */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
-                    <h3 className="font-semibold text-gray-900 text-lg font-['Comic_Sans_MS']">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 md:gap-3 mb-2 flex-wrap">
+                    <h3 className="font-semibold text-gray-900 text-base sm:text-lg font-['Comic_Sans_MS']">
                       {post.name || "Anonymous"}
                     </h3>
-                    <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                    <span className="text-xs sm:text-sm text-gray-500 font-['Comic_Sans_MS']">
                       {formatDate(post.createdAt)}
                     </span>
                   </div>
 
                   {/* Status Badges */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     {post.isFlagged && (
                       <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded-full">
                         <Flag size={10} />
@@ -195,7 +195,7 @@ function PostModal({
 
                 {/* Admin Actions */}
                 {isAdmin && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 flex-shrink-0">
                     {post.isHidden ? (
                       <button
                         onClick={() => onUpdate(post._id, "unhide")}
@@ -236,61 +236,69 @@ function PostModal({
               </div>
 
               {/* Full Message Content */}
-              <div className="mb-4 sm:mb-6">
-                <p className="text-gray-800 text-base leading-relaxed whitespace-pre-wrap font-['Comic_Sans_MS']">
+              <div className="mb-3 sm:mb-4 md:mb-6">
+                <p className="text-gray-800 text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-['Comic_Sans_MS']">
                   {post.message}
                 </p>
               </div>
 
               {/* Stats Row */}
-              <div className="flex items-center gap-4 sm:gap-6 text-base text-gray-500 mb-4 sm:mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 md:gap-6 text-sm sm:text-base text-gray-500 mb-3 sm:mb-4 md:mb-6">
                 <span className="flex items-center gap-2">
-                  <Heart size={16} className="text-red-500" />
+                  <Heart size={14} className="sm:w-4 sm:h-4 text-red-500" />
                   {post.likes || 0} likes
                 </span>
                 <span className="flex items-center gap-2">
-                  <MessageSquare size={16} className="text-blue-500" />
+                  <MessageSquare
+                    size={14}
+                    className="sm:w-4 sm:h-4 text-blue-500"
+                  />
                   {post.comments ? post.comments.length : 0} comments
                 </span>
                 {post.reportCount > 0 && (
                   <span className="flex items-center gap-2 text-red-600">
-                    <Flag size={16} />
+                    <Flag size={14} className="sm:w-4 sm:h-4" />
                     {post.reportCount} reports
                   </span>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-4 sm:mb-6">
                 <button
                   onClick={handleLike}
                   disabled={isLiking}
-                  className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl transition-colors font-medium touch-manipulation text-base ${
+                  className={`flex items-center justify-center gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-colors font-medium touch-manipulation text-sm sm:text-base ${
                     post.userLiked
                       ? "bg-red-100 text-red-700 hover:bg-red-200"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
                   <Heart
-                    size={18}
-                    className={post.userLiked ? "fill-current" : ""}
+                    size={16}
+                    className={`sm:w-[18px] sm:h-[18px] ${
+                      post.userLiked ? "fill-current" : ""
+                    }`}
                   />
                   {post.userLiked ? "Liked" : "Like"}
                 </button>
 
                 <button
                   onClick={openCommentModal}
-                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-xl transition-colors font-medium touch-manipulation text-base"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg sm:rounded-xl transition-colors font-medium touch-manipulation text-sm sm:text-base"
                 >
-                  <MessageSquare size={18} />
+                  <MessageSquare
+                    size={16}
+                    className="sm:w-[18px] sm:h-[18px]"
+                  />
                   Comment
                 </button>
 
                 <button
                   onClick={openReportModal}
-                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-orange-100 text-orange-700 hover:bg-orange-200 rounded-xl transition-colors font-medium touch-manipulation text-base"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-3 bg-orange-100 text-orange-700 hover:bg-orange-200 rounded-lg sm:rounded-xl transition-colors font-medium touch-manipulation text-sm sm:text-base"
                 >
-                  <Flag size={18} />
+                  <Flag size={16} className="sm:w-[18px] sm:h-[18px]" />
                   Report
                 </button>
               </div>
@@ -299,27 +307,27 @@ function PostModal({
             {/* Comments Section */}
             {post.comments && post.comments.length > 0 && (
               <div className="border-t border-gray-100">
-                <div className="p-4 sm:p-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4 font-['Comic_Sans_MS']">
+                <div className="p-3 sm:p-4 md:p-6">
+                  <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 font-['Comic_Sans_MS']">
                     Comments ({post.comments.length})
                   </h4>
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-2 sm:space-y-3 md:space-y-4">
                     {post.comments.map((comment, index) => (
                       <div
                         key={index}
-                        className="bg-gray-50 rounded-xl p-3 sm:p-4"
+                        className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="font-semibold text-gray-900 text-base font-['Comic_Sans_MS']">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                              <span className="font-semibold text-gray-900 text-sm sm:text-base font-['Comic_Sans_MS']">
                                 {comment.name || "Anonymous"}
                               </span>
-                              <span className="text-sm text-gray-500 font-['Comic_Sans_MS']">
+                              <span className="text-xs sm:text-sm text-gray-500 font-['Comic_Sans_MS']">
                                 {formatDate(comment.createdAt)}
                               </span>
                             </div>
-                            <p className="text-gray-700 text-base font-['Comic_Sans_MS'] leading-relaxed whitespace-pre-wrap">
+                            <p className="text-gray-700 text-sm sm:text-base font-['Comic_Sans_MS'] leading-relaxed whitespace-pre-wrap">
                               {comment.message}
                             </p>
                           </div>

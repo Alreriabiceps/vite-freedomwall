@@ -53,7 +53,7 @@ function CreatePoll() {
         // Redirect to home page and show polls
         navigate("/?showPolls=true");
       } else {
-        const errorData = await response.json();
+        console.error("Failed to create poll");
       }
     } catch (error) {
       console.error("Error creating poll:", error);
