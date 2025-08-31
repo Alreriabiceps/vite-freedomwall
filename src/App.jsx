@@ -5,9 +5,11 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import SimpleNavbar from "./components/SimpleNavbar";
 import BottomNavigation from "./components/BottomNavigation";
 import Footer from "./components/Footer";
+import DisclaimerAgreement from "./components/DisclaimerAgreement";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
 import CreatePoll from "./pages/CreatePoll";
@@ -52,6 +54,42 @@ const ConditionalFooter = () => {
 };
 
 function App() {
+  const [hasAgreed, setHasAgreed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check if user has already agreed to disclaimer
+  useEffect(() => {
+    const disclaimerAgreed = localStorage.getItem("disclaimerAgreed");
+    if (disclaimerAgreed === "true") {
+      setHasAgreed(true);
+    }
+    setIsLoading(false);
+  }, []);
+
+  const handleAgree = () => {
+    setHasAgreed(true);
+  };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-blue-800 text-lg font-['Comic_Sans_MS']">
+            Loading...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show disclaimer agreement if user hasn't agreed yet
+  if (!hasAgreed) {
+    return <DisclaimerAgreement onAgree={handleAgree} />;
+  }
+
+  // Show main app after agreement
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="App">

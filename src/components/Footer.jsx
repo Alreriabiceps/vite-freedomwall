@@ -1,6 +1,17 @@
-import { Heart, School, Users, Shield } from "lucide-react";
+import { Heart, School, Users, Shield, RefreshCw } from "lucide-react";
 
 const Footer = () => {
+  const handleReviewTerms = () => {
+    if (
+      confirm(
+        "This will reset your terms agreement. You'll need to review and agree to the terms again before accessing the website. Continue?"
+      )
+    ) {
+      localStorage.removeItem("disclaimerAgreed");
+      window.location.reload();
+    }
+  };
+
   return (
     <footer className="bg-gray-900 text-white py-12 mt-16">
       <div className="max-w-7xl mx-auto px-6">
@@ -131,6 +142,14 @@ const Footer = () => {
             >
               Disclaimer
             </a>
+            <span className="text-gray-600">|</span>
+            <button
+              onClick={handleReviewTerms}
+              className="text-gray-400 hover:text-white transition-colors font-['Comic_Sans_MS'] underline decoration-dotted underline-offset-4 flex items-center gap-1 mx-auto sm:mx-0"
+            >
+              <RefreshCw size={14} />
+              Review Terms
+            </button>
           </div>
         </div>
       </div>
