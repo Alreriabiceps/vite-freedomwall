@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Send, MessageSquare } from "lucide-react";
+import { Send, MessageSquare, Edit2 } from "lucide-react";
 import { io } from "socket.io-client";
 import {
   FadeIn,
@@ -25,6 +25,15 @@ const WorldChat = () => {
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
+  // Check for cached pen name on component mount
+  useEffect(() => {
+    const cachedPenName = localStorage.getItem("worldChatPenName");
+    if (cachedPenName) {
+      setPenName(cachedPenName);
+      setShowPenNameModal(false);
+    }
+  }, []);
+
   // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -37,7 +46,7 @@ const WorldChat = () => {
   // Initialize socket connection when pen name is set
   useEffect(() => {
     console.log("useEffect triggered - penName:", penName, "socket:", socket);
-    if (penName && !socket) {
+    if (penName && (!socket || (socket && !socket.connected))) {
       console.log("🔄 Creating new socket connection...");
       // Always connect to the backend for Socket.io
       const socketURL = "http://localhost:5000";
@@ -47,17 +56,20 @@ const WorldChat = () => {
 
       const newSocket = io(socketURL, {
         query: { penName },
-        timeout: 10000, // Reduced from 30s to 10s
-        forceNew: false, // Changed to false for better performance
+        timeout: 3000, // Reduced from 10s to 3s for faster connection
+        forceNew: false,
         reconnection: true,
-        reconnectionAttempts: 3, // Reduced attempts
-        reconnectionDelay: 500, // Faster reconnection
-        reconnectionDelayMax: 2000, // Shorter max delay
+        reconnectionAttempts: 5, // More attempts for reliability
+        reconnectionDelay: 100, // Much faster reconnection (100ms)
+        reconnectionDelayMax: 1000, // Shorter max delay (1s)
         autoConnect: true,
-        transports: ["websocket", "polling"], // WebSocket first for speed
-        upgrade: true,
-        rememberUpgrade: true,
-        maxReconnectionAttempts: 3,
+        transports: ["websocket"], // WebSocket only for speed
+        upgrade: false, // Disable upgrade to prevent delays
+        rememberUpgrade: false,
+        maxReconnectionAttempts: 5,
+        // Faster ping settings
+        pingTimeout: 5000, // 5s ping timeout
+        pingInterval: 2500, // 2.5s ping interval
       });
 
       console.log("Socket created:", newSocket);
@@ -136,28 +148,7 @@ const WorldChat = () => {
         setConnectionStatus("error");
       });
 
-      // Add connection timeout with better logic - reduced to 8 seconds
-      const connectionTimeout = setTimeout(() => {
-        console.log("🔍 Checking socket state after 8 seconds:");
-        console.log("Socket connected:", newSocket.connected);
-        console.log("Socket ID:", newSocket.id);
-        console.log("Socket readyState:", newSocket.readyState);
-
-        if (!newSocket.connected) {
-          console.error("Socket connection timeout after 8 seconds");
-          setIsConnected(false);
-          setConnectionStatus("error");
-          // Try to reconnect manually
-          newSocket.connect();
-        }
-      }, 8000);
-
-      // Clear timeout if connection is successful
-      newSocket.on("connect", () => {
-        clearTimeout(connectionTimeout);
-        setConnectionStatus("connected");
-      });
-
+      // Set up event listeners
       newSocket.on("message", (message) => {
         setMessages((prev) => [...prev, message]);
       });
@@ -204,12 +195,21 @@ const WorldChat = () => {
       console.log("🔗 Setting socket in state...");
       setSocket(newSocket);
 
-      return () => {
-        console.log("🧹 Cleaning up socket connection...");
-        newSocket.close();
-      };
+      // Don't return cleanup function here - let it persist
+    } else if (penName && socket && socket.connected) {
+      console.log("✅ Socket already connected, skipping creation");
     }
-  }, [penName]); // Removed socket from dependencies to prevent recreation
+  }, [penName]); // Only depend on penName, not socket
+
+  // Cleanup socket when component unmounts
+  useEffect(() => {
+    return () => {
+      if (socket) {
+        console.log("🧹 Component unmounting - cleaning up socket...");
+        socket.disconnect();
+      }
+    };
+  }, [socket]);
 
   const handlePenNameSubmit = async (e) => {
     e.preventDefault();
@@ -287,6 +287,11 @@ const WorldChat = () => {
     }
   };
 
+  const openChangePenNameModal = () => {
+    setNewPenName(penName); // Pre-fill with current pen name
+    setShowChangePenNameModal(true);
+  };
+
   const handleLogout = () => {
     // Disconnect socket
     if (socket) {
@@ -301,6 +306,9 @@ const WorldChat = () => {
     setMessages([]);
     setIsConnected(false);
     setConnectionStatus("disconnected");
+
+    // Show confirmation
+    alert("Logged out successfully! You can now choose a new pen name.");
   };
 
   const handleSendMessage = (e) => {
@@ -415,26 +423,43 @@ const WorldChat = () => {
         </h1>
         <p className="text-gray-600 font-['Comic_Sans_MS']">
           Chat with the world using your pen name:{" "}
-          <span className="font-semibold text-blue-600">{penName}</span>
+          <button
+            onClick={openChangePenNameModal}
+            className="font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 mx-auto mt-1 group"
+          >
+            <span>{penName}</span>
+            <Edit2
+              size={14}
+              className="opacity-0 group-hover:opacity-100 transition-opacity"
+            />
+          </button>
         </p>
-        <div className="flex items-center justify-center gap-2 mt-2">
-          <div
-            className={`w-2 h-2 rounded-full ${
-              connectionStatus === "connected"
-                ? "bg-green-500"
-                : connectionStatus === "connecting"
-                ? "bg-yellow-500"
-                : connectionStatus === "error"
-                ? "bg-red-500"
-                : "bg-gray-500"
-            }`}
-          ></div>
-          <span className="text-sm text-gray-600 font-['Comic_Sans_MS']">
-            {connectionStatus === "connected" && "Connected"}
-            {connectionStatus === "connecting" && "Connecting..."}
-            {connectionStatus === "disconnected" && "Disconnected"}
-            {connectionStatus === "error" && "Connection Error"}
-          </span>
+        <div className="flex items-center justify-center gap-4 mt-3">
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                connectionStatus === "connected"
+                  ? "bg-green-500"
+                  : connectionStatus === "connecting"
+                  ? "bg-yellow-500"
+                  : connectionStatus === "error"
+                  ? "bg-red-500"
+                  : "bg-gray-500"
+              }`}
+            ></div>
+            <span className="text-sm text-gray-600 font-['Comic_Sans_MS']">
+              {connectionStatus === "connected" && "Connected"}
+              {connectionStatus === "connecting" && "Connecting..."}
+              {connectionStatus === "disconnected" && "Disconnected"}
+              {connectionStatus === "error" && "Connection Error"}
+            </span>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="text-sm text-red-600 hover:text-red-700 hover:underline font-['Comic_Sans_MS']"
+          >
+            Logout
+          </button>
         </div>
       </div>
 
@@ -538,6 +563,69 @@ const WorldChat = () => {
           </div>
         </div>
       </div>
+
+      {/* Change Pen Name Modal */}
+      {showChangePenNameModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 border border-gray-200 max-w-sm sm:max-w-md w-full mx-4">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="w-8 h-8 text-white" />
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 font-['Comic_Sans_MS'] mb-2">
+                Change Pen Name
+              </h1>
+              <p className="text-sm sm:text-base text-gray-600 font-['Comic_Sans_MS']">
+                Choose a new pen name for your chat identity
+              </p>
+              <p className="text-sm text-gray-500 mt-2 font-['Comic_Sans_MS']">
+                Current pen name:{" "}
+                <span className="font-semibold text-blue-600">{penName}</span>
+              </p>
+            </div>
+
+            <form onSubmit={handleChangePenName} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="newPenName"
+                  className="block text-sm font-medium text-gray-700 font-['Comic_Sans_MS'] mb-2"
+                >
+                  New Pen Name
+                </label>
+                <input
+                  type="text"
+                  id="newPenName"
+                  value={newPenName}
+                  onChange={(e) => setNewPenName(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-['Comic_Sans_MS'] text-base"
+                  placeholder="Enter new pen name..."
+                  maxLength={20}
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1 font-['Comic_Sans_MS']">
+                  Choose a unique name (max 20 characters)
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowChangePenNameModal(false)}
+                  className="flex-1 bg-gray-500 text-white py-3 px-6 rounded-lg font-semibold font-['Comic_Sans_MS'] text-base hover:bg-gray-600 transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-500 text-white py-3 px-6 rounded-lg font-semibold font-['Comic_Sans_MS'] text-base hover:bg-blue-600 transition-colors duration-200"
+                >
+                  Change Name
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

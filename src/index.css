@@ -40,6 +40,7 @@
     min-height: 400px;
     display: flex;
     flex-direction: column;
+    border: 2px solid #ef4444;
   }
 
   .post-card-content {
@@ -103,5 +104,16 @@
 
   .to-red-500 {
     --tw-gradient-to: #ef4444;
+  }
+
+  /* Mobile-optimized animations */
+  @media (max-width: 768px) {
+    .animate-pulse {
+      animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .animate-ping {
+      animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
   }
 }
