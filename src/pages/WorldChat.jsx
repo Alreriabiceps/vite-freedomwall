@@ -154,27 +154,13 @@ const WorldChat = () => {
       });
 
       newSocket.on("userJoined", (user) => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now(),
-            type: "system",
-            content: `${user.penName} joined the chat`,
-            timestamp: new Date().toISOString(),
-          },
-        ]);
+        // Don't show join/leave messages in chat
+        console.log(`${user.penName} joined the chat`);
       });
 
       newSocket.on("userLeft", (user) => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now(),
-            type: "system",
-            content: `${user.penName} left the chat`,
-            timestamp: new Date().toISOString(),
-          },
-        ]);
+        // Don't show join/leave messages in chat
+        console.log(`${user.penName} left the chat`);
       });
 
       newSocket.on("typingStart", (user) => {
@@ -485,10 +471,14 @@ const WorldChat = () => {
         {/* Chat Messages */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 h-[500px] md:h-[600px] flex flex-col">
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6">
             <StaggerContainer>
               {messages.map((message, index) => (
-                <StaggerItem key={message.id || index} delay={index * 0.1}>
+                <StaggerItem
+                  key={message.id || index}
+                  delay={index * 0.1}
+                  className="mb-2 sm:mb-3"
+                >
                   {message.type === "system" ? (
                     <div className="text-center">
                       <span className="inline-block bg-gray-100 text-gray-600 px-2.5 sm:px-3 py-1 sm:py-1 rounded-full text-xs sm:text-sm font-['Comic_Sans_MS']">
