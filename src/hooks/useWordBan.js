@@ -147,12 +147,12 @@ export const useWordBan = (isAuthenticated) => {
     setShowAddForm(false);
   };
 
-  // Fetch banned words when adminKey changes
+  // Fetch banned words when authentication status changes
   useEffect(() => {
     if (isAuthenticated) {
       fetchBannedWords();
     }
-  }, [adminKey, fetchBannedWords]);
+  }, [isAuthenticated, fetchBannedWords]);
 
   return {
     bannedWords,

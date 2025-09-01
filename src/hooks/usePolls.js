@@ -90,12 +90,12 @@ export const usePolls = (isAuthenticated) => {
     }
   };
 
-  // Fetch polls when adminKey changes
+  // Fetch polls when authentication status changes
   useEffect(() => {
     if (isAuthenticated) {
       fetchPolls();
     }
-  }, [adminKey, fetchPolls]);
+  }, [isAuthenticated, fetchPolls]);
 
   return {
     polls,

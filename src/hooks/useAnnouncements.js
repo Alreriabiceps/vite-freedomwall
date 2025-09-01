@@ -158,12 +158,12 @@ export const useAnnouncements = (isAuthenticated) => {
     setShowCreateForm(false);
   };
 
-  // Fetch announcements when adminKey changes
+  // Fetch announcements when authentication status changes
   useEffect(() => {
     if (isAuthenticated) {
       fetchAnnouncements();
     }
-  }, [adminKey, fetchAnnouncements]);
+  }, [isAuthenticated, fetchAnnouncements]);
 
   return {
     announcements,

@@ -95,12 +95,12 @@ export const useContacts = (isAuthenticated) => {
     }
   };
 
-  // Fetch contact messages when adminKey changes
+  // Fetch contact messages when authentication status changes
   useEffect(() => {
     if (isAuthenticated) {
       fetchContactMessages();
     }
-  }, [adminKey, fetchContactMessages]);
+  }, [isAuthenticated, fetchContactMessages]);
 
   return {
     contactMessages,

@@ -115,7 +115,6 @@ function Admin() {
     }
   }, [
     isAuthenticated,
-    adminKey,
     fetchPosts,
     fetchStats,
     fetchContactMessages,

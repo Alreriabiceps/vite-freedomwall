@@ -136,12 +136,12 @@ export const usePosts = (isAuthenticated) => {
     }));
   };
 
-  // Fetch posts when adminKey changes
+  // Fetch posts when authentication status changes
   useEffect(() => {
     if (isAuthenticated) {
       fetchPosts();
     }
-  }, [adminKey, fetchPosts]);
+  }, [isAuthenticated, fetchPosts]);
 
   return {
     posts,
