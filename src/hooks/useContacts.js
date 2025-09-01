@@ -2,20 +2,18 @@ import { useState, useEffect, useCallback } from "react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 import { confirmAction } from "../utils/adminUtils";
 
-export const useContacts = (adminKey) => {
+export const useContacts = (isAuthenticated) => {
   const [contactMessages, setContactMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchContactMessages = useCallback(async () => {
-    if (!adminKey) return;
+    if (!isAuthenticated) return;
 
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.CONTACT_ADMIN, {
-        headers: {
-          "admin-key": adminKey,
-        },
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -30,7 +28,7 @@ export const useContacts = (adminKey) => {
       setLoading(false);
     }
     return 0;
-  }, [adminKey]);
+  }, [isAuthenticated]);
 
   const handleContactStatus = async (contactId, action, value = null) => {
     try {
@@ -50,7 +48,6 @@ export const useContacts = (adminKey) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "admin-key": adminKey,
           },
           body: JSON.stringify(body),
         }
@@ -80,9 +77,7 @@ export const useContacts = (adminKey) => {
         buildEndpoint(API_ENDPOINTS.CONTACT, `/${contactId}`),
         {
           method: "DELETE",
-          headers: {
-            "admin-key": adminKey,
-          },
+          headers: {},
         }
       );
 
@@ -102,7 +97,7 @@ export const useContacts = (adminKey) => {
 
   // Fetch contact messages when adminKey changes
   useEffect(() => {
-    if (adminKey) {
+    if (isAuthenticated) {
       fetchContactMessages();
     }
   }, [adminKey, fetchContactMessages]);

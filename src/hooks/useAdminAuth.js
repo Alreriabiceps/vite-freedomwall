@@ -7,14 +7,26 @@ export const useAdminAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Check if already authenticated
+  // Check if already authenticated via session
   useEffect(() => {
-    const savedKey = localStorage.getItem("adminKey");
-    if (savedKey) {
-      setIsAuthenticated(true);
-      setAdminKey(savedKey);
-    }
+    checkAuthStatus();
   }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.POSTS_ADMIN}/auth-check`, {
+        method: "GET",
+        credentials: "include", // Include cookies for session
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      // Silent fail - user is not authenticated
+      setIsAuthenticated(false);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -24,16 +36,19 @@ export const useAdminAuth = () => {
     setError(null);
 
     try {
-      // Test admin access by fetching admin posts
-      const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
+      // Login via secure endpoint that sets session cookie
+      const response = await fetch(`${API_ENDPOINTS.POSTS_ADMIN}/login`, {
+        method: "POST",
         headers: {
-          "admin-key": adminKey,
+          "Content-Type": "application/json",
         },
+        credentials: "include", // Include cookies for session
+        body: JSON.stringify({ adminKey }),
       });
 
       if (response.ok) {
         setIsAuthenticated(true);
-        localStorage.setItem("adminKey", adminKey);
+        setAdminKey(""); // Clear the input field for security
       } else {
         setError("Invalid admin key");
       }
@@ -44,14 +59,19 @@ export const useAdminAuth = () => {
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem("adminKey");
-    setAdminKey("");
-  };
-
-  const getCurrentAdminKey = () => {
-    return localStorage.getItem("adminKey");
+  const handleLogout = async () => {
+    try {
+      // Logout via secure endpoint that clears session
+      await fetch(`${API_ENDPOINTS.POSTS_ADMIN}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setIsAuthenticated(false);
+      setAdminKey("");
+    }
   };
 
   return {
@@ -62,6 +82,5 @@ export const useAdminAuth = () => {
     error,
     handleLogin,
     handleLogout,
-    getCurrentAdminKey,
   };
 };

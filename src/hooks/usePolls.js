@@ -2,20 +2,18 @@ import { useState, useEffect, useCallback } from "react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 import { confirmAction } from "../utils/adminUtils";
 
-export const usePolls = (adminKey) => {
+export const usePolls = (isAuthenticated) => {
   const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchPolls = useCallback(async () => {
-    if (!adminKey) return;
+    if (!isAuthenticated) return;
 
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.POLLS_ADMIN, {
-        headers: {
-          "admin-key": adminKey,
-        },
+        credentials: "include",
       });
       if (response.ok) {
         const data = await response.json();
@@ -27,7 +25,7 @@ export const usePolls = (adminKey) => {
     } finally {
       setLoading(false);
     }
-  }, [adminKey]);
+  }, [isAuthenticated]);
 
   const handlePollStatus = async (pollId, isActive) => {
     try {
@@ -37,7 +35,6 @@ export const usePolls = (adminKey) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "admin-key": adminKey,
           },
           body: JSON.stringify({ isActive }),
         }
@@ -72,9 +69,7 @@ export const usePolls = (adminKey) => {
         buildEndpoint(API_ENDPOINTS.POLLS, `/${pollId}`),
         {
           method: "DELETE",
-          headers: {
-            "admin-key": adminKey,
-          },
+          headers: {},
         }
       );
 
@@ -97,7 +92,7 @@ export const usePolls = (adminKey) => {
 
   // Fetch polls when adminKey changes
   useEffect(() => {
-    if (adminKey) {
+    if (isAuthenticated) {
       fetchPolls();
     }
   }, [adminKey, fetchPolls]);

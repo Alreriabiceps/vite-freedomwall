@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { API_ENDPOINTS } from "../config/api";
 
-export const useStats = (adminKey) => {
+export const useStats = (isAuthenticated) => {
   const [stats, setStats] = useState({
     totalPosts: 0,
     flaggedPosts: 0,
@@ -15,14 +15,12 @@ export const useStats = (adminKey) => {
   const [loading, setLoading] = useState(false);
 
   const fetchStats = useCallback(async () => {
-    if (!adminKey) return;
+    if (!isAuthenticated) return;
 
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
-        headers: {
-          "admin-key": adminKey,
-        },
+        credentials: "include", // Include session cookies
       });
       if (response.ok) {
         const data = await response.json();
@@ -50,7 +48,7 @@ export const useStats = (adminKey) => {
     } finally {
       setLoading(false);
     }
-  }, [adminKey]);
+  }, [isAuthenticated]);
 
   const updateContactCount = useCallback((count) => {
     setStats((prev) => ({
@@ -73,12 +71,12 @@ export const useStats = (adminKey) => {
     }));
   }, []);
 
-  // Fetch stats when adminKey changes
+  // Fetch stats when authentication status changes
   useEffect(() => {
-    if (adminKey) {
+    if (isAuthenticated) {
       fetchStats();
     }
-  }, [adminKey, fetchStats]);
+  }, [isAuthenticated, fetchStats]);
 
   return {
     stats,

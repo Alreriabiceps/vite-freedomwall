@@ -2,21 +2,19 @@ import { useState, useEffect, useCallback } from "react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 import { confirmAction } from "../utils/adminUtils";
 
-export const usePosts = (adminKey) => {
+export const usePosts = (isAuthenticated) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [expandedComments, setExpandedComments] = useState({});
 
   const fetchPosts = useCallback(async () => {
-    if (!adminKey) return;
+    if (!isAuthenticated) return;
 
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.POSTS_ADMIN, {
-        headers: {
-          "admin-key": adminKey,
-        },
+        credentials: "include",
       });
       if (response.ok) {
         const data = await response.json();
@@ -28,7 +26,7 @@ export const usePosts = (adminKey) => {
     } finally {
       setLoading(false);
     }
-  }, [adminKey]);
+  }, [isAuthenticated]);
 
   const handleModerate = async (postId, action) => {
     try {
@@ -47,9 +45,7 @@ export const usePosts = (adminKey) => {
           buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}`),
           {
             method: "DELETE",
-            headers: {
-              "admin-key": adminKey,
-            },
+            headers: {},
           }
         );
       } else {
@@ -68,7 +64,6 @@ export const usePosts = (adminKey) => {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              "admin-key": adminKey,
             },
             body: JSON.stringify(body),
           }
@@ -114,9 +109,7 @@ export const usePosts = (adminKey) => {
         ),
         {
           method: "DELETE",
-          headers: {
-            "admin-key": adminKey,
-          },
+          headers: {},
         }
       );
 
@@ -145,7 +138,7 @@ export const usePosts = (adminKey) => {
 
   // Fetch posts when adminKey changes
   useEffect(() => {
-    if (adminKey) {
+    if (isAuthenticated) {
       fetchPosts();
     }
   }, [adminKey, fetchPosts]);

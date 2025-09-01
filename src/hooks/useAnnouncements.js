@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 import { confirmAction } from "../utils/adminUtils";
 
-export const useAnnouncements = (adminKey) => {
+export const useAnnouncements = (isAuthenticated) => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -16,14 +16,12 @@ export const useAnnouncements = (adminKey) => {
   });
 
   const fetchAnnouncements = useCallback(async () => {
-    if (!adminKey) return;
+    if (!isAuthenticated) return;
 
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.ANNOUNCEMENTS_ADMIN, {
-        headers: {
-          "admin-key": adminKey,
-        },
+        credentials: "include",
       });
       if (response.ok) {
         const data = await response.json();
@@ -35,7 +33,7 @@ export const useAnnouncements = (adminKey) => {
     } finally {
       setLoading(false);
     }
-  }, [adminKey]);
+  }, [isAuthenticated]);
 
   const handleAnnouncementStatus = async (announcementId, isActive) => {
     try {
@@ -45,7 +43,6 @@ export const useAnnouncements = (adminKey) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "admin-key": adminKey,
           },
           body: JSON.stringify({ isActive }),
         }
@@ -82,9 +79,7 @@ export const useAnnouncements = (adminKey) => {
         buildEndpoint(API_ENDPOINTS.ANNOUNCEMENTS, `/${announcementId}`),
         {
           method: "DELETE",
-          headers: {
-            "admin-key": adminKey,
-          },
+          headers: {},
         }
       );
 
@@ -115,7 +110,6 @@ export const useAnnouncements = (adminKey) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "admin-key": adminKey,
         },
         body: JSON.stringify({
           ...newAnnouncement,
@@ -166,7 +160,7 @@ export const useAnnouncements = (adminKey) => {
 
   // Fetch announcements when adminKey changes
   useEffect(() => {
-    if (adminKey) {
+    if (isAuthenticated) {
       fetchAnnouncements();
     }
   }, [adminKey, fetchAnnouncements]);

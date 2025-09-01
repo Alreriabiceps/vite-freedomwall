@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { API_ENDPOINTS, buildEndpoint } from "../config/api";
 import { confirmAction } from "../utils/adminUtils";
 
-export const useWordBan = (adminKey) => {
+export const useWordBan = (isAuthenticated) => {
   const [bannedWords, setBannedWords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -12,14 +12,12 @@ export const useWordBan = (adminKey) => {
   });
 
   const fetchBannedWords = useCallback(async () => {
-    if (!adminKey) return;
+    if (!isAuthenticated) return;
 
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.BANNED_WORDS_ADMIN, {
-        headers: {
-          "admin-key": adminKey,
-        },
+        credentials: "include",
       });
       if (response.ok) {
         const data = await response.json();
@@ -31,7 +29,7 @@ export const useWordBan = (adminKey) => {
     } finally {
       setLoading(false);
     }
-  }, [adminKey]);
+  }, [isAuthenticated]);
 
   const handleAddWord = async (e, wordData = null) => {
     if (e) e.preventDefault();
@@ -42,7 +40,6 @@ export const useWordBan = (adminKey) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "admin-key": adminKey,
         },
         body: JSON.stringify({
           ...wordToAdd,
@@ -87,9 +84,7 @@ export const useWordBan = (adminKey) => {
         buildEndpoint(API_ENDPOINTS.BANNED_WORDS, `/${wordId}`),
         {
           method: "DELETE",
-          headers: {
-            "admin-key": adminKey,
-          },
+          headers: {},
         }
       );
 
@@ -115,7 +110,6 @@ export const useWordBan = (adminKey) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "admin-key": adminKey,
           },
           body: JSON.stringify(updates),
         }
@@ -155,7 +149,7 @@ export const useWordBan = (adminKey) => {
 
   // Fetch banned words when adminKey changes
   useEffect(() => {
-    if (adminKey) {
+    if (isAuthenticated) {
       fetchBannedWords();
     }
   }, [adminKey, fetchBannedWords]);

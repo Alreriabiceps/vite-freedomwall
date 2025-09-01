@@ -42,7 +42,7 @@ function Admin() {
     handleModerate,
     handleDeleteComment,
     toggleComments,
-  } = usePosts(adminKey);
+  } = usePosts(isAuthenticated);
   const {
     stats,
     loading: statsLoading,
@@ -50,7 +50,7 @@ function Admin() {
     updateContactCount,
     updatePollCount,
     updateAnnouncementCount,
-  } = useStats(adminKey);
+  } = useStats(isAuthenticated);
   const {
     polls,
     loading: pollsLoading,
@@ -58,7 +58,7 @@ function Admin() {
     fetchPolls,
     handlePollStatus,
     handleDeletePoll,
-  } = usePolls(adminKey);
+  } = usePolls(isAuthenticated);
   const {
     announcements,
     loading: announcementsLoading,
@@ -72,7 +72,7 @@ function Admin() {
     handleCreateAnnouncement,
     handleInputChange,
     resetForm,
-  } = useAnnouncements(adminKey);
+  } = useAnnouncements(isAuthenticated);
   const {
     contactMessages,
     loading: contactsLoading,
@@ -80,7 +80,7 @@ function Admin() {
     fetchContactMessages,
     handleContactStatus,
     handleContactDelete,
-  } = useContacts(adminKey);
+  } = useContacts(isAuthenticated);
 
   const {
     bannedWords,
@@ -95,11 +95,11 @@ function Admin() {
     handleUpdateWord,
     handleInputChange: handleWordInputChange,
     resetForm: resetWordForm,
-  } = useWordBan(adminKey);
+  } = useWordBan(isAuthenticated);
 
   // Update stats when data changes
   useEffect(() => {
-    if (isAuthenticated && adminKey) {
+    if (isAuthenticated) {
       // Fetch all data and update stats
       const fetchAllData = async () => {
         await Promise.all([
