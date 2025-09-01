@@ -10,6 +10,7 @@ import SimpleNavbar from "./components/SimpleNavbar";
 import BottomNavigation from "./components/BottomNavigation";
 import Footer from "./components/Footer";
 import DisclaimerAgreement from "./components/DisclaimerAgreement";
+import AnnouncementBar from "./components/AnnouncementBar";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
 import CreatePoll from "./pages/CreatePoll";
@@ -95,6 +96,7 @@ function App() {
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="App">
         <ConditionalNavbar />
+        <AnnouncementBar />
 
         <main className="pb-20 md:pb-0">
           <AnimatePresence mode="wait">
