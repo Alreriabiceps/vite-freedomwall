@@ -185,7 +185,7 @@ function SimpleNavbar() {
                       </span>
                     )}
                     {item.isNew && (
-                      <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 new-badge-glow">
+                      <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 new-badge-wiggle">
                         NEW
                       </span>
                     )}

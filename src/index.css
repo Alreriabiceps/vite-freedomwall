@@ -1,6 +1,9 @@
 /* Import Comic Sans MS font */
 @import url("https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap");
 
+/* Import custom animations */
+@import "./styles/animations.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
