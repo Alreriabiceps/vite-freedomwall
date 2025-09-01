@@ -7,6 +7,8 @@ import {
   Shield,
   Heart,
   MessageSquare,
+  Pin,
+  PinOff,
 } from "lucide-react";
 import { formatDate } from "../../utils/adminUtils";
 import CommentSection from "./CommentSection";
@@ -45,6 +47,12 @@ const PostCard = ({
                 Hidden
               </span>
             )}
+            {post.isPinned && (
+              <span className="flex items-center gap-1 text-blue-600 text-xs sm:text-sm">
+                <Pin size={14} />
+                Pinned
+              </span>
+            )}
           </div>
           <p className="text-gray-700 font-['Comic_Sans_MS'] mb-3 text-base md:text-lg">
             {post.message}
@@ -68,6 +76,23 @@ const PostCard = ({
         </div>
 
         <div className="flex items-center gap-2 sm:ml-4">
+          {post.isPinned ? (
+            <button
+              onClick={() => onModerate(post._id, "unpin")}
+              className="p-2 md:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Unpin post"
+            >
+              <PinOff size={16} />
+            </button>
+          ) : (
+            <button
+              onClick={() => onModerate(post._id, "pin")}
+              className="p-2 md:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Pin post"
+            >
+              <Pin size={16} />
+            </button>
+          )}
           {post.isHidden ? (
             <button
               onClick={() => onModerate(post._id, "unhide")}

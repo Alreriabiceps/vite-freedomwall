@@ -1,36 +1,61 @@
 import { FadeIn, SlideIn } from "../components/AnimatedComponents";
-import { Shield, Users, Heart, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+import {
+  Shield,
+  Users,
+  Heart,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 
 const CommunityGuidelines = () => {
   const guidelines = [
     {
       icon: Shield,
       title: "Respect & Kindness",
-      description: "Treat everyone with respect. No bullying, harassment, or hate speech.",
-      examples: ["Be kind to others", "Respect different opinions", "No personal attacks"],
-      notAllowed: ["Bullying", "Name-calling", "Threats"]
+      description:
+        "Treat everyone with respect. No bullying, harassment, or hate speech.",
+      examples: [
+        "Be kind to others",
+        "Respect different opinions",
+        "No personal attacks",
+      ],
+      notAllowed: ["Bullying", "Name-calling", "Threats"],
     },
     {
       icon: Users,
       title: "Appropriate Content",
       description: "Keep content family-friendly and suitable for all ages.",
-      examples: ["School discussions", "Positive messages", "Constructive feedback"],
-      notAllowed: ["Profanity", "Violence", "Adult content", "Drug references"]
+      examples: [
+        "School discussions",
+        "Positive messages",
+        "Constructive feedback",
+      ],
+      notAllowed: ["Profanity", "Violence", "Adult content", "Drug references"],
     },
     {
       icon: Heart,
       title: "Positive Environment",
-      description: "Create a supportive space for everyone in the school community.",
-      examples: ["Encourage others", "Share positive experiences", "Help classmates"],
-      notAllowed: ["Negative gossip", "Spreading rumors", "Creating drama"]
+      description:
+        "Create a supportive space for everyone in the school community.",
+      examples: [
+        "Encourage others",
+        "Share positive experiences",
+        "Help classmates",
+      ],
+      notAllowed: ["Negative gossip", "Spreading rumors", "Creating drama"],
     },
     {
       icon: AlertTriangle,
       title: "No Harmful Content",
       description: "Never post content that could harm yourself or others.",
-      examples: ["Seek help if needed", "Report concerning posts", "Support struggling peers"],
-      notAllowed: ["Self-harm content", "Violence", "Dangerous challenges"]
-    }
+      examples: [
+        "Seek help if needed",
+        "Report concerning posts",
+        "Support struggling peers",
+      ],
+      notAllowed: ["Self-harm content", "Violence", "Dangerous challenges"],
+    },
   ];
 
   const consequences = [
@@ -39,26 +64,26 @@ const CommunityGuidelines = () => {
       icon: AlertTriangle,
       color: "text-yellow-600",
       bgColor: "bg-yellow-50",
-      description: "First violation - content removed with warning"
+      description: "First violation - content removed with warning",
     },
     {
       level: "Temporary Ban",
       icon: XCircle,
       color: "text-orange-600",
       bgColor: "bg-orange-50",
-      description: "Repeated violations - 24-48 hour suspension"
+      description: "Repeated violations - 24-48 hour suspension",
     },
     {
       level: "Permanent Ban",
       icon: XCircle,
       color: "text-red-600",
       bgColor: "bg-red-50",
-      description: "Severe or repeated violations - permanent removal"
-    }
+      description: "Severe or repeated violations - permanent removal",
+    },
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 md:px-6 py-8">
+    <div className="w-full max-w-4xl mx-auto px-4 md:px-6 pt-20 pb-8">
       {/* Header */}
       <FadeIn delay={0.2} className="text-center mb-12">
         <div className="mb-6">
@@ -68,9 +93,9 @@ const CommunityGuidelines = () => {
           Community Guidelines
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto font-['Comic_Sans_MS']">
-          Help us maintain a safe, respectful, and positive environment for everyone.
-          These guidelines ensure our Freedom Wall remains a place where students can
-          express themselves freely while respecting others.
+          Help us maintain a safe, respectful, and positive environment for
+          everyone. These guidelines ensure our Freedom Wall remains a place
+          where students can express themselves freely while respecting others.
         </p>
       </FadeIn>
 
@@ -90,7 +115,7 @@ const CommunityGuidelines = () => {
                   <p className="text-gray-600 mb-4 font-['Comic_Sans_MS']">
                     {guideline.description}
                   </p>
-                  
+
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <h4 className="font-semibold text-green-700 mb-2 flex items-center gap-2 font-['Comic_Sans_MS']">
@@ -99,14 +124,17 @@ const CommunityGuidelines = () => {
                       </h4>
                       <ul className="space-y-1">
                         {guideline.examples.map((example, i) => (
-                          <li key={i} className="text-sm text-gray-600 flex items-center gap-2 font-['Comic_Sans_MS']">
+                          <li
+                            key={i}
+                            className="text-sm text-gray-600 flex items-center gap-2 font-['Comic_Sans_MS']"
+                          >
                             <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                             {example}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-semibold text-red-700 mb-2 flex items-center gap-2 font-['Comic_Sans_MS']">
                         <XCircle className="w-4 h-4" />
@@ -114,7 +142,10 @@ const CommunityGuidelines = () => {
                       </h4>
                       <ul className="space-y-1">
                         {guideline.notAllowed.map((item, i) => (
-                          <li key={i} className="text-sm text-gray-600 flex items-center gap-2 font-['Comic_Sans_MS']">
+                          <li
+                            key={i}
+                            className="text-sm text-gray-600 flex items-center gap-2 font-['Comic_Sans_MS']"
+                          >
                             <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
                             {item}
                           </li>
@@ -137,9 +168,16 @@ const CommunityGuidelines = () => {
           </h2>
           <div className="grid md:grid-cols-3 gap-4">
             {consequences.map((consequence, index) => (
-              <div key={index} className={`${consequence.bgColor} rounded-lg p-4 text-center`}>
-                <consequence.icon className={`w-8 h-8 mx-auto mb-3 ${consequence.color}`} />
-                <h3 className={`font-bold mb-2 ${consequence.color} font-['Comic_Sans_MS']`}>
+              <div
+                key={index}
+                className={`${consequence.bgColor} rounded-lg p-4 text-center`}
+              >
+                <consequence.icon
+                  className={`w-8 h-8 mx-auto mb-3 ${consequence.color}`}
+                />
+                <h3
+                  className={`font-bold mb-2 ${consequence.color} font-['Comic_Sans_MS']`}
+                >
                   {consequence.level}
                 </h3>
                 <p className="text-sm text-gray-700 font-['Comic_Sans_MS']">
@@ -152,7 +190,10 @@ const CommunityGuidelines = () => {
       </FadeIn>
 
       {/* Reporting Section */}
-      <FadeIn delay={0.8} className="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+      <FadeIn
+        delay={0.8}
+        className="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100"
+      >
         <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center font-['Comic_Sans_MS']">
           How to Report Violations
         </h2>
@@ -162,8 +203,9 @@ const CommunityGuidelines = () => {
               Report Button
             </h3>
             <p className="text-gray-600 mb-4 font-['Comic_Sans_MS']">
-              Use the report button (🚩) on any post or comment that violates these guidelines.
-              Your report helps us maintain a safe environment.
+              Use the report button (🚩) on any post or comment that violates
+              these guidelines. Your report helps us maintain a safe
+              environment.
             </p>
             <div className="bg-gray-50 rounded-lg p-3 text-center">
               <p className="text-sm text-gray-600 font-['Comic_Sans_MS']">
@@ -171,7 +213,7 @@ const CommunityGuidelines = () => {
               </p>
             </div>
           </div>
-          
+
           <div>
             <h3 className="font-semibold text-gray-900 mb-3 font-['Comic_Sans_MS']">
               What Happens Next
@@ -193,8 +235,8 @@ const CommunityGuidelines = () => {
             Questions or Concerns?
           </h3>
           <p className="text-gray-600 mb-4 font-['Comic_Sans_MS']">
-            If you have questions about these guidelines or need to report a serious issue,
-            please contact us through the Contact page.
+            If you have questions about these guidelines or need to report a
+            serious issue, please contact us through the Contact page.
           </p>
           <a
             href="/contact"

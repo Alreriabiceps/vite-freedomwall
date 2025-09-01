@@ -57,7 +57,7 @@ function Create() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto pt-6">
       {/* Header */}
       <div className="text-center mb-6 md:mb-8">
         <div className="mb-4 md:mb-6">

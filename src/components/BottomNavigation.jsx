@@ -10,6 +10,7 @@ import {
   Menu,
   X,
   Coffee,
+  MessageSquare,
 } from "lucide-react";
 
 function BottomNavigation() {
@@ -45,6 +46,12 @@ function BottomNavigation() {
       label: "Polls",
       icon: BarChart3,
       color: "text-purple-600",
+    },
+    {
+      to: "/world-chat",
+      label: "Chat",
+      icon: MessageSquare,
+      color: "text-indigo-600",
     },
   ];
 

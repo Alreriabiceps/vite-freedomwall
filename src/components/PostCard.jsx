@@ -6,11 +6,13 @@ import {
   MoreHorizontal,
   Star,
   TrendingUp,
+  Pin,
 } from "lucide-react";
 import PostModal from "./PostModal";
 import LazyContent from "./LazyContent";
 import { InteractiveCard } from "./InteractiveElements";
 import { getUserIdentifier } from "../utils/userIdentifier";
+import ElectricBorder from "./Animations/ElectricBorder/ElectricBorder";
 
 function PostCard({
   post,
@@ -157,75 +159,227 @@ function PostCard({
   return (
     <>
       {/* Instagram/Facebook Style Card with Popularity Indicators */}
-      <InteractiveCard
-        className={`post-card group relative ${styles.border} ${styles.shadow}`}
-      >
-        {/* Popularity Badge */}
-        {styles.badge && (
-          <div
-            className={`absolute top-3 right-3 z-10 ${styles.badge.bg} ${styles.badge.color} px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 font-['Comic_Sans_MS']`}
+      {post.isPinned ? (
+        <ElectricBorder
+          color="#EF4444"
+          speed={1.5}
+          chaos={0.8}
+          thickness={4}
+          className="rounded-xl"
+        >
+          <InteractiveCard
+            className={`post-card-pinned group relative ${styles.shadow}`}
           >
-            <styles.badge.icon size={12} />
-            {styles.badge.text}
-          </div>
-        )}
-
-        {/* Header */}
-        <div className="p-4 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 text-gray-600"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+            {/* Popularity Badge */}
+            {styles.badge && (
+              <div
+                className={`absolute top-3 right-3 z-10 ${styles.badge.bg} ${styles.badge.color} px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 font-['Comic_Sans_MS']`}
+              >
+                <styles.badge.icon size={12} />
+                {styles.badge.text}
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 text-lg sm:text-xl font-['Arial'] sm:font-['Comic_Sans_MS']">
-                  {post.name || "Anonymous"}
-                </h3>
-                <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
-                  {formatDate(post.createdAt)}
-                </span>
+            )}
+
+            {/* Header */}
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-gray-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-gray-900 text-lg sm:text-xl font-['Arial'] sm:font-['Comic_Sans_MS']">
+                        {post.name || "Anonymous"}
+                      </h3>
+                      <div className="flex items-center gap-1 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">
+                        <Pin size={12} />
+                        <span className="font-['Comic_Sans_MS']">Pinned</span>
+                      </div>
+                    </div>
+                    <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                      {formatDate(post.createdAt)}
+                    </span>
+                  </div>
+                </div>
+                <button className="p-1 hover:bg-gray-100 rounded-full">
+                  <MoreHorizontal size={16} className="text-gray-400" />
+                </button>
               </div>
             </div>
-            <button className="p-1 hover:bg-gray-100 rounded-full">
-              <MoreHorizontal size={16} className="text-gray-400" />
-            </button>
-          </div>
-        </div>
 
-        {/* Content - Fixed height for consistency */}
-        <div className="post-card-content p-4 min-h-[120px] flex flex-col justify-center">
-          <p className="text-gray-800 text-lg sm:text-xl leading-relaxed line-clamp-4 font-['Arial'] sm:font-['Comic_Sans_MS']">
-            {post.message}
-          </p>
-          {post.message.length > 150 && (
-            <button
-              onClick={openPostModal}
-              className="text-blue-600 hover:text-blue-700 text-lg sm:text-xl font-medium mt-2 hover:underline font-['Arial'] sm:font-['Comic_Sans_MS']"
+            {/* Content - Fixed height for consistency */}
+            <div className="post-card-content p-4 min-h-[120px] flex flex-col justify-center">
+              <p className="text-gray-800 text-lg sm:text-xl leading-relaxed line-clamp-4 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                {post.message}
+              </p>
+              {post.message.length > 150 && (
+                <button
+                  onClick={openPostModal}
+                  className="text-blue-600 hover:text-blue-700 text-lg sm:text-xl font-medium mt-2 hover:underline font-['Arial'] sm:font-['Comic_Sans_MS']"
+                >
+                  Read more
+                </button>
+              )}
+            </div>
+
+            {/* Comment Preview Section - Fixed height for consistency */}
+            <div className="px-4 py-3 border-t border-gray-100 min-h-[80px] flex flex-col justify-center">
+              {post.comments && post.comments.length > 0 ? (
+                <div className="space-y-2">
+                  {/* Recent Comment */}
+                  <div className="flex items-start gap-2">
+                    <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg
+                        className="w-3 h-3 text-gray-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-base sm:text-lg font-medium text-gray-700 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                          {post.comments[0].name || "Anonymous"}
+                        </span>
+                        <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                          {formatDate(post.comments[0].createdAt)}
+                        </span>
+                      </div>
+                      <p className="text-base sm:text-lg text-gray-600 line-clamp-2 leading-relaxed font-['Arial'] sm:font-['Comic_Sans_MS']">
+                        {post.comments[0].message}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* View all comments button */}
+                  {post.comments.length > 1 && (
+                    <button
+                      onClick={openPostModal}
+                      className="text-blue-600 hover:text-blue-700 text-base sm:text-lg font-medium hover:underline flex items-center gap-1 font-['Arial'] sm:font-['Comic_Sans_MS']"
+                    >
+                      View all {post.comments.length} comments
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-2">
+                  <div className="flex items-center justify-center gap-2 text-gray-400 mb-1">
+                    <MessageSquare size={12} />
+                    <span className="text-base sm:text-lg font-['Arial'] sm:font-['Comic_Sans_MS']">
+                      No comments yet
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-lg text-gray-300 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                    Be the first to comment!
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="post-card-footer p-4 border-t border-gray-100">
+              {/* Stats */}
+              <div className="flex items-center gap-4 mb-3">
+                <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  <Heart size={18} className="text-red-500" />
+                  {post.likes || 0}
+                </span>
+                <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  <MessageSquare size={18} className="text-blue-500" />
+                  {post.comments ? post.comments.length : 0}
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleLike}
+                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <Heart
+                    size={20}
+                    className={
+                      post.userLiked
+                        ? "text-red-500 fill-red-500"
+                        : "text-gray-400"
+                    }
+                  />
+                  <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                    Like
+                  </span>
+                </button>
+                <button
+                  onClick={openPostModal}
+                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <MessageSquare size={20} className="text-gray-400" />
+                  <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                    Comment
+                  </span>
+                </button>
+                <button
+                  onClick={openPostModal}
+                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <Flag size={20} className="text-gray-400" />
+                  <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                    Report
+                  </span>
+                </button>
+              </div>
+            </div>
+          </InteractiveCard>
+        </ElectricBorder>
+      ) : (
+        <InteractiveCard
+          className={`post-card group relative ${styles.border} ${styles.shadow}`}
+        >
+          {/* Popularity Badge */}
+          {styles.badge && (
+            <div
+              className={`absolute top-3 right-3 z-10 ${styles.badge.bg} ${styles.badge.color} px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 font-['Comic_Sans_MS']`}
             >
-              Read more
-            </button>
+              <styles.badge.icon size={12} />
+              {styles.badge.text}
+            </div>
           )}
-        </div>
 
-        {/* Comment Preview Section - Fixed height for consistency */}
-        <div className="px-4 py-3 border-t border-gray-100 min-h-[80px] flex flex-col justify-center">
-          {post.comments && post.comments.length > 0 ? (
-            <div className="space-y-2">
-              {/* Recent Comment */}
-              <div className="flex items-start gap-2">
-                <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+          {/* Header */}
+          <div className="p-4 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-3 h-3 text-gray-600"
+                    className="w-5 h-5 text-gray-600"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -236,110 +390,162 @@ function PostCard({
                     />
                   </svg>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-base sm:text-lg font-medium text-gray-700 font-['Arial'] sm:font-['Comic_Sans_MS']">
-                      {post.comments[0].name || "Anonymous"}
-                    </span>
-                    <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
-                      {formatDate(post.comments[0].createdAt)}
-                    </span>
-                  </div>
-                  <p className="text-base sm:text-lg text-gray-600 line-clamp-2 leading-relaxed font-['Arial'] sm:font-['Comic_Sans_MS']">
-                    {post.comments[0].message}
-                  </p>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-lg sm:text-xl font-['Arial'] sm:font-['Comic_Sans_MS']">
+                    {post.name || "Anonymous"}
+                  </h3>
+                  <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                    {formatDate(post.createdAt)}
+                  </span>
                 </div>
               </div>
+              <button className="p-1 hover:bg-gray-100 rounded-full">
+                <MoreHorizontal size={16} className="text-gray-400" />
+              </button>
+            </div>
+          </div>
 
-              {/* View all comments button */}
-              {post.comments.length > 1 && (
-                <button
-                  onClick={openPostModal}
-                  className="text-blue-600 hover:text-blue-700 text-base sm:text-lg font-medium hover:underline flex items-center gap-1 font-['Arial'] sm:font-['Comic_Sans_MS']"
-                >
-                  View all {post.comments.length} comments
-                  <svg
-                    className="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+          {/* Content - Fixed height for consistency */}
+          <div className="post-card-content p-4 min-h-[120px] flex flex-col justify-center">
+            <p className="text-gray-800 text-lg sm:text-xl leading-relaxed line-clamp-4 font-['Arial'] sm:font-['Comic_Sans_MS']">
+              {post.message}
+            </p>
+            {post.message.length > 150 && (
+              <button
+                onClick={openPostModal}
+                className="text-blue-600 hover:text-blue-700 text-lg sm:text-xl font-medium mt-2 hover:underline font-['Arial'] sm:font-['Comic_Sans_MS']"
+              >
+                Read more
+              </button>
+            )}
+          </div>
+
+          {/* Comment Preview Section - Fixed height for consistency */}
+          <div className="px-4 py-3 border-t border-gray-100 min-h-[80px] flex flex-col justify-center">
+            {post.comments && post.comments.length > 0 ? (
+              <div className="space-y-2">
+                {/* Recent Comment */}
+                <div className="flex items-start gap-2">
+                  <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg
+                      className="w-3 h-3 text-gray-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-base sm:text-lg font-medium text-gray-700 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                        {post.comments[0].name || "Anonymous"}
+                      </span>
+                      <span className="text-base sm:text-lg text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                        {formatDate(post.comments[0].createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-base sm:text-lg text-gray-600 line-clamp-2 leading-relaxed font-['Arial'] sm:font-['Comic_Sans_MS']">
+                      {post.comments[0].message}
+                    </p>
+                  </div>
+                </div>
+
+                {/* View all comments button */}
+                {post.comments.length > 1 && (
+                  <button
+                    onClick={openPostModal}
+                    className="text-blue-600 hover:text-blue-700 text-base sm:text-lg font-medium hover:underline flex items-center gap-1 font-['Arial'] sm:font-['Comic_Sans_MS']"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-2">
-              <div className="flex items-center justify-center gap-2 text-gray-400 mb-1">
-                <MessageSquare size={12} />
-                <span className="text-base sm:text-lg font-['Arial'] sm:font-['Comic_Sans_MS']">
-                  No comments yet
-                </span>
+                    View all {post.comments.length} comments
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                )}
               </div>
-              <p className="text-base sm:text-lg text-gray-300 font-['Arial'] sm:font-['Comic_Sans_MS']">
-                Be the first to comment!
-              </p>
+            ) : (
+              <div className="text-center py-2">
+                <div className="flex items-center justify-center gap-2 text-gray-400 mb-1">
+                  <MessageSquare size={12} />
+                  <span className="text-base sm:text-lg font-['Arial'] sm:font-['Comic_Sans_MS']">
+                    No comments yet
+                  </span>
+                </div>
+                <p className="text-base sm:text-lg text-gray-300 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  Be the first to comment!
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="post-card-footer p-4 border-t border-gray-100">
+            {/* Stats */}
+            <div className="flex items-center gap-4 mb-3">
+              <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                <Heart size={18} className="text-red-500" />
+                {post.likes || 0}
+              </span>
+              <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                <MessageSquare size={18} className="text-blue-500" />
+                {post.comments ? post.comments.length : 0}
+              </span>
             </div>
-          )}
-        </div>
 
-        {/* Footer */}
-        <div className="post-card-footer p-4 border-t border-gray-100">
-          {/* Stats */}
-          <div className="flex items-center gap-4 mb-3">
-            <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
-              <Heart size={18} className="text-red-500" />
-              {post.likes || 0}
-            </span>
-            <span className="flex items-center gap-1 text-lg sm:text-xl text-gray-500 font-['Arial'] sm:font-['Comic_Sans_MS']">
-              <MessageSquare size={18} className="text-blue-500" />
-              {post.comments ? post.comments.length : 0}
-            </span>
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleLike}
+                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Heart
+                  size={20}
+                  className={
+                    post.userLiked
+                      ? "text-red-500 fill-red-500"
+                      : "text-gray-400"
+                  }
+                />
+                <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  Like
+                </span>
+              </button>
+              <button
+                onClick={openPostModal}
+                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <MessageSquare size={20} className="text-gray-400" />
+                <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  Comment
+                </span>
+              </button>
+              <button
+                onClick={openPostModal}
+                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <Flag size={20} className="text-gray-400" />
+                <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
+                  Report
+                </span>
+              </button>
+            </div>
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleLike}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <Heart
-                size={20}
-                className={
-                  post.userLiked ? "text-red-500 fill-red-500" : "text-gray-400"
-                }
-              />
-              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
-                Like
-              </span>
-            </button>
-            <button
-              onClick={openPostModal}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <MessageSquare size={20} className="text-gray-400" />
-              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
-                Comment
-              </span>
-            </button>
-            <button
-              onClick={openPostModal}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <Flag size={20} className="text-gray-400" />
-              <span className="text-lg sm:text-xl text-gray-600 font-['Arial'] sm:font-['Comic_Sans_MS']">
-                Report
-              </span>
-            </button>
-          </div>
-        </div>
-      </InteractiveCard>
+        </InteractiveCard>
+      )}
 
       {/* Post Modal */}
       <PostModal

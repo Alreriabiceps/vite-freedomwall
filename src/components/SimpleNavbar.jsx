@@ -10,6 +10,7 @@ import {
   Coffee,
   Shield,
   X,
+  MessageSquare,
 } from "lucide-react";
 import { API_ENDPOINTS } from "../config/api";
 import { ScaleOnHover } from "./AnimatedComponents";
@@ -88,6 +89,7 @@ function SimpleNavbar() {
     { to: "/", label: "Home", icon: Home },
     { to: "/create", label: "Create", icon: PenTool },
     { to: "/create-poll", label: "Polls", icon: BarChart3 },
+    { to: "/world-chat", label: "World Chat", icon: MessageSquare },
     { to: "/about", label: "About", icon: Info },
     { to: "/contact", label: "Contact", icon: Mail },
     { to: "/buy-me-a-coffee", label: "Support", icon: Coffee },

@@ -11,6 +11,7 @@ import {
   X,
   Menu,
   Ban,
+  Pin,
 } from "lucide-react";
 
 const AdminSidebar = ({
@@ -64,6 +65,15 @@ const AdminSidebar = ({
       activeColor: "bg-red-100 text-red-700 border-r-2 border-red-500",
       badge: stats.hiddenPosts > 0 ? stats.hiddenPosts : null,
       badgeColor: "bg-gray-500",
+    },
+    {
+      id: "pinned",
+      label: "Pinned Posts",
+      icon: Pin,
+      color: "text-blue-700 hover:bg-blue-50",
+      activeColor: "bg-blue-100 text-blue-700 border-r-2 border-blue-500",
+      badge: stats.pinnedPosts > 0 ? stats.pinnedPosts : null,
+      badgeColor: "bg-blue-500",
     },
     {
       id: "word-banning",

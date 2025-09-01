@@ -21,6 +21,7 @@ import Terms from "./pages/Terms";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
 import BuyMeACoffee from "./pages/BuyMeACoffee";
 import Admin from "./pages/Admin";
+import WorldChat from "./pages/WorldChat";
 
 import "./App.css";
 
@@ -101,6 +102,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/create" element={<Create />} />
               <Route path="/create-poll" element={<CreatePoll />} />
+              <Route path="/world-chat" element={<WorldChat />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/disclaimer" element={<Disclaimer />} />

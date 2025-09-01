@@ -2,7 +2,7 @@ import { AlertTriangle, Shield, Users } from "lucide-react";
 
 function Disclaimer() {
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto pt-6">
       {/* Header */}
       <div className="text-center mb-12">
         <div className="mb-6">

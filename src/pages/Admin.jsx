@@ -158,6 +158,9 @@ function Admin() {
       case "flagged":
         filtered = filtered.filter((post) => post.isFlagged);
         break;
+      case "pinned":
+        filtered = filtered.filter((post) => post.isPinned);
+        break;
       default:
         break;
     }

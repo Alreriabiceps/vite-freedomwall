@@ -53,12 +53,14 @@ export const usePosts = (adminKey) => {
           }
         );
       } else {
-        // For hide/unhide/flag actions, use the status endpoint
+        // For hide/unhide/flag/pin actions, use the status endpoint
         const body = {};
         if (action === "hide") body.isHidden = true;
         if (action === "unhide") body.isHidden = false;
         if (action === "flag") body.isFlagged = true;
         if (action === "unflag") body.isFlagged = false;
+        if (action === "pin") body.isPinned = true;
+        if (action === "unpin") body.isPinned = false;
 
         response = await fetch(
           buildEndpoint(API_ENDPOINTS.POSTS, `/${postId}/status`),

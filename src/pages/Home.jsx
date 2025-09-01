@@ -322,7 +322,7 @@ function Home() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
+    <div className="w-full max-w-7xl mx-auto px-4 md:px-6 pt-6">
       {/* Hero Section */}
       <FadeIn delay={0.2} className="text-center mb-8 md:mb-12 px-4 md:px-0">
         <div className="mb-4 md:mb-6 mt-8 md:mt-12">
