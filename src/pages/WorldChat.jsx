@@ -485,7 +485,7 @@ const WorldChat = () => {
         {/* Chat Messages */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 h-[500px] md:h-[600px] flex flex-col">
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
             <StaggerContainer>
               {messages.map((message, index) => (
                 <StaggerItem key={message.id || index} delay={index * 0.1}>
