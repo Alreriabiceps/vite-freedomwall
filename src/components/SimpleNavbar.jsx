@@ -29,7 +29,6 @@ function SimpleNavbar() {
   const {
     newPostsCount,
     newMessagesCount,
-    totalNotifications,
     markAsRead,
     isConnected,
     hasNotificationPermission,
@@ -107,6 +106,7 @@ function SimpleNavbar() {
       label: "World Chat",
       icon: MessageSquare,
       notificationCount: newMessagesCount,
+      isNew: true, // Mark as new feature
     },
     { to: "/about", label: "About", icon: Info },
     { to: "/contact", label: "Contact", icon: Mail },
@@ -182,6 +182,11 @@ function SimpleNavbar() {
                     {item.to === "/buy-me-a-coffee" && (
                       <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
                         ♥
+                      </span>
+                    )}
+                    {item.isNew && (
+                      <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 new-badge-glow">
+                        NEW
                       </span>
                     )}
                     {item.notificationCount > 0 && (

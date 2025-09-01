@@ -64,6 +64,7 @@ function BottomNavigation() {
       icon: MessageSquare,
       color: "text-indigo-600",
       notificationCount: newMessagesCount,
+      isNew: true, // Mark as new feature
     },
   ];
 
@@ -123,6 +124,13 @@ function BottomNavigation() {
                   }`}
                 >
                   <Icon size={24} />
+
+                  {/* NEW badge */}
+                  {item.isNew && (
+                    <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 new-badge-glow">
+                      NEW
+                    </span>
+                  )}
 
                   {/* Notification badge */}
                   {item.notificationCount > 0 && (
