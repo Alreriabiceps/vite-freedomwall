@@ -7,7 +7,7 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "../components/AnimatedComponents";
-import { API_ENDPOINTS } from "../config/api";
+import { API_ENDPOINTS, getBackendURL } from "../config/api";
 
 const WorldChat = () => {
   const [penName, setPenName] = useState("");
@@ -49,7 +49,7 @@ const WorldChat = () => {
     if (penName && (!socket || (socket && !socket.connected))) {
       console.log("🔄 Creating new socket connection...");
       // Always connect to the backend for Socket.io
-      const socketURL = "http://localhost:5000";
+      const socketURL = getBackendURL();
 
       console.log("Attempting to connect to socket at:", socketURL);
       console.log("Pen name:", penName);
@@ -216,16 +216,13 @@ const WorldChat = () => {
     if (penName.trim()) {
       try {
         // Check if pen name is available
-        const response = await fetch(
-          "http://localhost:5000/api/v1/chat/check-penname",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ penName: penName.trim() }),
-          }
-        );
+        const response = await fetch(API_ENDPOINTS.CHAT_CHECK_PENNAME, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ penName: penName.trim() }),
+        });
 
         const data = await response.json();
 
@@ -237,7 +234,19 @@ const WorldChat = () => {
         }
       } catch (error) {
         console.error("Error checking pen name:", error);
-        alert("Error checking pen name availability");
+
+        // Better error handling
+        if (error.name === "TypeError" && error.message.includes("fetch")) {
+          alert(
+            "Cannot connect to server. Please check if the backend is running or try again later."
+          );
+        } else if (error.message.includes("Failed to fetch")) {
+          alert(
+            "Network error. Please check your internet connection and try again."
+          );
+        } else {
+          alert("Error checking pen name availability. Please try again.");
+        }
       }
     }
   };
@@ -247,16 +256,13 @@ const WorldChat = () => {
     if (newPenName.trim() && newPenName.trim() !== penName) {
       try {
         // Check if new pen name is available
-        const response = await fetch(
-          "http://localhost:5000/api/v1/chat/check-penname",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ penName: newPenName.trim() }),
-          }
-        );
+        const response = await fetch(API_ENDPOINTS.CHAT_CHECK_PENNAME, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ penName: newPenName.trim() }),
+        });
 
         const data = await response.json();
 
@@ -282,7 +288,19 @@ const WorldChat = () => {
         }
       } catch (error) {
         console.error("Error checking pen name:", error);
-        alert("Error checking pen name availability");
+
+        // Better error handling
+        if (error.name === "TypeError" && error.message.includes("fetch")) {
+          alert(
+            "Cannot connect to server. Please check if the backend is running or try again later."
+          );
+        } else if (error.message.includes("Failed to fetch")) {
+          alert(
+            "Network error. Please check your internet connection and try again."
+          );
+        } else {
+          alert("Error checking pen name availability. Please try again.");
+        }
       }
     }
   };

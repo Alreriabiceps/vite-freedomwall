@@ -12,8 +12,21 @@ export const API_ENDPOINTS = {
   ANNOUNCEMENTS_ADMIN: `${API_BASE_URL}/api/v1/announcements/admin`,
   BANNED_WORDS: `${API_BASE_URL}/api/v1/banned-words`,
   BANNED_WORDS_ADMIN: `${API_BASE_URL}/api/v1/banned-words/admin`,
+  CHAT: `${API_BASE_URL}/api/v1/chat`,
+  CHAT_CHECK_PENNAME: `${API_BASE_URL}/api/v1/chat/check-penname`,
 };
 
 export const buildEndpoint = (base, path) => `${base}${path}`;
+
+// Get the backend URL for Socket.io connections
+export const getBackendURL = () => {
+  // In development, use localhost:5000
+  if (import.meta.env.DEV) {
+    return "http://localhost:5000";
+  }
+  // In production, use the API base URL from environment variable
+  // This should be set in Vercel as VITE_API_BASE_URL=https://your-render-backend.onrender.com
+  return API_BASE_URL;
+};
 
 export default API_BASE_URL;
