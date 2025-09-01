@@ -20,7 +20,7 @@ function SimpleNavbar() {
   const location = useLocation();
   const [announcements, setAnnouncements] = useState([]);
   const [showAnnouncements, setShowAnnouncements] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
   const [announcementsError, setAnnouncementsError] = useState(null);
   const [showTermsReminder, setShowTermsReminder] = useState(true);
@@ -82,16 +82,13 @@ function SimpleNavbar() {
       ) {
         setShowAnnouncements(false);
       }
-      if (showMobileMenu && !event.target.closest(".mobile-menu-dropdown")) {
-        setShowMobileMenu(false);
-      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showAnnouncements, showMobileMenu]);
+  }, [showAnnouncements]);
 
   const toggleAnnouncements = () => {
     setShowAnnouncements(!showAnnouncements);
@@ -367,79 +364,6 @@ function SimpleNavbar() {
 
             {/* Mobile Navigation - Only show on mobile */}
             <div className="md:hidden flex items-center space-x-2">
-              {/* Mobile Menu Button */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowMobileMenu(!showMobileMenu)}
-                  className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors relative"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                  {totalNotifications > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {totalNotifications > 99 ? "99+" : totalNotifications}
-                    </span>
-                  )}
-                </button>
-
-                {/* Mobile Menu Dropdown */}
-                {showMobileMenu && (
-                  <div className="mobile-menu-dropdown absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                    <div className="p-3 border-b border-gray-200">
-                      <h3 className="font-semibold text-gray-900 text-base">
-                        Navigation
-                      </h3>
-                    </div>
-                    <div className="p-2 space-y-1">
-                      {navItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <Link
-                            key={item.to}
-                            to={item.to}
-                            onClick={() => {
-                              setShowMobileMenu(false);
-                              if (
-                                item.to === "/" ||
-                                item.to === "/world-chat"
-                              ) {
-                                markAsRead();
-                              }
-                            }}
-                            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors relative ${
-                              location.pathname === item.to
-                                ? "bg-gray-900 text-white"
-                                : "text-gray-700 hover:bg-gray-100"
-                            }`}
-                          >
-                            <Icon size={18} />
-                            {item.label}
-                            {item.notificationCount > 0 && (
-                              <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                                {item.notificationCount > 99
-                                  ? "99+"
-                                  : item.notificationCount}
-                              </span>
-                            )}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-
               {/* Mobile Notification Permission Button */}
               {!hasNotificationPermission && (
                 <button

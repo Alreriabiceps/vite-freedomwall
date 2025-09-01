@@ -12,6 +12,7 @@ import {
   Coffee,
   MessageSquare,
 } from "lucide-react";
+import useRealtimeNotifications from "../hooks/useRealtimeNotifications";
 
 function BottomNavigation() {
   const location = useLocation();
@@ -19,6 +20,10 @@ function BottomNavigation() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showQuickActions, setShowQuickActions] = useState(false);
+
+  // Real-time notification counts
+  const { newPostsCount, newMessagesCount, markAsRead } =
+    useRealtimeNotifications();
 
   // Hide/show navigation on scroll
   useEffect(() => {
@@ -39,7 +44,13 @@ function BottomNavigation() {
   }, [lastScrollY]);
 
   const navItems = [
-    { to: "/", label: "Home", icon: Home, color: "text-blue-600" },
+    {
+      to: "/",
+      label: "Home",
+      icon: Home,
+      color: "text-blue-600",
+      notificationCount: newPostsCount,
+    },
     { to: "/create", label: "Create", icon: PenTool, color: "text-green-600" },
     {
       to: "/create-poll",
@@ -52,6 +63,7 @@ function BottomNavigation() {
       label: "Chat",
       icon: MessageSquare,
       color: "text-indigo-600",
+      notificationCount: newMessagesCount,
     },
   ];
 
@@ -93,6 +105,12 @@ function BottomNavigation() {
               <Link
                 key={item.to}
                 to={item.to}
+                onClick={() => {
+                  // Mark notifications as read when visiting Home or World Chat
+                  if (item.to === "/" || item.to === "/world-chat") {
+                    markAsRead();
+                  }
+                }}
                 className="flex flex-col items-center justify-center min-w-[60px] py-2 rounded-xl transition-all duration-200"
               >
                 <motion.div
@@ -105,6 +123,15 @@ function BottomNavigation() {
                   }`}
                 >
                   <Icon size={24} />
+
+                  {/* Notification badge */}
+                  {item.notificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {item.notificationCount > 99
+                        ? "99+"
+                        : item.notificationCount}
+                    </span>
+                  )}
 
                   {/* Active indicator */}
                   {isActive && (
